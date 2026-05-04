@@ -1,0 +1,1765 @@
+-- -- ============================================================
+--  EDUMANAGER — Schéma MySQL Collège Uniquement
+--  Version : 5.0
+--  Date     : Avril 2026
+--
+--  CHANGEMENTS v5 vs v4 :
+--    [-] TABLE filieres         — supprimée (université)
+--    [-] Champ group_type       — simplifié, 'classe' uniquement
+--    [-] Champ parent_id        — supprimé (lié aux filières)
+--    [-] Champ cycle université — simplifié
+--    [-] schools.type           — ENUM supprimé, collège uniquement
+--    [-] schools.subtype        — gardé (info admin public/privé)
+--
+--  TABLES FINALES : 16 tables + 6 vues SQL
+-- ============================================================
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+
+-- ============================================================
+-- TABLE 1 : schools
+-- Un enregistrement = un collège inscrit sur le SaaS
+-- subtype : info administrative uniquement (public ou privé)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `schools` (
+  `id`         INT UNSIGNED     NOT NULL AUTO_INCREMENT,
+  `name`       VARCHAR(150)     NOT NULL,
+  `subtype`    ENUM('public','prive') NULL DEFAULT NULL
+                 COMMENT 'info administrative uniquement',
+  `email`      VARCHAR(150)     NOT NULL UNIQUE,
+  `phone`      VARCHAR(20)      NULL,
+  `address`    VARCHAR(255)     NULL,
+  `logo`       VARCHAR(255)     NULL,
+  `slug`       VARCHAR(100)     NOT NULL UNIQUE,
+  `status`     ENUM('active','inactive','suspended') NOT NULL DEFAULT 'active',
+  `created_at` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- TABLE 2 : users
+-- 3 rôles :
+--   super_admin → school_id = NULL  (propriétaire du SaaS)
+--   admin       → school_id = X     (gère son collège)
+--   agent       → school_id = X     (permissions définies par admin)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `users` (
+  `id`         INT UNSIGNED     NOT NULL AUTO_INCREMENT,
+  `school_id`  INT UNSIGNED     NULL     DEFAULT NULL,
+  `name`       VARCHAR(100)     NOT NULL,
+  `email`      VARCHAR(150)     NOT NULL UNIQUE,
+  `password`   VARCHAR(255)     NOT NULL,
+  `role`       ENUM('super_admin','admin','agent') NOT NULL DEFAULT 'admin',
+  `avatar`     VARCHAR(255)     NULL,
+  `status`     ENUM('active','inactive') NOT NULL DEFAULT 'active',
+  `last_login` TIMESTAMP        NULL,
+  `created_at` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_users_school` FOREIGN KEY (`school_id`)
+    REFERENCES `schools`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- TABLE 3 : agent_permissions
+-- Permissions granulaires définies par l'admin pour chaque agent
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `agent_permissions` (
+  `id`                    INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id`               INT UNSIGNED NOT NULL,
+  `school_id`             INT UNSIGNED NOT NULL,
+  `can_add_student`       TINYINT(1)   NOT NULL DEFAULT 0,
+  `can_edit_student`      TINYINT(1)   NOT NULL DEFAULT 0,
+  `can_delete_student`    TINYINT(1)   NOT NULL DEFAULT 0,
+  `can_add_grade`         TINYINT(1)   NOT NULL DEFAULT 1,
+  `can_edit_grade`        TINYINT(1)   NOT NULL DEFAULT 1,
+  `can_delete_grade`      TINYINT(1)   NOT NULL DEFAULT 0,
+  `can_add_payment`       TINYINT(1)   NOT NULL DEFAULT 1,
+  `can_edit_payment`      TINYINT(1)   NOT NULL DEFAULT 0,
+  `can_delete_payment`    TINYINT(1)   NOT NULL DEFAULT 0,
+  `can_generate_bulletin` TINYINT(1)   NOT NULL DEFAULT 1,
+  `can_export_data`       TINYINT(1)   NOT NULL DEFAULT 0,
+  `can_import_data`       TINYINT(1)   NOT NULL DEFAULT 0,
+  `created_at`            TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`            TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_agent_school` (`user_id`, `school_id`),
+  CONSTRAINT `fk_permissions_user`   FOREIGN KEY (`user_id`)   REFERENCES `users`(`id`)   ON DELETE CASCADE,
+  CONSTRAINT `fk_permissions_school` FOREIGN KEY (`school_id`) REFERENCES `schools`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- TABLE 4 : school_settings
+-- Configuration pédagogique complète du collège
+-- Modifiable uniquement par admin et super_admin
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `school_settings` (
+  `id`                    INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  `school_id`             INT UNSIGNED  NOT NULL UNIQUE,
+
+  -- Système de périodes
+  `period_type`           ENUM('semestre','trimestre') NOT NULL DEFAULT 'semestre',
+  `nb_periods`            TINYINT       NOT NULL DEFAULT 2
+                            COMMENT '2 semestres ou 3 trimestres',
+
+  -- Types de devoirs activés
+  `use_interro`           TINYINT(1)    NOT NULL DEFAULT 1,
+  `use_d1`                TINYINT(1)    NOT NULL DEFAULT 1,
+  `use_d2`                TINYINT(1)    NOT NULL DEFAULT 1,
+  `use_dh`                TINYINT(1)    NOT NULL DEFAULT 0
+                            COMMENT 'Devoir hebdomadaire',
+
+  -- Conduite
+  `use_conduite`          TINYINT(1)    NOT NULL DEFAULT 1,
+  `conduite_coef`         TINYINT       NOT NULL DEFAULT 1,
+  `conduite_max`          DECIMAL(5,2)  NOT NULL DEFAULT 20.00,
+
+  -- Moyenne de passage
+  `passing_grade`         DECIMAL(5,2)  NOT NULL DEFAULT 10.00,
+
+  -- Pondération semestres
+  -- MA = (MGS1 * poids_s1 + MGS2 * poids_s2) / (poids_s1 + poids_s2)
+  `poids_s1`              TINYINT       NOT NULL DEFAULT 1,
+  `poids_s2`              TINYINT       NOT NULL DEFAULT 2,
+
+  -- Scolarité
+  `currency`              VARCHAR(10)   NOT NULL DEFAULT 'FCFA',
+
+  `created_at`            TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`            TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_settings_school` FOREIGN KEY (`school_id`)
+    REFERENCES `schools`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- TABLE 5 : classes
+-- Classes du collège créées par l'admin
+-- Premier cycle  : 6ème A, 6ème B, 5ème A...
+-- Second cycle   : 2nde A, Terminale C...
+-- cycle  : 'premier' | 'second'
+-- serie  : NULL pour premier cycle | A,B,C,D pour second cycle
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `classes` (
+  `id`            INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  `school_id`     INT UNSIGNED  NOT NULL,
+  `name`          VARCHAR(100)  NOT NULL COMMENT 'ex: 6ème A, Terminale C',
+  `cycle`         ENUM('premier','second') NOT NULL DEFAULT 'premier',
+  `serie`         VARCHAR(20)   NULL DEFAULT NULL
+                    COMMENT 'A,B,C,D — second cycle uniquement',
+  `academic_year` YEAR          NOT NULL,
+  `created_at`    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_classes_school` FOREIGN KEY (`school_id`)
+    REFERENCES `schools`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- TABLE 6 : teachers
+-- Enseignants du collège
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `teachers` (
+  `id`          INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  `school_id`   INT UNSIGNED  NOT NULL,
+  `firstname`   VARCHAR(80)   NOT NULL,
+  `lastname`    VARCHAR(80)   NOT NULL,
+  `email`       VARCHAR(150)  NULL,
+  `phone`       VARCHAR(20)   NULL,
+  `speciality`  VARCHAR(100)  NULL COMMENT 'matière principale',
+  `status`      ENUM('actif','inactif') NOT NULL DEFAULT 'actif',
+  `created_at`  TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`  TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_teachers_school` FOREIGN KEY (`school_id`)
+    REFERENCES `schools`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- TABLE 7 : subjects
+-- Matières par classe — CRUD complet par l'admin
+-- is_default : 1 = matière insérée automatiquement par le système
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `subjects` (
+  `id`            INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  `school_id`     INT UNSIGNED  NOT NULL,
+  `class_id`      INT UNSIGNED  NOT NULL,
+  `name`          VARCHAR(100)  NOT NULL,
+  `coefficient`   TINYINT       NOT NULL DEFAULT 1,
+  `is_default`    TINYINT(1)    NOT NULL DEFAULT 0,
+  `created_at`    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_subjects_school` FOREIGN KEY (`school_id`)
+    REFERENCES `schools`(`id`)  ON DELETE CASCADE,
+  CONSTRAINT `fk_subjects_class`  FOREIGN KEY (`class_id`)
+    REFERENCES `classes`(`id`)  ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- TABLE 8 : teacher_subjects
+-- Liaison prof ↔ matières qu'il enseigne
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `teacher_subjects` (
+  `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `school_id`   INT UNSIGNED NOT NULL,
+  `teacher_id`  INT UNSIGNED NOT NULL,
+  `subject_id`  INT UNSIGNED NOT NULL,
+  `created_at`  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_teacher_subject` (`teacher_id`, `subject_id`),
+  CONSTRAINT `fk_ts_school`   FOREIGN KEY (`school_id`)  REFERENCES `schools`(`id`)   ON DELETE CASCADE,
+  CONSTRAINT `fk_ts_teacher`  FOREIGN KEY (`teacher_id`) REFERENCES `teachers`(`id`)  ON DELETE CASCADE,
+  CONSTRAINT `fk_ts_subject`  FOREIGN KEY (`subject_id`) REFERENCES `subjects`(`id`)  ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- TABLE 9 : teacher_classes
+-- Liaison prof ↔ classes dans lesquelles il intervient
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `teacher_classes` (
+  `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `school_id`   INT UNSIGNED NOT NULL,
+  `teacher_id`  INT UNSIGNED NOT NULL,
+  `class_id`    INT UNSIGNED NOT NULL,
+  `created_at`  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_teacher_class` (`teacher_id`, `class_id`),
+  CONSTRAINT `fk_tc_school`   FOREIGN KEY (`school_id`)  REFERENCES `schools`(`id`)  ON DELETE CASCADE,
+  CONSTRAINT `fk_tc_teacher`  FOREIGN KEY (`teacher_id`) REFERENCES `teachers`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_tc_class`    FOREIGN KEY (`class_id`)   REFERENCES `classes`(`id`)  ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- TABLE 10 : students
+-- Profil complet de chaque élève
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `students` (
+  `id`             INT UNSIGNED        NOT NULL AUTO_INCREMENT,
+  `school_id`      INT UNSIGNED        NOT NULL,
+  `class_id`       INT UNSIGNED        NULL DEFAULT NULL,
+  `matricule`      VARCHAR(30)         NOT NULL,
+  `firstname`      VARCHAR(80)         NOT NULL,
+  `lastname`       VARCHAR(80)         NOT NULL,
+  `email`          VARCHAR(150)        NULL,
+  `phone`          VARCHAR(20)         NULL,
+  `gender`         ENUM('M','F')       NOT NULL,
+  `birthdate`      DATE                NULL,
+  `birthplace`     VARCHAR(100)        NULL,
+  `nationality`    VARCHAR(60)         NULL DEFAULT 'Béninoise',
+  `marital_status` ENUM('celibataire','marie','divorce','veuf')
+                     NULL DEFAULT 'celibataire',
+  `photo`          VARCHAR(255)        NULL,
+  `parent_name`    VARCHAR(150)        NULL,
+  `parent_phone`   VARCHAR(20)         NULL,
+  `address`        VARCHAR(255)        NULL,
+  `status`         ENUM('actif','inactif','exclu','diplome')
+                     NOT NULL DEFAULT 'actif',
+  `enrolled_at`    DATE                NULL,
+  `notes`          TEXT                NULL,
+  `created_at`     TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`     TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_matricule_school` (`matricule`, `school_id`),
+  CONSTRAINT `fk_students_school` FOREIGN KEY (`school_id`)
+    REFERENCES `schools`(`id`)  ON DELETE CASCADE,
+  CONSTRAINT `fk_students_class`  FOREIGN KEY (`class_id`)
+    REFERENCES `classes`(`id`)  ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- TABLE 11 : enrollments
+-- Inscriptions formelles par année académique
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `enrollments` (
+  `id`             INT UNSIGNED   NOT NULL AUTO_INCREMENT,
+  `school_id`      INT UNSIGNED   NOT NULL,
+  `student_id`     INT UNSIGNED   NOT NULL,
+  `class_id`       INT UNSIGNED   NULL,
+  `academic_year`  YEAR           NOT NULL,
+  `tuition_amount` DECIMAL(10,2)  NULL COMMENT 'frais pour cette année',
+  `status`         ENUM('inscrit','reinscrit','annule')
+                     NOT NULL DEFAULT 'inscrit',
+  `enrolled_by`    INT UNSIGNED   NULL COMMENT 'users.id',
+  `created_at`     TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`     TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_enrollment_student_year`
+    (`student_id`, `academic_year`, `school_id`),
+  CONSTRAINT `fk_enroll_school`   FOREIGN KEY (`school_id`)
+    REFERENCES `schools`(`id`)  ON DELETE CASCADE,
+  CONSTRAINT `fk_enroll_student`  FOREIGN KEY (`student_id`)
+    REFERENCES `students`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_enroll_class`    FOREIGN KEY (`class_id`)
+    REFERENCES `classes`(`id`)  ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- TABLE 12 : grades
+-- Notes par élève / matière / période
+-- type   : interro | d1 | d2 | dh | composition | examen
+-- period : S1/S2 ou T1/T2/T3 selon config école
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `grades` (
+  `id`          INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+  `school_id`   INT UNSIGNED    NOT NULL,
+  `student_id`  INT UNSIGNED    NOT NULL,
+  `subject_id`  INT UNSIGNED    NOT NULL,
+  `score`       DECIMAL(5,2)    NOT NULL,
+  `max_score`   DECIMAL(5,2)    NOT NULL DEFAULT 20.00,
+  `period`      VARCHAR(5)      NOT NULL COMMENT 'S1,S2 ou T1,T2,T3',
+  `type`        ENUM('interro','d1','d2','dh','composition','examen')
+                  NOT NULL DEFAULT 'interro',
+  `label`       VARCHAR(100)    NULL COMMENT 'ex: Interro n°1, Devoir 1',
+  `date`        DATE            NULL,
+  `comment`     TEXT            NULL,
+  `created_by`  INT UNSIGNED    NULL,
+  `created_at`  TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_grades_school`   FOREIGN KEY (`school_id`)
+    REFERENCES `schools`(`id`)  ON DELETE CASCADE,
+  CONSTRAINT `fk_grades_student`  FOREIGN KEY (`student_id`)
+    REFERENCES `students`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_grades_subject`  FOREIGN KEY (`subject_id`)
+    REFERENCES `subjects`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- TABLE 13 : conduite
+-- Note de conduite par élève et par période
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `conduite` (
+  `id`          INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+  `school_id`   INT UNSIGNED    NOT NULL,
+  `student_id`  INT UNSIGNED    NOT NULL,
+  `period`      VARCHAR(5)      NOT NULL COMMENT 'S1,S2 ou T1,T2,T3',
+  `score`       DECIMAL(5,2)    NOT NULL,
+  `max_score`   DECIMAL(5,2)    NOT NULL DEFAULT 20.00,
+  `comment`     TEXT            NULL,
+  `created_by`  INT UNSIGNED    NULL,
+  `created_at`  TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_conduite_student_period`
+    (`student_id`, `period`, `school_id`),
+  CONSTRAINT `fk_conduite_school`   FOREIGN KEY (`school_id`)
+    REFERENCES `schools`(`id`)  ON DELETE CASCADE,
+  CONSTRAINT `fk_conduite_student`  FOREIGN KEY (`student_id`)
+    REFERENCES `students`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- TABLE 14 : payments
+-- Paiements de scolarité en FCFA
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `payments` (
+  `id`             INT UNSIGNED   NOT NULL AUTO_INCREMENT,
+  `school_id`      INT UNSIGNED   NOT NULL,
+  `student_id`     INT UNSIGNED   NOT NULL,
+  `amount_due`     DECIMAL(10,2)  NOT NULL COMMENT 'montant attendu',
+  `amount_paid`    DECIMAL(10,2)  NOT NULL DEFAULT 0.00,
+  `status`         ENUM('paye','partiel','en_attente','retard')
+                     NOT NULL DEFAULT 'en_attente',
+  `period`         VARCHAR(10)    NOT NULL DEFAULT 'annuel'
+                     COMMENT 'S1,S2,T1,T2,T3 ou annuel',
+  `payment_method` ENUM('espece','mobile_money','virement','cheque') NULL,
+  `payment_date`   DATE           NULL,
+  `receipt_number` VARCHAR(50)    NULL,
+  `note`           TEXT           NULL,
+  `created_by`     INT UNSIGNED   NULL,
+  `created_at`     TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`     TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_payments_school`   FOREIGN KEY (`school_id`)
+    REFERENCES `schools`(`id`)  ON DELETE CASCADE,
+  CONSTRAINT `fk_payments_student`  FOREIGN KEY (`student_id`)
+    REFERENCES `students`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- TABLE 15 : student_history
+-- Historique académique annuel : passage, redoublement, diplôme
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `student_history` (
+  `id`               INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  `school_id`        INT UNSIGNED  NOT NULL,
+  `student_id`       INT UNSIGNED  NOT NULL,
+  `class_id`         INT UNSIGNED  NULL COMMENT 'classe de cette année',
+  `academic_year`    YEAR          NOT NULL,
+  `moyenne_annuelle` DECIMAL(5,2)  NULL,
+  `decision`         ENUM('passe','redouble','exclu','diplome','transfere')
+                       NOT NULL,
+  `next_class_id`    INT UNSIGNED  NULL COMMENT 'classe suivante si admis',
+  `comment`          TEXT          NULL,
+  `created_by`       INT UNSIGNED  NULL,
+  `created_at`       TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_history_student_year` (`student_id`, `academic_year`),
+  CONSTRAINT `fk_history_school`   FOREIGN KEY (`school_id`)
+    REFERENCES `schools`(`id`)  ON DELETE CASCADE,
+  CONSTRAINT `fk_history_student`  FOREIGN KEY (`student_id`)
+    REFERENCES `students`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- TABLE 16 : generated_docs
+-- Suivi des documents PDF générés
+-- bulletins, relevés de notes, attestations
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `generated_docs` (
+  `id`            INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  `school_id`     INT UNSIGNED  NOT NULL,
+  `student_id`    INT UNSIGNED  NOT NULL,
+  `doc_type`      ENUM('bulletin','releve','attestation') NOT NULL,
+  `period`        VARCHAR(10)   NULL COMMENT 'NULL pour relevé annuel',
+  `academic_year` YEAR          NOT NULL,
+  `file_path`     VARCHAR(255)  NULL COMMENT 'chemin du PDF sur le serveur',
+  `generated_by`  INT UNSIGNED  NULL,
+  `generated_at`  TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_docs_school`   FOREIGN KEY (`school_id`)
+    REFERENCES `schools`(`id`)  ON DELETE CASCADE,
+  CONSTRAINT `fk_docs_student`  FOREIGN KEY (`student_id`)
+    REFERENCES `students`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+-- ============================================================
+-- VUES SQL — CALCUL DES MOYENNES
+-- Tous les calculs se font dans la base de données
+-- ============================================================
+
+-- ------------------------------------------------------------
+-- VUE 1 : v_moyenne_interros
+-- MI = moyenne des interrogations normalisées sur 20
+-- ------------------------------------------------------------
+CREATE OR REPLACE VIEW `v_moyenne_interros` AS
+SELECT
+  g.school_id,
+  g.student_id,
+  g.subject_id,
+  g.period,
+  ROUND(AVG(g.score / g.max_score * 20), 2) AS mi
+FROM grades g
+WHERE g.type = 'interro'
+GROUP BY g.school_id, g.student_id, g.subject_id, g.period;
+
+
+-- ------------------------------------------------------------
+-- VUE 2 : v_moyenne_matiere
+-- MM selon le système configuré par l'école :
+--   Sans DH : MM = (MI + D1 + D2) / 3
+--   Avec DH : MIA = (MI + DH) / 2 → MM = (MIA + D1 + D2) / 3
+-- ------------------------------------------------------------
+CREATE OR REPLACE VIEW `v_moyenne_matiere` AS
+SELECT
+  mi.school_id,
+  mi.student_id,
+  mi.subject_id,
+  mi.period,
+  MAX(CASE WHEN g.type = 'd1' THEN g.score / g.max_score * 20 END) AS d1,
+  MAX(CASE WHEN g.type = 'd2' THEN g.score / g.max_score * 20 END) AS d2,
+  MAX(CASE WHEN g.type = 'dh' THEN g.score / g.max_score * 20 END) AS dh,
+  mi.mi,
+  ROUND(
+    CASE
+      WHEN ss.use_dh = 1
+        AND MAX(CASE WHEN g.type = 'dh'
+                THEN g.score / g.max_score * 20 END) IS NOT NULL
+      THEN (
+        ( (mi.mi + MAX(CASE WHEN g.type = 'dh'
+                       THEN g.score / g.max_score * 20 END)) / 2
+          + MAX(CASE WHEN g.type = 'd1'
+                THEN g.score / g.max_score * 20 END)
+          + MAX(CASE WHEN g.type = 'd2'
+                THEN g.score / g.max_score * 20 END)
+        ) / 3
+      )
+      ELSE (
+        mi.mi
+        + COALESCE(MAX(CASE WHEN g.type = 'd1'
+                       THEN g.score / g.max_score * 20 END), mi.mi)
+        + COALESCE(MAX(CASE WHEN g.type = 'd2'
+                       THEN g.score / g.max_score * 20 END), mi.mi)
+      ) / 3
+    END
+  , 2) AS mm
+FROM v_moyenne_interros mi
+JOIN grades g
+  ON  g.student_id = mi.student_id
+  AND g.subject_id = mi.subject_id
+  AND g.period     = mi.period
+  AND g.school_id  = mi.school_id
+JOIN school_settings ss ON ss.school_id = mi.school_id
+GROUP BY mi.school_id, mi.student_id,
+         mi.subject_id, mi.period, mi.mi, ss.use_dh;
+
+
+-- ------------------------------------------------------------
+-- VUE 3 : v_moyenne_generale_periode
+-- MGS ou MGT = (somme(MM × coef) + conduite × coef_conduite)
+--              / (somme(coefs) + coef_conduite)
+-- ------------------------------------------------------------
+CREATE OR REPLACE VIEW `v_moyenne_generale_periode` AS
+SELECT
+  mm.school_id,
+  mm.student_id,
+  mm.period,
+  ROUND(SUM(mm.mm * s.coefficient), 2)          AS somme_mcm,
+  SUM(s.coefficient)                             AS somme_coefs,
+  COALESCE(c.score / c.max_score * 20, NULL)     AS note_conduite,
+  ss.conduite_coef,
+  ROUND(
+    (
+      SUM(mm.mm * s.coefficient)
+      + COALESCE(c.score / c.max_score * 20, 0) * ss.conduite_coef
+    ) /
+    (
+      SUM(s.coefficient)
+      + CASE WHEN ss.use_conduite = 1 THEN ss.conduite_coef ELSE 0 END
+    )
+  , 2) AS mg_periode
+FROM v_moyenne_matiere mm
+JOIN subjects s         ON s.id = mm.subject_id
+JOIN school_settings ss ON ss.school_id = mm.school_id
+LEFT JOIN conduite c
+  ON  c.student_id = mm.student_id
+  AND c.period     = mm.period
+  AND c.school_id  = mm.school_id
+GROUP BY mm.school_id, mm.student_id, mm.period,
+         c.score, c.max_score, ss.conduite_coef, ss.use_conduite;
+
+
+-- ------------------------------------------------------------
+-- VUE 4 : v_moyenne_annuelle
+-- Semestre  : MA = (MGS1×poids_s1 + MGS2×poids_s2)/(p1+p2)
+-- Trimestre : MA = (MGT1 + MGT2 + MGT3) / 3
+-- Décision  : Admis si MA >= passing_grade
+-- ------------------------------------------------------------
+CREATE OR REPLACE VIEW `v_moyenne_annuelle` AS
+SELECT
+  mgp.school_id,
+  mgp.student_id,
+  MAX(CASE WHEN mgp.period IN ('S1','T1')
+       THEN mgp.mg_periode END)                  AS mg_p1,
+  MAX(CASE WHEN mgp.period IN ('S2','T2')
+       THEN mgp.mg_periode END)                  AS mg_p2,
+  MAX(CASE WHEN mgp.period = 'T3'
+       THEN mgp.mg_periode END)                  AS mg_p3,
+  ss.period_type,
+  ss.poids_s1,
+  ss.poids_s2,
+  ss.passing_grade,
+  ROUND(
+    CASE
+      WHEN ss.period_type = 'trimestre' THEN (
+        COALESCE(MAX(CASE WHEN mgp.period='T1'
+                     THEN mgp.mg_periode END), 0)
+        + COALESCE(MAX(CASE WHEN mgp.period='T2'
+                       THEN mgp.mg_periode END), 0)
+        + COALESCE(MAX(CASE WHEN mgp.period='T3'
+                       THEN mgp.mg_periode END), 0)
+      ) / 3
+      ELSE (
+        COALESCE(MAX(CASE WHEN mgp.period='S1'
+                     THEN mgp.mg_periode END), 0) * ss.poids_s1
+        + COALESCE(MAX(CASE WHEN mgp.period='S2'
+                       THEN mgp.mg_periode END), 0) * ss.poids_s2
+      ) / (ss.poids_s1 + ss.poids_s2)
+    END
+  , 2) AS moyenne_annuelle,
+  CASE
+    WHEN ROUND(
+      CASE
+        WHEN ss.period_type = 'trimestre' THEN (
+          COALESCE(MAX(CASE WHEN mgp.period='T1'
+                       THEN mgp.mg_periode END), 0)
+          + COALESCE(MAX(CASE WHEN mgp.period='T2'
+                         THEN mgp.mg_periode END), 0)
+          + COALESCE(MAX(CASE WHEN mgp.period='T3'
+                         THEN mgp.mg_periode END), 0)
+        ) / 3
+        ELSE (
+          COALESCE(MAX(CASE WHEN mgp.period='S1'
+                       THEN mgp.mg_periode END), 0) * ss.poids_s1
+          + COALESCE(MAX(CASE WHEN mgp.period='S2'
+                         THEN mgp.mg_periode END), 0) * ss.poids_s2
+        ) / (ss.poids_s1 + ss.poids_s2)
+      END
+    , 2) >= ss.passing_grade
+    THEN 'Admis'
+    ELSE 'Redoublant'
+  END AS decision
+FROM v_moyenne_generale_periode mgp
+JOIN school_settings ss ON ss.school_id = mgp.school_id
+GROUP BY mgp.school_id, mgp.student_id,
+         ss.period_type, ss.poids_s1, ss.poids_s2, ss.passing_grade;
+
+
+-- ------------------------------------------------------------
+-- VUE 5 : v_classement
+-- Classement des élèves par classe et par période
+-- ------------------------------------------------------------
+CREATE OR REPLACE VIEW `v_classement` AS
+SELECT
+  mgp.school_id,
+  mgp.student_id,
+  st.class_id,
+  mgp.period,
+  mgp.mg_periode,
+  RANK() OVER (
+    PARTITION BY st.class_id, mgp.period
+    ORDER BY mgp.mg_periode DESC
+  ) AS rang
+FROM v_moyenne_generale_periode mgp
+JOIN students st ON st.id = mgp.student_id;
+
+
+-- ------------------------------------------------------------
+-- VUE 6 : v_bulletin
+-- Vue complète pour générer le bulletin d'un élève
+-- Utilisée par BulletinPDF.php
+-- ------------------------------------------------------------
+CREATE OR REPLACE VIEW `v_bulletin` AS
+SELECT
+  st.school_id,
+  st.id                                    AS student_id,
+  CONCAT(st.firstname, ' ', st.lastname)   AS student_name,
+  st.matricule,
+  st.gender,
+  st.birthdate,
+  cl.name                                  AS class_name,
+  cl.cycle,
+  cl.serie,
+  sub.id                                   AS subject_id,
+  sub.name                                 AS subject_name,
+  sub.coefficient,
+  mm.period,
+  mm.mi,
+  mm.d1,
+  mm.d2,
+  mm.dh,
+  mm.mm                                    AS moyenne_matiere,
+  ROUND(mm.mm * sub.coefficient, 2)        AS mcm,
+  c.score                                  AS note_conduite,
+  mgp.mg_periode                           AS moyenne_generale,
+  cls.rang,
+  ma.moyenne_annuelle,
+  ma.decision
+FROM students st
+JOIN classes cl          ON cl.id  = st.class_id
+JOIN subjects sub        ON sub.class_id = cl.id
+JOIN v_moyenne_matiere mm
+  ON  mm.student_id = st.id
+  AND mm.subject_id = sub.id
+LEFT JOIN conduite c
+  ON  c.student_id = st.id
+  AND c.period     = mm.period
+  AND c.school_id  = st.school_id
+LEFT JOIN v_moyenne_generale_periode mgp
+  ON  mgp.student_id = st.id
+  AND mgp.period     = mm.period
+  AND mgp.school_id  = st.school_id
+LEFT JOIN v_classement cls
+  ON  cls.student_id = st.id
+  AND cls.period     = mm.period
+LEFT JOIN v_moyenne_annuelle ma
+  ON  ma.student_id = st.id
+  AND ma.school_id  = st.school_id;
+
+
+-- ============================================================
+-- RÉCAPITULATIF FINAL — v5 COLLÈGE UNIQUEMENT
+-- ============================================================
+--
+--  #   Table                Rôle
+--  --- -------------------- -----------------------------------
+--  1   schools              Collèges inscrits sur le SaaS
+--  2   users                super_admin / admin / agent
+--  3   agent_permissions    Permissions granulaires agents
+--  4   school_settings      Config pédagogique par collège
+--  5   classes              Classes premier et second cycle
+--  6   teachers             Enseignants
+--  7   subjects             Matières par classe
+--  8   teacher_subjects     Liaison prof ↔ matières
+--  9   teacher_classes      Liaison prof ↔ classes
+--  10  students             Profil complet élève
+--  11  enrollments          Inscriptions par année
+--  12  grades               Notes (interro, D1, D2, DH...)
+--  13  conduite             Note de conduite par période
+--  14  payments             Paiements scolarité en FCFA
+--  15  student_history      Historique passage/redoublement
+--  16  generated_docs       Suivi PDF bulletins/relevés
+--
+--  Vues SQL :
+--  v1  v_moyenne_interros
+--  v2  v_moyenne_matiere
+--  v3  v_moyenne_generale_periode
+--  v4  v_moyenne_annuelle
+--  v5  v_classement
+--  v6  v_bulletin
+--
+-- ============================================================
+-- FIN — EduManager Schema v5.0 — Collège — Avril 2026
+-- ============================================================
+
+
+
+================================================================
+EDUMANAGER — PROMPTS DE GÉNÉRATION PAR FICHIER
+Version 3.0 | Stack : HTML + Tailwind CSS + JS + PHP + MySQL
+Couleurs : #7300e9 (violet) et #99fbe3 (menthe)
+Polices : Quicksand + Outfit (Google Fonts)
+Icônes : SVG inline uniquement — aucune librairie externe
+================================================================
+
+CONTEXTE GLOBAL À LIRE AVANT CHAQUE PROMPT
+-------------------------------------------
+EduManager est un micro-SaaS de gestion scolaire pour le Bénin
+et l'Afrique de l'Ouest. Il gère des collèges et universités.
+Multi-tenant : chaque école a un school_id unique.
+3 rôles : super_admin (propriétaire SaaS), admin (son école),
+agent (permissions définies par admin).
+Stack : HTML, Tailwind CSS, JavaScript, PHP, MySQL.
+Polices : Quicksand (titres) + Outfit (corps).
+Couleurs primaires : #7300e9 (violet) et #99fbe3 (menthe).
+Icônes : SVG inline uniquement, aucune librairie externe.
+Design : épuré, moderne, hors du commun, pas générique.
+
+
+================================================================
+FICHIER 1 — index.html
+PAGE D'ACCUEIL DU SITE (LANDING PAGE)
+================================================================
+
+PROMPT :
+
+Tu es un développeur frontend expert et un designer UI/UX de haut
+niveau. Génère le fichier index.html complet de la landing page
+du projet EduManager.
+
+CONTEXTE DU PROJET :
+EduManager est un micro-SaaS de gestion scolaire destiné aux
+collèges et universités du Bénin et d'Afrique de l'Ouest.
+Il permet de gérer les élèves/étudiants, notes, moyennes,
+paiements de scolarité et bulletins PDF.
+
+STACK TECHNIQUE :
+- HTML5 sémantique
+- Tailwind CSS (via CDN)
+- JavaScript vanilla
+- Polices Google Fonts : Quicksand (titres) + Outfit (corps)
+- Icônes : SVG inline uniquement, aucune librairie externe
+- Couleurs : primaire #7300e9 (violet), accent #99fbe3 (menthe)
+
+SECTIONS À INCLURE (dans l'ordre) :
+1. NAVBAR fixe : logo EduManager + lien "Se connecter"
+2. HERO : titre accrocheur, sous-titre, bouton "Commencer
+   gratuitement" qui redirige vers choose_type.html
+3. FEATURES : 3 cartes de fonctionnalités clés
+   (Gestion élèves, Notes & moyennes, Paiements scolarité)
+4. STATS : 3 chiffres animés (ex: 500+ écoles, 50k+ élèves,
+   99% satisfaction)
+5. FOOTER : copyright EduManager 2024
+
+DESIGN :
+- Style épuré, moderne, hors du commun — pas générique
+- Fond blanc avec accents violet #7300e9 et menthe #99fbe3
+- Animations CSS subtiles au scroll (fade-in)
+- Responsive mobile-first
+- Le bouton principal est violet #7300e9 avec texte blanc
+- Hover effects élégants sur les cartes
+- Utiliser Quicksand pour les titres et Outfit pour le corps
+- Ajouter un effet de dégradé subtil dans la section hero
+- Le design doit être mémorable et professionnel
+
+EXIGENCES TECHNIQUES :
+- Fichier HTML complet et autonome
+- Tailwind CSS via CDN dans le <head>
+- Google Fonts importées dans le <head>
+- JavaScript dans le <body> avant </body>
+- Aucune dépendance externe sauf Tailwind et Google Fonts
+- Le bouton "Commencer" redirige vers : choose_type.html
+
+
+================================================================
+FICHIER 2 — choose_type.html
+PAGE DE CHOIX DU TYPE D'ÉTABLISSEMENT
+================================================================
+
+PROMPT :
+
+Tu es un développeur frontend expert. Génère le fichier
+choose_type.html complet.
+
+CONTEXTE :
+L'utilisateur arrive ici après avoir cliqué "Commencer" sur
+la landing page. Il doit choisir son type d'établissement
+avant de s'inscrire.
+
+STACK :
+- HTML5, Tailwind CSS (CDN), JavaScript vanilla
+- Polices : Quicksand + Outfit (Google Fonts)
+- Couleurs : #7300e9 (violet), #99fbe3 (menthe)
+- Icônes SVG inline uniquement
+
+CONTENU DE LA PAGE :
+- Logo EduManager centré en haut
+- Titre : "Quel type d'établissement êtes-vous ?"
+- Sous-titre explicatif
+- 2 grandes cartes cliquables côte à côte :
+
+  CARTE 1 — COLLÈGE
+  - Icône SVG représentant un collège
+  - Titre : "Collège"
+  - Description : "Collège public ou privé — gestion des
+    classes du premier et second cycle"
+  - Sous-texte : "6ème → Terminale"
+  - Au clic : redirige vers register.html?type=college
+
+  CARTE 2 — UNIVERSITÉ
+  - Icône SVG représentant une université
+  - Titre : "Université"
+  - Description : "Gestion des filières, spécialités et
+    niveaux universitaires"
+  - Sous-texte : "Licence → Master"
+  - Au clic : redirige vers register.html?type=universite
+
+- Lien en bas : "Déjà inscrit ? Se connecter" → login.html
+
+DESIGN :
+- Page centrée, fond très légèrement grisé
+- Les cartes ont une bordure qui devient violette #7300e9
+  au survol avec une ombre élégante
+- Animation d'entrée des cartes (fade + slide up)
+- La carte sélectionnée se met en surbrillance violette
+- Design épuré, aéré, professionnel
+- Responsive : cartes en colonne sur mobile
+
+
+================================================================
+FICHIER 3 — register.html
+PAGE D'INSCRIPTION DE L'ÉCOLE
+================================================================
+
+PROMPT :
+
+Tu es un développeur frontend expert. Génère le fichier
+register.html complet — formulaire d'inscription d'une école
+sur EduManager.
+
+CONTEXTE :
+L'admin de l'école s'inscrit ici. L'URL contient un paramètre
+?type=college ou ?type=universite récupéré en JavaScript pour
+adapter le formulaire. Après soumission, un email de
+confirmation est envoyé (confirmation de compte).
+
+STACK :
+- HTML5, Tailwind CSS (CDN), JavaScript vanilla
+- Polices : Quicksand + Outfit (Google Fonts)
+- Couleurs : #7300e9 (violet), #99fbe3 (menthe)
+- Icônes SVG inline uniquement
+
+CHAMPS DU FORMULAIRE (dans l'ordre) :
+Section "Votre établissement" :
+- Nom de l'établissement (text, required)
+- Type affiché en lecture seule (récupéré depuis l'URL)
+- Sous-type : Public / Privé (radio buttons, visible
+  uniquement si type = college)
+- Email de l'établissement (email, required)
+- Téléphone (tel)
+- Adresse (text)
+
+Section "Votre compte administrateur" :
+- Nom complet (text, required)
+- Email de connexion (email, required)
+- Mot de passe (password, required, min 8 chars)
+- Confirmer le mot de passe (password, required)
+- Case à cocher : "J'accepte les conditions d'utilisation"
+
+Bouton "Créer mon compte" violet #7300e9
+
+Lien : "Déjà inscrit ? Se connecter" → login.html
+
+COMPORTEMENTS JAVASCRIPT :
+- Récupérer le paramètre ?type= de l'URL et l'afficher
+- Afficher/masquer le champ sous-type selon le type
+- Validation côté client : champs requis, email valide,
+  mots de passe identiques, min 8 caractères
+- Afficher les erreurs sous chaque champ en rouge
+- Désactiver le bouton si le formulaire est invalide
+- Afficher un spinner pendant la soumission
+- Après succès (réponse PHP) : rediriger vers
+  email_sent.html avec message de confirmation
+
+NOTE BACKEND :
+Le formulaire soumet en POST vers app/controllers/
+AuthController.php qui :
+- Hash le mot de passe avec password_hash()
+- Insère dans les tables schools et users
+- Envoie un email de confirmation
+- Retourne du JSON
+
+DESIGN :
+- Layout deux colonnes sur desktop : formulaire + visuel
+  décoratif à droite (illustration SVG ou dégradé)
+- Sur mobile : une seule colonne
+- Champs avec focus ring violet #7300e9
+- Labels flottants ou labels classiques clairs
+- Design professionnel et rassurant
+
+
+================================================================
+FICHIER 4 — login.html
+PAGE DE CONNEXION
+================================================================
+
+PROMPT :
+
+Tu es un développeur frontend expert. Génère le fichier
+login.html complet — page de connexion pour tous les rôles
+(super_admin, admin, agent).
+
+CONTEXTE :
+Page de connexion unique pour les 3 rôles. Après connexion
+réussie, le PHP redirige selon le rôle :
+- super_admin → dashboard_superadmin.html
+- admin → dashboard_admin.html
+- agent → dashboard_agent.html
+
+STACK :
+- HTML5, Tailwind CSS (CDN), JavaScript vanilla
+- Polices : Quicksand + Outfit (Google Fonts)
+- Couleurs : #7300e9 (violet), #99fbe3 (menthe)
+- Icônes SVG inline uniquement
+
+CONTENU :
+- Logo EduManager centré
+- Titre "Bienvenue" + sous-titre
+- Formulaire :
+  * Email (email, required)
+  * Mot de passe (password, required) avec bouton
+    œil pour afficher/masquer
+  * Case "Se souvenir de moi"
+  * Bouton "Se connecter" violet #7300e9
+- Lien "Mot de passe oublié ?" → forgot_password.html
+- Lien "Pas encore inscrit ?" → choose_type.html
+
+COMPORTEMENTS JS :
+- Toggle afficher/masquer le mot de passe
+- Validation basique avant soumission
+- Spinner sur le bouton pendant la requête
+- Afficher message d'erreur si identifiants incorrects
+- Soumet en POST vers app/controllers/AuthController.php
+- Réponse JSON avec role et redirect URL
+
+DESIGN :
+- Page centrée avec carte de connexion élégante
+- Fond avec motif subtil ou dégradé léger
+- Effet glassmorphism léger sur la carte
+- Animation d'entrée de la carte
+- Design sobre et professionnel
+- Responsive parfait
+
+
+================================================================
+FICHIER 5 — forgot_password.html
+PAGE MOT DE PASSE OUBLIÉ
+================================================================
+
+PROMPT :
+
+Tu es un développeur frontend expert. Génère le fichier
+forgot_password.html — page de récupération de mot de passe.
+
+CONTEXTE :
+L'utilisateur entre son email. Le système envoie un lien de
+réinitialisation par email. Le lien contient un token unique
+valable 1 heure. L'email contient un lien vers
+reset_password.html?token=XXXX
+
+STACK :
+- HTML5, Tailwind CSS (CDN), JavaScript vanilla
+- Polices : Quicksand + Outfit (Google Fonts)
+- Couleurs : #7300e9 (violet), #99fbe3 (menthe)
+- Icônes SVG inline uniquement
+
+CONTENU :
+- Logo EduManager
+- Icône SVG d'email ou de clé
+- Titre : "Mot de passe oublié ?"
+- Texte explicatif rassurant
+- Champ email (required)
+- Bouton "Envoyer le lien" violet #7300e9
+- Après succès : afficher un message de confirmation
+  dans la même page (sans rechargement)
+  "Un email a été envoyé à votre adresse."
+- Lien retour : "← Retour à la connexion" → login.html
+
+COMPORTEMENTS JS :
+- Validation email avant soumission
+- Spinner sur le bouton
+- Afficher le message de succès inline (pas de redirect)
+- Soumet vers app/controllers/AuthController.php?action=forgot
+
+DESIGN :
+- Même style que login.html : carte centrée élégante
+- Illustration SVG d'email dans la carte
+- Design rassurant et clair
+
+
+================================================================
+FICHIER 6 — reset_password.html
+PAGE DE RÉINITIALISATION DU MOT DE PASSE
+================================================================
+
+PROMPT :
+
+Tu es un développeur frontend expert. Génère le fichier
+reset_password.html — page de création du nouveau mot de passe.
+
+CONTEXTE :
+L'utilisateur arrive ici via le lien email contenant un token.
+L'URL est : reset_password.html?token=XXXX
+Le token est envoyé avec le formulaire pour validation PHP.
+
+STACK :
+- HTML5, Tailwind CSS (CDN), JavaScript vanilla
+- Polices : Quicksand + Outfit (Google Fonts)
+- Couleurs : #7300e9 (violet), #99fbe3 (menthe)
+- Icônes SVG inline uniquement
+
+CONTENU :
+- Logo EduManager
+- Titre : "Nouveau mot de passe"
+- Champ "Nouveau mot de passe" avec toggle afficher/masquer
+- Champ "Confirmer le mot de passe" avec toggle
+- Indicateur de force du mot de passe (faible/moyen/fort)
+- Règles du mot de passe visibles : min 8 chars, 1 majuscule,
+  1 chiffre
+- Bouton "Réinitialiser" violet #7300e9
+- Après succès : message + lien vers login.html
+
+COMPORTEMENTS JS :
+- Récupérer le token depuis l'URL
+- Toggle afficher/masquer pour chaque champ
+- Indicateur de force du mot de passe en temps réel
+- Validation : mots de passe identiques + règles
+- Soumet en POST vers app/controllers/AuthController.php
+  avec le token et le nouveau mot de passe hashé côté PHP
+
+DESIGN :
+- Même cohérence visuelle que login.html et forgot_password.html
+- Barre de force du mot de passe colorée
+  (rouge → orange → vert)
+
+
+================================================================
+FICHIER 7 — dashboard_superadmin.html
+DASHBOARD SUPER ADMIN
+================================================================
+
+PROMPT :
+
+Tu es un développeur frontend expert et data analyst.
+Génère le fichier dashboard_superadmin.html complet —
+tableau de bord du super administrateur d'EduManager.
+
+CONTEXTE :
+Le super_admin est le propriétaire du SaaS EduManager.
+Il voit toutes les écoles inscrites sur la plateforme,
+les statistiques globales, peut suspendre/activer des écoles
+et accéder à n'importe quelle école.
+
+STACK :
+- HTML5, Tailwind CSS (CDN), JavaScript vanilla
+- Chart.js via CDN pour les graphiques
+- Polices : Quicksand + Outfit (Google Fonts)
+- Couleurs : #7300e9 (violet), #99fbe3 (menthe)
+- Icônes SVG inline uniquement
+
+LAYOUT :
+- Sidebar fixe à gauche (largeur 260px) avec navigation
+- Header fixe en haut avec barre de recherche + profil
+- Contenu principal scrollable à droite
+
+SIDEBAR — liens de navigation :
+- Dashboard (accueil)
+- Établissements (liste de toutes les écoles)
+- Utilisateurs (tous les admins/agents)
+- Statistiques globales
+- Paramètres système
+- Déconnexion
+
+CONTENU PRINCIPAL — SECTIONS :
+
+1. CARTES KPI (4 cartes en grille) :
+   - Total établissements inscrits (ex: 47)
+   - Total élèves/étudiants (ex: 12,340)
+   - Établissements actifs (ex: 44)
+   - Établissements suspendus (ex: 3)
+   Chaque carte : icône SVG + chiffre grand + variation %
+
+2. GRAPHIQUES (section data analyst) :
+   a) Graphique en barres : "Inscriptions par mois"
+      (12 barres, une par mois de l'année)
+   b) Graphique circulaire (donut) : "Répartition des types"
+      (Collèges publics / Collèges privés / Universités)
+   c) Graphique en barres horizontales :
+      "Top 5 des établissements par nombre d'élèves"
+   Utiliser Chart.js. Couleurs : violet #7300e9 + menthe #99fbe3
+   + nuances de ces deux couleurs.
+   Ajouter des titres, légendes et interprétation courte
+   sous chaque graphique (rôle data analyst).
+
+3. TABLEAU DES ÉTABLISSEMENTS RÉCENTS :
+   Colonnes : Nom | Type | Sous-type | Admin | Élèves |
+              Statut | Actions
+   Statut avec badges colorés (actif=vert, suspendu=rouge)
+   Actions : Voir | Suspendre | Accéder
+   Pagination simple
+
+4. ACTIVITÉ RÉCENTE :
+   Liste des 5 dernières actions sur la plateforme
+   (nouvelles inscriptions, connexions, etc.)
+
+DESIGN :
+- Sidebar violet foncé #7300e9 avec texte blanc
+- Header blanc avec ombre légère
+- Cartes KPI blanches avec bordure colorée à gauche
+- Graphiques propres avec tooltips
+- Tableau zébré avec hover effect
+- Design data-driven, professionnel, épuré
+- Responsive : sidebar se cache sur mobile (hamburger menu)
+
+DONNÉES : Utiliser des données fictives réalistes
+(noms d'écoles béninoises, chiffres plausibles).
+
+
+================================================================
+FICHIER 8 — dashboard_admin.html
+DASHBOARD ADMIN (DIRECTEUR D'ÉCOLE)
+================================================================
+
+PROMPT :
+
+Tu es un développeur frontend expert et data analyst.
+Génère le fichier dashboard_admin.html complet —
+tableau de bord de l'administrateur d'une école sur EduManager.
+
+CONTEXTE :
+L'admin est le directeur ou responsable informatique d'une école.
+Il voit uniquement les données de SON école.
+Il configure l'école, gère les classes, matières, élèves,
+agents, notes et paiements.
+
+STACK :
+- HTML5, Tailwind CSS (CDN), JavaScript vanilla
+- Chart.js via CDN pour les graphiques
+- Polices : Quicksand + Outfit (Google Fonts)
+- Couleurs : #7300e9 (violet), #99fbe3 (menthe)
+- Icônes SVG inline uniquement
+
+LAYOUT :
+- Sidebar fixe gauche (260px) avec navigation complète
+- Header fixe avec nom de l'école + profil admin
+- Contenu principal scrollable
+
+SIDEBAR — navigation :
+- Dashboard
+- Mon école (configuration)
+- Classes / Groupes
+- Matières
+- Élèves / Étudiants
+- Notes & Moyennes
+- Scolarité & Paiements
+- Agents (gestion des agents)
+- Bulletins & Documents
+- Statistiques
+- Déconnexion
+
+CONTENU PRINCIPAL — SECTIONS :
+
+1. BANDEAU DE BIENVENUE :
+   "Bonjour [Nom Admin] — Collège Saint-Michel"
+   + date du jour + indicateur de configuration
+   (si l'école n'est pas configurée, afficher une alerte
+   avec bouton "Configurer mon école maintenant")
+
+2. CARTES KPI (6 cartes) :
+   - Total élèves inscrits
+   - Élèves actifs
+   - Classes créées
+   - Paiements en retard (alerte rouge si > 0)
+   - Taux de réussite (%) de l'année
+   - Bulletins générés ce mois
+
+3. GRAPHIQUES :
+   a) Barres : "Évolution des inscriptions par mois"
+   b) Donut : "Répartition Admis / Redoublants"
+      par semestre en cours
+   c) Barres horizontales : "Top 5 matières — moyennes
+      de la classe" (interprétation data analyst incluse)
+   d) Courbe : "Évolution des paiements reçus par mois"
+      avec zone colorée sous la courbe
+   Couleurs Chart.js : #7300e9, #99fbe3, nuances des deux.
+   Chaque graphique a un titre, une légende et une
+   interprétation courte en dessous (style data analyst).
+
+4. ALERTES & ACTIONS RAPIDES :
+   - Liste des élèves avec paiement en retard (top 5)
+   - Derniers élèves ajoutés (top 5)
+   - Accès rapide : Ajouter élève | Saisir notes |
+     Enregistrer paiement | Générer bulletin
+
+5. TABLEAU RÉCAPITULATIF PAR CLASSE :
+   Colonnes : Classe | Nb élèves | Moy. générale |
+              Taux réussite | Paiements OK | Actions
+
+DESIGN :
+- Sidebar violet #7300e9 avec icônes SVG inline
+- Sous-menus dépliables dans la sidebar
+- Cartes KPI avec icônes colorées et tendances (flèches)
+- Graphiques propres et lisibles
+- Alertes en rouge/orange visibles
+- Design épuré, moderne, hors du commun
+- Responsive complet
+
+DONNÉES FICTIVES : École "Collège Saint-Michel", Cotonou,
+50 élèves, 4 classes, données réalistes béninoises.
+
+
+================================================================
+FICHIER 9 — dashboard_agent.html
+DASHBOARD AGENT
+================================================================
+
+PROMPT :
+
+Tu es un développeur frontend expert. Génère le fichier
+dashboard_agent.html complet — tableau de bord de l'agent
+d'une école sur EduManager.
+
+CONTEXTE :
+L'agent est un secrétaire ou surveillant général. Il a des
+permissions limitées définies par l'admin. Son dashboard
+est simplifié — il voit uniquement ce qu'il peut faire.
+
+STACK :
+- HTML5, Tailwind CSS (CDN), JavaScript vanilla
+- Chart.js via CDN (graphiques simplifiés)
+- Polices : Quicksand + Outfit (Google Fonts)
+- Couleurs : #7300e9 (violet), #99fbe3 (menthe)
+- Icônes SVG inline uniquement
+
+LAYOUT :
+- Sidebar simplifiée (uniquement les modules accessibles)
+- Header avec nom de l'école + profil agent
+- Contenu principal
+
+SIDEBAR — navigation (selon permissions) :
+- Dashboard
+- Élèves (si can_add_student ou can_edit_student)
+- Notes (si can_add_grade)
+- Paiements (si can_add_payment)
+- Bulletins (si can_generate_bulletin)
+- Déconnexion
+Note : Les liens non autorisés sont masqués ou grisés
+avec un cadenas SVG
+
+CONTENU :
+
+1. CARTES KPI SIMPLIFIÉES (3-4 cartes) :
+   - Élèves dans mon école
+   - Notes saisies ce mois
+   - Paiements enregistrés ce mois
+   - Bulletins générés
+
+2. ACTIONS RAPIDES (grandes tuiles cliquables) :
+   - Ajouter un élève
+   - Saisir des notes
+   - Enregistrer un paiement
+   - Générer un bulletin
+   Chaque tuile : icône SVG large + label + description courte
+   Tuiles grisées si permission non accordée
+
+3. GRAPHIQUE SIMPLE :
+   Barres : "Mes saisies cette semaine"
+   (notes saisies par jour sur 7 jours)
+
+4. ACTIVITÉ RÉCENTE :
+   Dernières actions effectuées par cet agent
+
+DESIGN :
+- Plus simple et épuré que admin
+- Focus sur les actions rapides
+- Tuiles grandes et claires
+- Messages d'aide pour les fonctions désactivées
+- Même charte graphique que les autres dashboards
+
+
+================================================================
+FICHIER 10 — setup_school.html
+PAGE DE CONFIGURATION DE L'ÉCOLE (POST-INSCRIPTION)
+================================================================
+
+PROMPT :
+
+Tu es un développeur frontend expert. Génère le fichier
+setup_school.html — page de configuration initiale de l'école
+après la première connexion de l'admin.
+
+CONTEXTE :
+Après sa première connexion, l'admin est redirigé ici pour
+configurer son école avant de pouvoir utiliser le système.
+C'est un formulaire en étapes (wizard) obligatoire.
+Les données vont dans la table school_settings de la DB.
+
+STACK :
+- HTML5, Tailwind CSS (CDN), JavaScript vanilla
+- Polices : Quicksand + Outfit (Google Fonts)
+- Couleurs : #7300e9 (violet), #99fbe3 (menthe)
+- Icônes SVG inline uniquement
+
+ÉTAPES DU WIZARD (barre de progression en haut) :
+Étape 1/4 — Système pédagogique
+Étape 2/4 — Types de devoirs
+Étape 3/4 — Conduite & Notation
+Étape 4/4 — Scolarité & Confirmation
+
+ÉTAPE 1 — Système pédagogique :
+- Titre "Comment fonctionne votre établissement ?"
+- Choix du système de périodes :
+  2 grandes cartes radio :
+  * SEMESTRE — "2 périodes par an (S1, S2)"
+    "Formule : MA = (MGS1 × 1 + MGS2 × 2) / 3"
+  * TRIMESTRE — "3 périodes par an (T1, T2, T3)"
+    "Formule : MA = (MGT1 + MGT2 + MGT3) / 3"
+- Afficher la formule de calcul correspondante en temps réel
+
+ÉTAPE 2 — Types de devoirs :
+- Titre "Quels types de devoirs utilisez-vous ?"
+- 4 toggles ON/OFF :
+  * Interrogations (MI) — activé par défaut
+  * Devoir 1 (D1) — activé par défaut
+  * Devoir 2 (D2) — activé par défaut
+  * Devoir Hebdomadaire (DH) — désactivé par défaut
+- Afficher en temps réel la formule de calcul
+  qui s'adapte selon les devoirs activés
+
+ÉTAPE 3 — Conduite & Notation :
+- Activer la note de conduite : toggle ON/OFF
+- Si activé : coefficient de la conduite (input number)
+  et note maximale (default 20)
+- Note de passage (default 10/20)
+- Pondération S1/S2 si semestre :
+  "Poids S1" (default 1) et "Poids S2" (default 2)
+
+ÉTAPE 4 — Scolarité :
+- Devise : FCFA (par défaut, non modifiable pour l'instant)
+- Résumé de toute la configuration
+- Bouton "Confirmer et accéder au tableau de bord"
+  qui soumet tout vers l'API PHP et redirige vers
+  dashboard_admin.html
+
+COMPORTEMENTS JS :
+- Navigation entre étapes avec validation de chaque étape
+- Barre de progression animée
+- Sauvegarde locale (localStorage) en cas de fermeture
+- Affichage en temps réel des formules de calcul
+- Récapitulatif à l'étape 4
+
+DESIGN :
+- Wizard avec étapes numérotées en haut
+- Carte centrale large et aérée
+- Boutons Précédent / Suivant bien positionnés
+- Animations de transition entre étapes
+- Design pédagogique qui guide l'admin pas à pas
+
+
+================================================================
+FICHIER 11 — manage_agents.html
+PAGE DE GESTION DES AGENTS
+================================================================
+
+PROMPT :
+
+Tu es un développeur frontend expert. Génère le fichier
+manage_agents.html — page de gestion des agents par l'admin.
+
+CONTEXTE :
+L'admin crée des agents pour son école et définit exactement
+ce que chaque agent peut faire via des permissions granulaires.
+Les données vont dans les tables users et agent_permissions.
+
+STACK :
+- HTML5, Tailwind CSS (CDN), JavaScript vanilla
+- Polices : Quicksand + Outfit (Google Fonts)
+- Couleurs : #7300e9 (violet), #99fbe3 (menthe)
+- Icônes SVG inline uniquement
+
+CONTENU :
+
+1. HEADER DE PAGE :
+   Titre "Gestion des agents" + bouton "Ajouter un agent"
+   (ouvre une modale)
+
+2. TABLEAU DES AGENTS EXISTANTS :
+   Colonnes : Avatar | Nom | Email | Rôle | Statut |
+              Permissions | Actions
+   Actions : Modifier | Permissions | Activer/Désactiver |
+             Supprimer
+   Badges de statut colorés
+
+3. MODALE — CRÉER / MODIFIER UN AGENT :
+   - Nom complet (required)
+   - Email (required)
+   - Mot de passe (required pour création, optionnel modif)
+   - Statut : Actif / Inactif
+
+   SECTION PERMISSIONS (checkboxes groupées) :
+   Groupe "Élèves" :
+   □ Ajouter un élève
+   □ Modifier un élève
+   □ Supprimer un élève
+
+   Groupe "Notes" :
+   □ Saisir des notes
+   □ Modifier des notes
+   □ Supprimer des notes
+
+   Groupe "Paiements" :
+   □ Enregistrer un paiement
+   □ Modifier un paiement
+   □ Supprimer un paiement
+
+   Groupe "Documents" :
+   □ Générer des bulletins
+   □ Exporter des données
+   □ Importer des données
+
+   Boutons : Annuler | Enregistrer
+
+COMPORTEMENTS JS :
+- Ouverture/fermeture de la modale
+- Validation du formulaire
+- Toggle "Tout sélectionner" par groupe
+- Génération automatique d'un mot de passe temporaire
+  avec bouton copier
+- Confirmation avant suppression (modale de confirmation)
+- Soumission vers app/controllers/UserController.php
+
+DESIGN :
+- Page avec même sidebar que dashboard_admin
+- Tableau propre avec avatars
+- Modale centrée avec overlay
+- Checkboxes stylisées en violet #7300e9
+- Design clair et fonctionnel
+
+
+================================================================
+FICHIER 12 — AuthController.php
+CONTRÔLEUR D'AUTHENTIFICATION
+================================================================
+
+PROMPT :
+
+Tu es un développeur backend PHP expert en sécurité.
+Génère le fichier app/controllers/AuthController.php complet.
+
+CONTEXTE :
+Contrôleur PHP qui gère toute l'authentification d'EduManager :
+inscription, connexion, déconnexion, mot de passe oublié,
+réinitialisation. Multi-tenant avec 3 rôles :
+super_admin, admin, agent.
+
+BASE DE DONNÉES :
+Tables utilisées : schools, users, school_settings
+Voir le schéma MySQL complet ci-dessous.
+
+[COLLER ICI LE CONTENU DU FICHIER edumanager_schema_v3_final.sql]
+
+ACTIONS À IMPLÉMENTER :
+Toutes les actions sont déterminées par $_POST['action']
+ou $_GET['action'].
+
+ACTION : register
+- Valider tous les champs (nom école, email, password, etc.)
+- Vérifier que l'email n'existe pas déjà
+- Hasher le mot de passe : password_hash($password, PASSWORD_BCRYPT)
+- Créer un slug unique depuis le nom de l'école
+- Insérer dans schools (type, subtype, email, slug, etc.)
+- Insérer dans users (school_id, role='admin', password hashé)
+- Générer un token de confirmation (bin2hex(random_bytes(32)))
+- Stocker le token dans une table email_verifications
+  (à créer : user_id, token, expires_at, created_at)
+- Envoyer un email de confirmation avec le lien :
+  https://[domain]/verify_email.html?token=XXX
+- Retourner JSON : {success: true, message: "..."}
+
+ACTION : login
+- Valider email et password
+- Récupérer l'utilisateur par email
+- Vérifier le status (active uniquement)
+- Vérifier le mot de passe : password_verify()
+- Vérifier que l'école est active (si admin ou agent)
+- Créer la session PHP :
+  $_SESSION['user_id'], $_SESSION['role'],
+  $_SESSION['school_id'], $_SESSION['name']
+- Mettre à jour last_login
+- Retourner JSON avec role et redirect :
+  super_admin → /dashboard_superadmin.html
+  admin → /dashboard_admin.html
+  agent → /dashboard_agent.html
+
+ACTION : logout
+- Détruire la session
+- Retourner JSON {success: true, redirect: '/login.html'}
+
+ACTION : forgot_password
+- Valider l'email
+- Vérifier que l'utilisateur existe
+- Générer un token sécurisé (bin2hex(random_bytes(32)))
+- Stocker dans table password_resets
+  (email, token, expires_at [+1 heure], created_at)
+- Envoyer email avec lien :
+  https://[domain]/reset_password.html?token=XXX
+- Retourner JSON {success: true, message: "Email envoyé"}
+
+ACTION : reset_password
+- Valider le token et vérifier qu'il n'est pas expiré
+- Valider le nouveau mot de passe (min 8 chars)
+- Hasher le nouveau mot de passe
+- Mettre à jour dans users
+- Supprimer le token de password_resets
+- Retourner JSON {success: true, redirect: '/login.html'}
+
+ACTION : verify_email
+- Valider le token
+- Vérifier qu'il n'est pas expiré
+- Mettre à jour users.status = 'active'
+- Supprimer le token de email_verifications
+- Retourner JSON {success: true, redirect: '/login.html'}
+
+SÉCURITÉ À IMPLÉMENTER :
+- session_start() en début de fichier
+- Protection CSRF : générer et vérifier un token CSRF
+- Sanitisation de tous les inputs : htmlspecialchars(),
+  filter_var(), trim()
+- Limite de tentatives de connexion (5 max, blocage 15min)
+  stocké en session ou table login_attempts
+- Headers de sécurité : Content-Type application/json
+- Vérification que la requête est bien POST pour les
+  actions sensibles
+- Toutes les réponses en JSON
+
+STRUCTURE DU FICHIER :
+<?php
+session_start();
+header('Content-Type: application/json');
+require_once '../config/database.php';
+require_once '../helpers/mailer.php';
+
+class AuthController {
+  // méthodes pour chaque action
+}
+
+$controller = new AuthController();
+$action = $_POST['action'] ?? $_GET['action'] ?? '';
+$controller->handle($action);
+
+CONNEXION DB :
+Utiliser PDO avec requêtes préparées exclusivement.
+Le fichier database.php retourne une instance PDO.
+Variable : $pdo
+
+
+================================================================
+FICHIER 13 — database.php
+CONFIGURATION BASE DE DONNÉES
+================================================================
+
+PROMPT :
+
+Tu es un développeur PHP expert. Génère le fichier
+app/config/database.php complet.
+
+CONTEXTE :
+Fichier de configuration de la connexion MySQL pour EduManager.
+Utilisé par tous les contrôleurs PHP.
+
+CONTENU :
+- Classe Database avec pattern Singleton
+- Connexion PDO avec gestion des erreurs
+- Charset utf8mb4
+- Variables de configuration :
+  DB_HOST, DB_NAME, DB_USER, DB_PASS, DB_PORT
+- Méthode getConnection() qui retourne l'instance PDO
+- Mode erreur : PDO::ERRMODE_EXCEPTION
+- Fetch mode par défaut : PDO::FETCH_ASSOC
+- Désactiver l'émulation des requêtes préparées
+- Log des erreurs de connexion (pas d'affichage en prod)
+
+EXIGENCES SÉCURITÉ :
+- Ne jamais afficher les erreurs de DB en production
+- Utiliser des variables d'environnement ou un fichier
+  .env pour les credentials (montrer les deux approches)
+- Inclure un exemple de fichier .env.example
+- Ajouter au .gitignore : .env et database.php en prod
+
+STRUCTURE :
+<?php
+class Database {
+    private static $instance = null;
+    private $connection;
+
+    private function __construct() { ... }
+    public static function getInstance() { ... }
+    public function getConnection() { ... }
+}
+
+
+================================================================
+FICHIER 14 — mailer.php
+HELPER D'ENVOI D'EMAILS
+================================================================
+
+PROMPT :
+
+Tu es un développeur PHP expert. Génère le fichier
+app/helpers/mailer.php complet.
+
+CONTEXTE :
+Helper PHP pour envoyer des emails transactionnels dans
+EduManager. Utilisé pour : confirmation de compte,
+réinitialisation de mot de passe.
+
+MÉTHODES À IMPLÉMENTER :
+
+1. sendVerificationEmail($email, $name, $token)
+   Email de confirmation de compte après inscription.
+   Contenu HTML :
+   - Logo EduManager
+   - Titre "Confirmez votre adresse email"
+   - Message de bienvenue avec le nom
+   - Bouton "Confirmer mon compte" → lien avec token
+   - Validité : 24 heures
+   - Design HTML email responsive avec couleurs
+     #7300e9 et #99fbe3
+
+2. sendPasswordResetEmail($email, $name, $token)
+   Email de réinitialisation du mot de passe.
+   Contenu HTML :
+   - Logo EduManager
+   - Titre "Réinitialisation de votre mot de passe"
+   - Message explicatif
+   - Bouton "Réinitialiser mon mot de passe" → lien token
+   - Validité : 1 heure
+   - Mention : si vous n'avez pas demandé cela, ignorez
+
+IMPLÉMENTATION :
+- Utiliser PHPMailer si disponible (via Composer)
+- Sinon fallback sur mail() natif PHP
+- Configuration SMTP configurable via constantes
+- Templates HTML inline (pas de fichiers séparés)
+- Gestion des erreurs avec try/catch
+- Retourner true/false selon succès
+
+CONFIGURATION SMTP :
+SMTP_HOST, SMTP_PORT (587), SMTP_USER, SMTP_PASS,
+SMTP_FROM_EMAIL, SMTP_FROM_NAME = "EduManager"
+
+
+================================================================
+FICHIER 15 — default_subjects.php
+HELPER MATIÈRES PAR DÉFAUT
+================================================================
+
+PROMPT :
+
+Tu es un développeur PHP expert. Génère le fichier
+app/helpers/default_subjects.php complet.
+
+CONTEXTE :
+Quand un admin crée une classe (groupe), le système insère
+automatiquement les matières par défaut selon le cycle.
+L'admin peut ensuite modifier ces matières via le CRUD.
+
+DONNÉES PAR DÉFAUT :
+
+Premier cycle (6ème → 3ème) — cycle = 'premier' :
+Mathématiques           coef 4
+PCT                     coef 3
+SVT                     coef 2
+Lecture                 coef 3
+Communication écrite    coef 3
+Anglais                 coef 2
+EPS                     coef 1
+
+Second cycle (2nde → Terminale) — cycle = 'second' :
+Mathématiques           coef 4
+PCT                     coef 3
+SVT                     coef 2
+Français                coef 3
+Philosophie             coef 2
+Anglais                 coef 2
+EPS                     coef 1
+
+MÉTHODE PRINCIPALE :
+insertDefaultSubjects($pdo, $school_id, $group_id, $cycle)
+- Récupérer les matières selon le cycle
+- Les insérer dans la table subjects avec is_default = 1
+- Retourner le nombre de matières insérées
+- Utiliser une transaction PDO pour l'atomicité
+
+MÉTHODE SECONDAIRE :
+getDefaultSubjectsByCycle($cycle)
+- Retourner le tableau des matières par défaut
+  sans les insérer en DB (pour preview)
+
+NOTE : Pour le second cycle, les matières varient selon
+la série (A, B, C, D). Prévoir une méthode
+getSerieSubjects($serie) avec les matières de chaque série
+(à compléter par l'admin).
+
+================================================================
+FIN DES PROMPTS — EDUMANAGER v3.0
+================================================================
+
+ORDRE DE GÉNÉRATION RECOMMANDÉ :
+1. database.php (base de tout)
+2. mailer.php (dépendance de AuthController)
+3. default_subjects.php
+4. AuthController.php
+5. index.html
+6. choose_type.html
+7. register.html
+8. login.html
+9. forgot_password.html
+10. reset_password.html
+11. setup_school.html
+12. manage_agents.html
+13. dashboard_superadmin.html
+14. dashboard_admin.html
+15. dashboard_agent.html
+
+================================================================
