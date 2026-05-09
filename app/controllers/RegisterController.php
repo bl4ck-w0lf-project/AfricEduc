@@ -93,6 +93,18 @@ final class RegisterController
             $errors['school_email'] = "Email de l'établissement invalide.";
         }
 
+        if ($d['school_phone'] === '') {
+            $errors['school_phone'] = "Le numéro de téléphone de l'établissement est requis.";
+        } elseif (!filter_var($d['school_phone'], FILTER_VALIDATE_EMAIL)) {
+            $errors['school_phone'] = "Numéro de téléphone de l'établissement invalide.";
+        }
+
+        if ($d['school_adress'] === '') {
+            $errors['school_adress'] = "L'adresse complète de l'établissement est requis.";
+        } elseif (!filter_var($d['school_adress'], FILTER_VALIDATE_EMAIL)) {
+            $errors['school_adress'] = "Adresse complète de l'établissement invalide.";
+        }
+
         if ($d['admin_name'] === '') {
             $errors['admin_name'] = 'Votre nom complet est requis.';
         }
