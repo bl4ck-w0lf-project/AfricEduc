@@ -155,7 +155,7 @@
                     <span id="type-display" class="font-medium">Collège/Lycée</span>
                   </div>
                 </div>
-                <fieldset class="rounded-xl border border-slate-200 bg-slate-50/30 p-5">
+                <fieldset name="school_subtype" class="rounded-xl border border-slate-200 bg-slate-50/30 p-5">
                   <legend class="text-sm font-semibold text-slate-700 px-1">Sous-type <span class="text-red-500">*</span></legend>
                   <div class="mt-3 flex flex-wrap gap-6">
                     <label class="flex cursor-pointer items-center gap-2.5 py-1.5 px-3 rounded-lg hover:bg-slate-100 transition">
@@ -165,9 +165,12 @@
                     <label class="flex cursor-pointer items-center gap-2.5 py-1.5 px-3 rounded-lg hover:bg-slate-100 transition">
                       <input type="radio" name="school_subtype" value="prive" class="h-4 w-4 border-slate-300 text-primary focus:ring-primary">
                       <span> Privé</span>
+                      
                     </label>
+                    
                   </div>
                 </fieldset>
+                <p id="error_school_subtype" class="hidden text-xs text-red-500 mt-1"></p>
                 <div class="grid gap-5 sm:grid-cols-2">
                   <div>
                     <label for="school_email" class="block text-sm font-semibold text-slate-700 mb-1">Email de l'établissement <span class="text-red-500">*</span></label>
@@ -564,13 +567,28 @@ async function handleSubmit(e) {
       body:   new FormData(els.form),
     });
 
-    const data = await response.json();
+    const text = await response.text();
 
-    if (data.success) {
-      handleSuccess(data);
-    } else {
-      handleFailure(data);
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch (err) {
+      console.error('Réponse invalide du serveur :', text);
+      showGlobalError('Erreur serveur inattendue.');
+      return;
     }
+
+    if (!response.ok) {
+  handleFailure(data);
+  return;
+}
+
+if (data.success) {
+  handleSuccess(data);
+} else {
+  handleFailure(data);
+}
 
   } catch (err) {
     console.error('[Register] Fetch error:', err);
@@ -590,14 +608,23 @@ function handleSuccess(data) {
 }
 
 function handleFailure(data) {
-  if (data.errors && typeof data.errors === 'object') {
-    // Remonter à la première étape contenant une erreur
+  clearAllErrors();
+
+  if (
+    data.errors &&
+    typeof data.errors === 'object' &&
+    Object.keys(data.errors).length > 0
+  ) {
     navigateToErrorStep(data.errors);
     displayFieldErrors(data.errors);
     focusFirstError();
-  } else {
-    showGlobalError(data.message ?? 'Une erreur est survenue.');
+    return;
   }
+
+  // uniquement pour erreurs serveur réelles
+  showGlobalError(
+  data.message || "Une erreur serveur est survenue. Veuillez réessayer."
+);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -619,9 +646,23 @@ const REQUIRED_FIELDS = [
 function validateRequiredFields(formData) {
   const errors = {};
 
+  const fieldMessages = {
+    school_name: "Le nom de l'établissement est requis.",
+    school_subtype: "Veuillez choisir le sous-type de l'établissement.",
+    school_email: "L'email de l'établissement est requis.",
+    school_phone: "Le numéro de téléphone est requis.",
+    school_address: "L'adresse de l'établissement est requise.",
+    admin_full_name: "Le nom complet de l'administrateur est requis.",
+    admin_email: "L'email de connexion est requis.",
+    password: "Le mot de passe est requis.",
+    password_confirm: "Veuillez confirmer le mot de passe.",
+  };
+
   REQUIRED_FIELDS.forEach((field) => {
-    if (!(formData.get(field) ?? '').trim()) {
-      errors[field] = 'Ce champ est requis.';
+    const value = formData.get(field);
+
+    if (!value || !String(value).trim()) {
+      errors[field] = fieldMessages[field] || 'Ce champ est requis.';
     }
   });
 

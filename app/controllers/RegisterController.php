@@ -208,7 +208,7 @@ final class RegisterController
             $this->json([
                 'success'  => true,
                 'message'  => 'Compte créé avec succès ! Consultez votre boîte email pour activer votre compte.',
-                'redirect' => '../../auth/login.php',
+                'redirect' => 'login.php',
             ]);
 
         } catch (PDOException $e) {
