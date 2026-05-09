@@ -126,7 +126,7 @@
           </div>
         </div>
 
-        <form id="register-form" class="mt-6" novalidate>
+        <form id="register-form" method="POST" action="app/controllers/RegisterController.php">
           <input type="hidden" name="school_type" id="school_type" value="college">
 
           <!-- STEP 1 -->
@@ -407,55 +407,6 @@
       prevBtn.addEventListener('click', function() {
         if (currentStep > 1) { currentStep--; showStep(); }
       });
-
-      // ========== SOUMISSION (sans validation JS) ==========
-      document.getElementById('register-form').addEventListener('submit', function(ev) {
-        ev.preventDefault();
-        var btnLabel   = document.getElementById('btn-label');
-        var btnSpinner = document.getElementById('btn-spinner');
-
-        submitBtn.disabled = true;
-        btnLabel.textContent = 'Envoi en cours…';
-        btnSpinner.classList.remove('hidden');
-
-        var fd = new FormData(this);
-        fd.delete('password_confirm');
-        fd.append('action', 'register');
-
-        fetch('../app/controllers/AuthController.php', {
-          method: 'POST',
-          body: fd,
-          headers: { Accept: 'application/json' },
-          credentials: 'same-origin'
-        })
-        .then(function(res) {
-          var ct = res.headers.get('content-type') || '';
-          if (ct.indexOf('application/json') !== -1)
-            return res.json().then(function(data) { return { ok: res.ok, data: data }; });
-          return res.text().then(function(text) { return { ok: res.ok, data: { message: text } }; });
-        })
-        .then(function(result) {
-          btnSpinner.classList.add('hidden');
-          btnLabel.textContent = 'Créer mon compte';
-          submitBtn.disabled = false;
-          var data = result.data || {};
-          if (result.ok && (data.success === true || data.success === 'true')) {
-            window.location.href = 'email_sent.html';
-            return;
-          }
-          var msg = data.message || data.error || 'Une erreur est survenue. Réessayez.';
-          globalErr.textContent = msg;
-          globalErr.classList.remove('hidden');
-        })
-        .catch(function() {
-          btnSpinner.classList.add('hidden');
-          document.getElementById('btn-label').textContent = 'Créer mon compte';
-          submitBtn.disabled = false;
-          globalErr.textContent = 'Impossible de joindre le serveur. Vérifiez votre connexion.';
-          globalErr.classList.remove('hidden');
-        });
-      });
-
       showStep();
     })();
   </script>

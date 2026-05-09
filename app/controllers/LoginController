@@ -102,7 +102,7 @@ class LoginController
         $_SESSION['school_id']   = $user['school_id'] ? (int)$user['school_id'] : null;
         $_SESSION['name']        = $user['name'];
         $_SESSION['email']       = $user['email'];
-        $_SESSION['school_name'] = $user['school_name'] ?? 'EduManager';
+        $_SESSION['school_name'] = $user['school_name'] ?? 'africeduc';
         $_SESSION['logged_in']   = true;
         $_SESSION['login_time']  = time();
 

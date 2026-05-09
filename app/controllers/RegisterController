@@ -186,7 +186,7 @@ class RegisterController
 
         } catch (PDOException $e) {
             $this->pdo->rollBack();
-            error_log('[EduManager][Register] DB error: ' . $e->getMessage());
+            error_log('[africeduc][Register] DB error: ' . $e->getMessage());
             $this->json(['success' => false, 'message' => 'Erreur serveur. Veuillez réessayer.'], 500);
         }
     }
@@ -238,7 +238,7 @@ class RegisterController
 
         } catch (PDOException $e) {
             $this->pdo->rollBack();
-            error_log('[EduManager][Register][verify_email] DB error: ' . $e->getMessage());
+            error_log('[africeduc][Register][verify_email] DB error: ' . $e->getMessage());
             $this->json(['success' => false, 'message' => 'Erreur serveur. Réessayez.'], 500);
         }
     }
