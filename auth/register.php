@@ -146,6 +146,7 @@
                   <label for="school_name" class="block text-sm font-semibold text-slate-700 mb-1">Nom de l'établissement <span class="text-red-500">*</span></label>
                   <input type="text" id="school_name" name="school_name" autocomplete="organization" placeholder="Ex: Collège Saint-Michel de Cotonou"
                     class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
+                    <p id="error_school_name" class="hidden text-xs text-red-500 mt-1"></p>
                 </div>
                 <div>
                   <span class="block text-sm font-semibold text-slate-700 mb-1">Type d'établissement</span>
@@ -172,17 +173,20 @@
                     <label for="school_email" class="block text-sm font-semibold text-slate-700 mb-1">Email de l'établissement <span class="text-red-500">*</span></label>
                     <input type="email" id="school_email" name="school_email" autocomplete="email" placeholder="contact@gmail.com"
                       class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
+                      <p id="error_school_email" class="hidden text-xs text-red-500 mt-1"></p>
                   </div>
                   <div>
                     <label for="school_phone" class="block text-sm font-semibold text-slate-700 mb-1">Téléphone</label>
                     <input type="tel" id="school_phone" name="school_phone" autocomplete="tel" placeholder="+229 01 XX XX XX XX"
                       class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
+                      <p id="error_school_phone" class="hidden text-xs text-red-500 mt-1"></p>
                   </div>
                 </div>
                 <div>
                   <label for="school_address" class="block text-sm font-semibold text-slate-700 mb-1">Adresse</label>
                   <input type="text" id="school_address" name="school_address" autocomplete="street-address" placeholder="Cotonou, Bénin"
                     class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
+                    <p id="error_school_address" class="hidden text-xs text-red-500 mt-1"></p>
                 </div>
               </div>
             </section>
@@ -205,18 +209,22 @@
                   <label for="admin_full_name" class="block text-sm font-semibold text-slate-700 mb-1">Nom complet <span class="text-red-500">*</span></label>
                   <input type="text" id="admin_full_name" name="admin_full_name" autocomplete="name" placeholder="Jean Dupont"
                     class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
+                    <p id="error_admin_full_name" class="hidden text-xs text-red-500 mt-1"></p>
+                    
                 </div>
                 <div>
                   <label for="admin_email" class="block text-sm font-semibold text-slate-700 mb-1">Email de connexion <span class="text-red-500">*</span></label>
                   <input type="email" id="admin_email" name="admin_email" autocomplete="username" placeholder="admin@ecole.edu"
                     class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
-                </div>
+                  <p id="error_admin_email" class="hidden text-xs text-red-500 mt-1"></p>
+                  </div>
                 <div class="grid gap-5 sm:grid-cols-2">
                   <div>
                     <label for="password" class="block text-sm font-semibold text-slate-700 mb-1">Mot de passe <span class="text-red-500">*</span></label>
                     <div class="password-wrapper">
                       <input type="password" id="password" name="password" autocomplete="new-password" placeholder="••••••••"
                         class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
+                        <p id="error_password" class="hidden text-xs text-red-500 mt-1"></p>
                       <button type="button" class="password-toggle" data-target="password">
                         <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -231,6 +239,7 @@
                     <div class="password-wrapper">
                       <input type="password" id="password_confirm" name="password_confirm" autocomplete="new-password" placeholder="••••••••"
                         class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
+                        <p id="error_password_confirm" class="hidden text-xs text-red-500 mt-1"></p>
                       <button type="button" class="password-toggle" data-target="password_confirm">
                         <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -288,6 +297,9 @@
               </svg>
             </button>
           </div>
+          <div id="globalError" class="hidden ...">
+            <p id="globalErrorMsg"></p>
+          </div>
         </form>
 
         <div class="mt-3 text-center">
@@ -322,93 +334,412 @@
   </div>
 
   <script>
-    // ========== ŒIL MOT DE PASSE ==========
-    document.querySelectorAll('.password-toggle').forEach(function(button) {
-      button.addEventListener('click', function() {
-        var input = document.getElementById(this.getAttribute('data-target'));
-        if (!input) return;
-        var isPassword = input.type === 'password';
-        input.type = isPassword ? 'text' : 'password';
-        var svg = this.querySelector('.eye-icon');
-        if (svg) {
-          svg.innerHTML = isPassword
-            ? '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><path d="M3 3l18 18" stroke="currentColor" stroke-width="2"></path><circle cx="12" cy="12" r="3"></circle>'
-            : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
-        }
-      });
+    /**
+ * register.js — AfricEduc
+ * Fusion complète : navigation par étapes + toggle mot de passe + soumission fetch.
+ * IDs HTML de référence alignés avec le fichier register.html.
+ */
+
+'use strict';
+
+// ─── Config ───────────────────────────────────────────────────────────────────
+
+const CONFIG = {
+  endpoint:    '../controllers/RegisterController.php',
+  minPassword: 8,
+  totalSteps:  3,
+};
+
+// ─── État centralisé ──────────────────────────────────────────────────────────
+
+const state = {
+  currentStep:   1,
+  isSubmitting:  false,
+};
+
+// ─── Sélecteurs (résolus une seule fois) ─────────────────────────────────────
+
+const $ = (id) => document.getElementById(id);
+
+const els = {
+  // Formulaire
+  form:           $('register-form'),
+
+  // Navigation
+  prevBtn:        $('prev-btn'),
+  nextBtn:        $('next-btn'),
+  submitBtn:      $('submit-btn'),
+  btnLabel:       $('btn-label'),
+  btnSpinner:     $('btn-spinner'),
+
+  // Récapitulatif (step 3)
+  recapContainer: $('recap-container'),
+
+  // Erreur globale
+  globalError:    $('form-global-error'),
+
+  // Champs utiles au récap
+  schoolName:     $('school_name'),
+  schoolEmail:    $('school_email'),
+  adminName:      $('admin_full_name'),
+  adminEmail:     $('admin_email'),
+};
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!els.form) return;
+
+  initStepNavigation();
+  initPasswordToggles();
+  initInlineClearErrors();
+
+  els.form.addEventListener('submit', handleSubmit);
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  NAVIGATION PAR ÉTAPES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function initStepNavigation() {
+  els.nextBtn?.addEventListener('click', () => {
+    if (state.currentStep < CONFIG.totalSteps) {
+      goToStep(state.currentStep + 1);
+    }
+  });
+
+  els.prevBtn?.addEventListener('click', () => {
+    if (state.currentStep > 1) {
+      goToStep(state.currentStep - 1);
+    }
+  });
+
+  // Afficher l'étape initiale
+  goToStep(1);
+}
+
+function goToStep(step) {
+  state.currentStep = step;
+  renderStepPanels();
+  renderStepIndicators();
+  renderNavButtons();
+  if (step === CONFIG.totalSteps) renderRecap();
+}
+
+/** Affiche le panneau de l'étape courante, masque les autres. */
+function renderStepPanels() {
+  for (let i = 1; i <= CONFIG.totalSteps; i++) {
+    $('step' + i)?.classList.toggle('hidden', i !== state.currentStep);
+  }
+}
+
+/** Met à jour les indicateurs visuels (cercles numérotés + lignes). */
+function renderStepIndicators() {
+  for (let i = 1; i <= CONFIG.totalSteps; i++) {
+    const ind   = $('step' + i + '-indicator');
+    const label = $('step' + i + '-label');
+    if (!ind || !label) continue;
+
+    ind.classList.remove('step-active', 'step-completed', 'step-default');
+    label.classList.remove('step-label-active', 'step-label-completed', 'step-label-default');
+
+    if (i === state.currentStep) {
+      ind.classList.add('step-active');
+      label.classList.add('step-label-active');
+    } else if (i < state.currentStep) {
+      ind.classList.add('step-completed');
+      label.classList.add('step-label-completed');
+      // Remplacer le chiffre par une coche pour les étapes complétées
+      ind.textContent = '✓';
+    } else {
+      ind.classList.add('step-default');
+      label.classList.add('step-label-default');
+      ind.textContent = String(i);
+    }
+  }
+
+  // Lignes entre les étapes
+  const lineStates = {
+    line1: state.currentStep > 1 ? 'step-line-completed' : 'step-line-default',
+    line2: state.currentStep > 2 ? 'step-line-completed' : 'step-line-default',
+  };
+  Object.entries(lineStates).forEach(([id, cls]) => {
+    const el = $(id);
+    if (el) el.className = 'flex-1 mx-2 step-line ' + cls;
+  });
+}
+
+/** Affiche/masque les boutons selon l'étape. */
+function renderNavButtons() {
+  const isFirst = state.currentStep === 1;
+  const isLast  = state.currentStep === CONFIG.totalSteps;
+
+  els.prevBtn?.classList.toggle('hidden', isFirst);
+  els.nextBtn?.classList.toggle('hidden', isLast);
+  els.submitBtn?.classList.toggle('hidden', !isLast);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  RÉCAPITULATIF (étape 3)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function renderRecap() {
+  if (!els.recapContainer) return;
+
+  const subType  = getRadioValue('school_subtype');
+  const typeText = 'Collège' + (subType ? ` (${subType === 'public' ? 'Public' : 'Privé'})` : '');
+
+  const rows = [
+    ['Établissement', els.schoolName?.value],
+    ['Type',          typeText],
+    ['Email école',   els.schoolEmail?.value],
+    ['Admin',         els.adminName?.value],
+    ['Email connexion', els.adminEmail?.value],
+  ];
+
+  els.recapContainer.innerHTML = rows
+    .map(([label, value]) => `
+      <div class="flex justify-between py-1">
+        <span class="text-slate-500">${label} :</span>
+        <span class="font-medium">${escapeHtml(value || 'Non renseigné')}</span>
+      </div>`)
+    .join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  TOGGLE VISIBILITÉ MOT DE PASSE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function initPasswordToggles() {
+  document.querySelectorAll('.password-toggle').forEach((button) => {
+    button.addEventListener('click', () => {
+      const targetId = button.getAttribute('data-target');
+      const input    = $(targetId);
+      if (!input) return;
+
+      const isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+
+      // Mise à jour de l'icône SVG (œil ouvert / barré)
+      const svg = button.querySelector('.eye-icon');
+      if (svg) {
+        svg.innerHTML = isHidden
+          ? `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+             <path d="M3 3l18 18" stroke="currentColor" stroke-width="2"></path>
+             <circle cx="12" cy="12" r="3"></circle>`
+          : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+             <circle cx="12" cy="12" r="3"></circle>`;
+      }
+
+      button.setAttribute('aria-label',
+        isHidden ? 'Masquer le mot de passe' : 'Afficher le mot de passe'
+      );
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  SOUMISSION FETCH
+// ═══════════════════════════════════════════════════════════════════════════════
+
+async function handleSubmit(e) {
+  e.preventDefault();
+  if (state.isSubmitting) return;
+
+  clearAllErrors();
+
+  // Validation côté client : champs obligatoires vides uniquement
+  const clientErrors = validateRequiredFields(new FormData(els.form));
+  if (Object.keys(clientErrors).length > 0) {
+    displayFieldErrors(clientErrors);
+    focusFirstError();
+    return;
+  }
+
+  setSubmitting(true);
+
+  try {
+    const response = await fetch(CONFIG.endpoint, {
+      method: 'POST',
+      body:   new FormData(els.form),
     });
 
-    // ========== NAVIGATION PAR ÉTAPES ==========
-    (function () {
-      var currentStep = 1;
-      var prevBtn    = document.getElementById('prev-btn');
-      var nextBtn    = document.getElementById('next-btn');
-      var submitBtn  = document.getElementById('submit-btn');
-      var globalErr  = document.getElementById('form-global-error');
+    const data = await response.json();
 
-      function getRadioValue(name) {
-        var r = document.querySelector('input[name="' + name + '"]:checked');
-        return r ? r.value : '';
-      }
+    if (data.success) {
+      handleSuccess(data);
+    } else {
+      handleFailure(data);
+    }
 
-      function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-          return m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;';
-        });
-      }
+  } catch (err) {
+    console.error('[Register] Fetch error:', err);
+    showGlobalError('Une erreur réseau est survenue. Vérifiez votre connexion.');
+  } finally {
+    setSubmitting(false);
+  }
+}
 
-      function updateRecap() {
-        var schoolName  = document.getElementById('school_name').value  || 'Non renseigné';
-        var subType     = getRadioValue('school_subtype');
-        var typeText    = 'Collège' + (subType ? ' (' + (subType === 'public' ? 'Public' : 'Privé') + ')' : '');
-        var schoolEmail = document.getElementById('school_email').value || 'Non renseigné';
-        var adminName   = document.getElementById('admin_full_name').value || 'Non renseigné';
-        var adminEmail  = document.getElementById('admin_email').value  || 'Non renseigné';
-        document.getElementById('recap-container').innerHTML =
-          '<div class="flex justify-between py-1"><span class="text-slate-500">Établissement :</span><span class="font-medium">' + escapeHtml(schoolName)  + '</span></div>' +
-          '<div class="flex justify-between py-1"><span class="text-slate-500">Type :</span><span class="font-medium">'              + escapeHtml(typeText)    + '</span></div>' +
-          '<div class="flex justify-between py-1"><span class="text-slate-500">Email école :</span><span class="font-medium">'       + escapeHtml(schoolEmail) + '</span></div>' +
-          '<div class="flex justify-between py-1"><span class="text-slate-500">Admin :</span><span class="font-medium">'             + escapeHtml(adminName)   + '</span></div>' +
-          '<div class="flex justify-between py-1"><span class="text-slate-500">Email connexion :</span><span class="font-medium">'   + escapeHtml(adminEmail)  + '</span></div>';
-      }
+function handleSuccess(data) {
+  els.form.reset();
+  if (data.redirect) {
+    window.location.href = data.redirect;
+  } else {
+    showGlobalError(data.message ?? 'Inscription réussie !');
+  }
+}
 
-      function updateStepAppearance() {
-        [1, 2, 3].forEach(function(i) {
-          var ind   = document.getElementById('step' + i + '-indicator');
-          var label = document.getElementById('step' + i + '-label');
-          ind.classList.remove('step-active', 'step-completed', 'step-default');
-          label.classList.remove('step-label-active', 'step-label-completed', 'step-label-default');
-          if (i === currentStep)      { ind.classList.add('step-active');    label.classList.add('step-label-active'); }
-          else if (i < currentStep)   { ind.classList.add('step-completed'); label.classList.add('step-label-completed'); }
-          else                        { ind.classList.add('step-default');   label.classList.add('step-label-default'); }
-        });
-        var line1 = document.getElementById('line1');
-        var line2 = document.getElementById('line2');
-        line1.className = 'flex-1 mx-2 step-line ' + (currentStep > 1 ? 'step-line-completed' : 'step-line-default');
-        line2.className = 'flex-1 mx-2 step-line ' + (currentStep > 2 ? 'step-line-completed' : 'step-line-default');
-      }
+function handleFailure(data) {
+  if (data.errors && typeof data.errors === 'object') {
+    // Remonter à la première étape contenant une erreur
+    navigateToErrorStep(data.errors);
+    displayFieldErrors(data.errors);
+    focusFirstError();
+  } else {
+    showGlobalError(data.message ?? 'Une erreur est survenue.');
+  }
+}
 
-      function showStep() {
-        [1, 2, 3].forEach(function(i) {
-          document.getElementById('step' + i).classList.toggle('hidden', i !== currentStep);
-        });
-        prevBtn.classList.toggle('hidden', currentStep === 1);
-        nextBtn.classList.toggle('hidden', currentStep === 3);
-        submitBtn.classList.toggle('hidden', currentStep !== 3);
-        updateStepAppearance();
-        if (currentStep === 3) updateRecap();
-      }
+// ═══════════════════════════════════════════════════════════════════════════════
+//  VALIDATION CLIENT (champs vides uniquement — la logique métier reste au PHP)
+// ═══════════════════════════════════════════════════════════════════════════════
 
-      nextBtn.addEventListener('click', function() {
-        if (currentStep < 3) { currentStep++; showStep(); }
-      });
+const REQUIRED_FIELDS = [
+  'school_name',
+  'school_subtype',
+  'school_email',
+  'admin_full_name',
+  'admin_email',
+  'password',
+  'password_confirm',
+];
 
-      prevBtn.addEventListener('click', function() {
-        if (currentStep > 1) { currentStep--; showStep(); }
-      });
-      showStep();
-    })();
+function validateRequiredFields(formData) {
+  const errors = {};
+
+  REQUIRED_FIELDS.forEach((field) => {
+    if (!(formData.get(field) ?? '').trim()) {
+      errors[field] = 'Ce champ est requis.';
+    }
+  });
+
+  return errors;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  GESTION DES ERREURS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/** Mapping champ → étape pour remonter automatiquement en cas d'erreur serveur. */
+const FIELD_STEP_MAP = {
+  school_name:      1,
+  school_subtype:   1,
+  school_sub:       1,
+  school_email:     1,
+  school_phone:     1,
+  school_address:   1,
+  admin_full_name:  2,
+  admin_name:       2,
+  admin_email:      2,
+  password:         2,
+  password_confirm: 2,
+};
+
+function navigateToErrorStep(errors) {
+  const firstErrorField = Object.keys(errors)[0];
+  const targetStep      = FIELD_STEP_MAP[firstErrorField] ?? 1;
+  if (targetStep !== state.currentStep) {
+    goToStep(targetStep);
+  }
+}
+
+function displayFieldErrors(errors) {
+  Object.entries(errors).forEach(([field, message]) => {
+    const input   = els.form.querySelector(`[name="${field}"]`);
+    const errorEl = $('error_' + field);
+
+    input?.classList.add('border-red-500');
+    input?.setAttribute('aria-invalid', 'true');
+
+    if (errorEl) {
+      errorEl.textContent = message;
+      errorEl.classList.remove('hidden');
+    }
+  });
+}
+
+function clearFieldError(fieldName) {
+  const input   = els.form.querySelector(`[name="${fieldName}"]`);
+  const errorEl = $('error_' + fieldName);
+
+  input?.classList.remove('border-red-500');
+  input?.removeAttribute('aria-invalid');
+
+  if (errorEl) {
+    errorEl.textContent = '';
+    errorEl.classList.add('hidden');
+  }
+}
+
+function clearAllErrors() {
+  els.form.querySelectorAll('[id^="error_"]').forEach((el) => {
+    el.textContent = '';
+    el.classList.add('hidden');
+  });
+  els.form.querySelectorAll('[aria-invalid]').forEach((el) => {
+    el.removeAttribute('aria-invalid');
+    el.classList.remove('border-red-500');
+  });
+  hideGlobalError();
+}
+
+/** Efface l'erreur d'un champ dès que l'utilisateur retape dedans. */
+function initInlineClearErrors() {
+  els.form.querySelectorAll('input, select, textarea').forEach((field) => {
+    field.addEventListener('input', () => clearFieldError(field.name));
+  });
+}
+
+function focusFirstError() {
+  els.form.querySelector('[aria-invalid="true"]')?.focus();
+}
+
+// ─── Messages globaux ────────────────────────────────────────────────────────
+
+function showGlobalError(message) {
+  if (!els.globalError) return;
+  els.globalError.textContent = message;
+  els.globalError.classList.remove('hidden');
+}
+
+function hideGlobalError() {
+  if (!els.globalError) return;
+  els.globalError.textContent = '';
+  els.globalError.classList.add('hidden');
+}
+
+// ─── État bouton submit ──────────────────────────────────────────────────────
+
+function setSubmitting(active) {
+  state.isSubmitting     = active;
+  els.submitBtn.disabled = active;
+  els.btnLabel?.classList.toggle('hidden', active);
+  els.btnSpinner?.classList.toggle('hidden', !active);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function getRadioValue(name) {
+  return document.querySelector(`input[name="${name}"]:checked`)?.value ?? '';
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>]/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])
+  );
+}
   </script>
 </body>
 </html>
