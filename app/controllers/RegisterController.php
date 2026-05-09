@@ -47,7 +47,7 @@ final class RegisterController
             $this->json(['success' => false, 'errors' => $errors], 422);
         }
 
-        $this->assertEmailsAreUnique($data['school_email'], $data['admin_email']);
+        $this->assertEmailsAreUnique($data['school_email'], $data['admin_email'], $data['school_name']);
         $this->createAccount($data);
     }
 
@@ -62,7 +62,7 @@ final class RegisterController
             'school_sub'       => $this->sanitize($_POST['school_subtype'] ?? $_POST['school_sub_type'] ?? ''),
             'school_email'     => $this->sanitize($_POST['school_email']   ?? ''),
             'school_phone'     => $this->sanitize($_POST['school_phone']   ?? ''),
-            'school_addr'      => $this->sanitize($_POST['school_address'] ?? ''),
+            'school_address'      => $this->sanitize($_POST['school_address'] ?? ''),
             'admin_name'       => $this->sanitize($_POST['admin_full_name'] ?? ''),
             'admin_email'      => $this->sanitize($_POST['admin_email']    ?? ''),
             'password'         => $_POST['password']         ?? '',
@@ -95,15 +95,11 @@ final class RegisterController
 
         if ($d['school_phone'] === '') {
             $errors['school_phone'] = "Le numéro de téléphone de l'établissement est requis.";
-        } elseif (!filter_var($d['school_phone'], FILTER_VALIDATE_EMAIL)) {
-            $errors['school_phone'] = "Numéro de téléphone de l'établissement invalide.";
-        }
+        } 
 
-        if ($d['school_adress'] === '') {
-            $errors['school_adress'] = "L'adresse complète de l'établissement est requis.";
-        } elseif (!filter_var($d['school_adress'], FILTER_VALIDATE_EMAIL)) {
-            $errors['school_adress'] = "Adresse complète de l'établissement invalide.";
-        }
+        if ($d['school_address'] === '') {
+            $errors['school_address'] = "L'adresse complète de l'établissement est requis.";
+        } 
 
         if ($d['admin_name'] === '') {
             $errors['admin_name'] = 'Votre nom complet est requis.';
@@ -136,8 +132,17 @@ final class RegisterController
     // ----------------------------------------------------------------
     //  Unicité des emails — répond directement si conflit
     // ----------------------------------------------------------------
-    private function assertEmailsAreUnique(string $schoolEmail, string $adminEmail): void
+    private function assertEmailsAreUnique(string $schoolEmail, string $adminEmail, string $schoolName): void
     {
+
+         $stmt = $this->pdo->prepare('SELECT id FROM schools WHERE name = ? LIMIT 1');
+         $stmt->execute([$schoolName]);
+         if ($stmt->fetch()) {
+             $this->json(['success' => false, 'errors' => [
+                 'school_name' => "Ce nom d'établissement est déjà utilisé.",
+             ]], 422);
+         }
+
         $stmt = $this->pdo->prepare('SELECT id FROM schools WHERE email = ? LIMIT 1');
         $stmt->execute([$schoolEmail]);
         if ($stmt->fetch()) {
@@ -145,6 +150,8 @@ final class RegisterController
                 'school_email' => "Cet email d'établissement est déjà utilisé.",
             ]], 422);
         }
+
+        
 
         $stmt = $this->pdo->prepare('SELECT id FROM users WHERE email = ? LIMIT 1');
         $stmt->execute([$adminEmail]);
@@ -174,7 +181,7 @@ final class RegisterController
                 ':subtype' => $d['school_sub'],
                 ':email'   => $d['school_email'],
                 ':phone'   => $d['school_phone'] !== '' ? $d['school_phone'] : null,
-                ':address' => $d['school_addr']  !== '' ? $d['school_addr']  : null,
+                ':address' => $d['school_address']  !== '' ? $d['school_address']  : null,
                 ':slug'    => $slug,
             ]);
             $schoolId = (int) $this->pdo->lastInsertId();

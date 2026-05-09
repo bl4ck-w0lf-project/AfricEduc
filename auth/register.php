@@ -345,7 +345,7 @@
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 const CONFIG = {
-  endpoint:    '../controllers/RegisterController.php',
+  endpoint:    '../app/controllers/RegisterController.php',
   minPassword: 8,
   totalSteps:  3,
 };
@@ -608,6 +608,8 @@ const REQUIRED_FIELDS = [
   'school_name',
   'school_subtype',
   'school_email',
+  'school_phone',
+  'school_address',
   'admin_full_name',
   'admin_email',
   'password',
