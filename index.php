@@ -111,17 +111,21 @@
 
       <div class="flex justify-center gap-2">
           <a href="auth/login.php" class="hidden md:flex rounded-full items-center gap-1 border border-primary/20 px-5 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:bg-primary hover:text-white">
-        
-             Se connecter
-          </a>
-
-          <a href="auth/register.php" class="hidden md:flex rounded-full items-center gap-1 border border-primary/20 px-5 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:bg-primary hover:text-white">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-1">
               <path d="M15 9L20 12L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M20 12H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
               <path d="M12 5H8C6.89543 5 6 5.89543 6 7V17C6 18.1046 6.89543 19 8 19H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
-            S'inscrire
+             Se connecter
+          </a>
+
+          <a href="auth/register.php" class="hidden md:flex rounded-full items-center gap-1 border border-primary/20 px-5 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:bg-primary hover:text-white">
+            <svg width="20" height="20" class="mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> 
+              <path d="M20 18L14 18M17 15V21M7.68213 14C8.63244 14.6318 9.77319 15 10.9999 15C11.7012 15 12.3744 14.8797 13 14.6586M10.5 21H5.6C5.03995 21 4.75992 21 4.54601 20.891C4.35785 20.7951 4.20487 20.6422 4.10899 20.454C4 20.2401 4 19.9601 4 19.4V17C4 15.3431 5.34315 14 7 14H7.5M15 7C15 9.20914 13.2091 11 11 11C8.79086 11 7 9.20914 7 7C7 4.79086 8.79086 3 11 3C13.2091 3 15 4.79086 15 7Z" 
+              stroke="#7200e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                </path> </g>
+            </svg>
+              S'inscrire
           </a>
       </div>
       
@@ -153,11 +157,7 @@
           </a>
 
           <a href="auth/register.php" class="inline-flex items-center justify-center w-full rounded-full border border-primary/20 px-5 py-2.5 my-2 text-sm font-semibold text-primary transition hover:border-primary hover:bg-primary hover:text-white">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
-              <path d="M15 9L20 12L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M20 12H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M12 5H8C6.89543 5 6 5.89543 6 7V17C6 18.1046 6.89543 19 8 19H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
+            
             S'inscrire
           </a>
         </div>
