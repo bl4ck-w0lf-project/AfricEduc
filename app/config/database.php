@@ -1,13 +1,13 @@
 <?php
 /**
- * Connexion PDO — EduManager
+ * Connexion PDO — africeduc
  * Variables d'environnement (recommandé) : DB_HOST, DB_NAME, DB_USER, DB_PASS, DB_CHARSET
  */
 
 declare(strict_types=1);
 
 $dbHost = getenv('DB_HOST') ?: '127.0.0.1';
-$dbName = getenv('DB_NAME') ?: 'edumanager';
+$dbName = getenv('DB_NAME') ?: 'africeduc';
 $dbUser = getenv('DB_USER') ?: 'root';
 $dbPass = getenv('DB_PASS') ?: '';
 $dbCharset = getenv('DB_CHARSET') ?: 'utf8mb4';

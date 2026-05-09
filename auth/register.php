@@ -126,7 +126,7 @@
           </div>
         </div>
 
-        <form id="register-form" method="POST" action="app/controllers/RegisterController.php">
+        <form id="register-form" method="POST" action="../app/controllers/RegisterController.php">
           <input type="hidden" name="school_type" id="school_type" value="college">
 
           <!-- STEP 1 -->
