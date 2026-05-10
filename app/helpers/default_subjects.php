@@ -1,6 +1,6 @@
 <?php
 // ============================================================
-//  EduManager — app/helpers/default_subjects.php
+//  africeduc — app/helpers/default_subjects.php
 //  Insertion automatique des matières par défaut
 //  Appelé par ClassController quand une classe est créée
 //
@@ -57,7 +57,7 @@ class DefaultSubjects
 
         } catch (PDOException $e) {
             $pdo->rollBack();
-            error_log('[EduManager][DefaultSubjects] Erreur insertion: ' . $e->getMessage());
+            error_log('[africeduc][DefaultSubjects] Erreur insertion: ' . $e->getMessage());
             return 0;
         }
     }

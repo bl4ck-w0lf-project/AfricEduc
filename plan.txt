@@ -242,6 +242,39 @@ CREATE TABLE IF NOT EXISTS `teacher_classes` (
 
 
 -- ============================================================
+-- email_verifications
+-- Token envoyé par mail pour activer le compte après inscription
+-- Expire après 24h
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `email_verifications` (
+  `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id`    INT UNSIGNED NOT NULL,
+  `token`      VARCHAR(64)  NOT NULL UNIQUE,
+  `expires_at` DATETIME     NOT NULL,
+  `created_at` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_ev_user` FOREIGN KEY (`user_id`)
+    REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
+-- password_resets
+-- Token envoyé par mail pour réinitialiser le mot de passe
+-- Expire après 1h — supprimé après utilisation
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `password_resets` (
+  `id`         INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  `email`      VARCHAR(150)  NOT NULL,
+  `token`      VARCHAR(64)   NOT NULL UNIQUE,
+  `expires_at` DATETIME      NOT NULL,
+  `created_at` TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_pr_email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================================
 -- TABLE 10 : students
 -- Profil complet de chaque élève
 -- ============================================================

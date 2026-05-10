@@ -337,386 +337,407 @@
   </div>
 
   <script>
-    /**
- * register.js — AfricEduc
- * Fusion complète : navigation par étapes + toggle mot de passe + soumission fetch.
- * IDs HTML de référence alignés avec le fichier register.html.
- */
 
 'use strict';
 
-// ─── Config ───────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// CONFIG
+// ─────────────────────────────────────────────
 
-const CONFIG = {
-  endpoint:    '../app/controllers/RegisterController.php',
-  minPassword: 8,
-  totalSteps:  3,
-};
+const TOTAL_STEPS = 3;
 
-// ─── État centralisé ──────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
 
 const state = {
-  currentStep:   1,
-  isSubmitting:  false,
+  currentStep: 1,
+  isSubmitting: false,
 };
 
-// ─── Sélecteurs (résolus une seule fois) ─────────────────────────────────────
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
 
 const $ = (id) => document.getElementById(id);
 
+// ─────────────────────────────────────────────
+// ELEMENTS
+// ─────────────────────────────────────────────
+
 const els = {
-  // Formulaire
-  form:           $('register-form'),
+  form: $('register-form'),
 
-  // Navigation
-  prevBtn:        $('prev-btn'),
-  nextBtn:        $('next-btn'),
-  submitBtn:      $('submit-btn'),
-  btnLabel:       $('btn-label'),
-  btnSpinner:     $('btn-spinner'),
+  prevBtn: $('prev-btn'),
+  nextBtn: $('next-btn'),
+  submitBtn: $('submit-btn'),
 
-  // Récapitulatif (step 3)
+  btnLabel: $('btn-label'),
+  btnSpinner: $('btn-spinner'),
+
   recapContainer: $('recap-container'),
 
-  // Erreur globale
-  globalError:    $('form-global-error'),
-
-  // Champs utiles au récap
-  schoolName:     $('school_name'),
-  schoolEmail:    $('school_email'),
-  adminName:      $('admin_full_name'),
-  adminEmail:     $('admin_email'),
+  schoolName: $('school_name'),
+  schoolEmail: $('school_email'),
+  adminName: $('admin_full_name'),
+  adminEmail: $('admin_email'),
 };
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// STEP FIELDS
+// ─────────────────────────────────────────────
+
+const STEP_FIELDS = {
+  1: [
+    'school_name',
+    'school_subtype',
+    'school_email',
+    'school_phone',
+    'school_address',
+  ],
+
+  2: [
+    'admin_full_name',
+    'admin_email',
+    'password',
+    'password_confirm',
+  ],
+};
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!els.form) return;
 
-  initStepNavigation();
+  initNavigation();
   initPasswordToggles();
   initInlineClearErrors();
+  initSubmit();
 
-  els.form.addEventListener('submit', handleSubmit);
+  restoreServerErrors();
+
+  goToStep(1);
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-//  NAVIGATION PAR ÉTAPES
-// ═══════════════════════════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────────
 
-function initStepNavigation() {
-  els.nextBtn?.addEventListener('click', () => {
-    if (state.currentStep < CONFIG.totalSteps) {
-      goToStep(state.currentStep + 1);
-    }
-  });
+function initNavigation() {
+  els.nextBtn?.addEventListener('click', handleNext);
 
-  els.prevBtn?.addEventListener('click', () => {
-    if (state.currentStep > 1) {
-      goToStep(state.currentStep - 1);
-    }
-  });
-
-  // Afficher l'étape initiale
-  goToStep(1);
+  els.prevBtn?.addEventListener('click', handlePrev);
 }
 
-function goToStep(step) {
-  state.currentStep = step;
-  renderStepPanels();
-  renderStepIndicators();
-  renderNavButtons();
-  if (step === CONFIG.totalSteps) renderRecap();
-}
-
-/** Affiche le panneau de l'étape courante, masque les autres. */
-function renderStepPanels() {
-  for (let i = 1; i <= CONFIG.totalSteps; i++) {
-    $('step' + i)?.classList.toggle('hidden', i !== state.currentStep);
-  }
-}
-
-/** Met à jour les indicateurs visuels (cercles numérotés + lignes). */
-function renderStepIndicators() {
-  for (let i = 1; i <= CONFIG.totalSteps; i++) {
-    const ind   = $('step' + i + '-indicator');
-    const label = $('step' + i + '-label');
-    if (!ind || !label) continue;
-
-    ind.classList.remove('step-active', 'step-completed', 'step-default');
-    label.classList.remove('step-label-active', 'step-label-completed', 'step-label-default');
-
-    if (i === state.currentStep) {
-      ind.classList.add('step-active');
-      label.classList.add('step-label-active');
-    } else if (i < state.currentStep) {
-      ind.classList.add('step-completed');
-      label.classList.add('step-label-completed');
-      // Remplacer le chiffre par une coche pour les étapes complétées
-      ind.textContent = '✓';
-    } else {
-      ind.classList.add('step-default');
-      label.classList.add('step-label-default');
-      ind.textContent = String(i);
-    }
-  }
-
-  // Lignes entre les étapes
-  const lineStates = {
-    line1: state.currentStep > 1 ? 'step-line-completed' : 'step-line-default',
-    line2: state.currentStep > 2 ? 'step-line-completed' : 'step-line-default',
-  };
-  Object.entries(lineStates).forEach(([id, cls]) => {
-    const el = $(id);
-    if (el) el.className = 'flex-1 mx-2 step-line ' + cls;
-  });
-}
-
-/** Affiche/masque les boutons selon l'étape. */
-function renderNavButtons() {
-  const isFirst = state.currentStep === 1;
-  const isLast  = state.currentStep === CONFIG.totalSteps;
-
-  els.prevBtn?.classList.toggle('hidden', isFirst);
-  els.nextBtn?.classList.toggle('hidden', isLast);
-  els.submitBtn?.classList.toggle('hidden', !isLast);
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-//  RÉCAPITULATIF (étape 3)
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function renderRecap() {
-  if (!els.recapContainer) return;
-
-  const subType  = getRadioValue('school_subtype');
-  const typeText = 'Collège' + (subType ? ` (${subType === 'public' ? 'Public' : 'Privé'})` : '');
-
-  const rows = [
-    ['Établissement', els.schoolName?.value],
-    ['Type',          typeText],
-    ['Email école',   els.schoolEmail?.value],
-    ['Admin',         els.adminName?.value],
-    ['Email connexion', els.adminEmail?.value],
-  ];
-
-  els.recapContainer.innerHTML = rows
-    .map(([label, value]) => `
-      <div class="flex justify-between py-1">
-        <span class="text-slate-500">${label} :</span>
-        <span class="font-medium">${escapeHtml(value || 'Non renseigné')}</span>
-      </div>`)
-    .join('');
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-//  TOGGLE VISIBILITÉ MOT DE PASSE
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function initPasswordToggles() {
-  document.querySelectorAll('.password-toggle').forEach((button) => {
-    button.addEventListener('click', () => {
-      const targetId = button.getAttribute('data-target');
-      const input    = $(targetId);
-      if (!input) return;
-
-      const isHidden = input.type === 'password';
-      input.type = isHidden ? 'text' : 'password';
-
-      // Mise à jour de l'icône SVG (œil ouvert / barré)
-      const svg = button.querySelector('.eye-icon');
-      if (svg) {
-        svg.innerHTML = isHidden
-          ? `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-             <path d="M3 3l18 18" stroke="currentColor" stroke-width="2"></path>
-             <circle cx="12" cy="12" r="3"></circle>`
-          : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-             <circle cx="12" cy="12" r="3"></circle>`;
-      }
-
-      button.setAttribute('aria-label',
-        isHidden ? 'Masquer le mot de passe' : 'Afficher le mot de passe'
-      );
-    });
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-//  SOUMISSION FETCH
-// ═══════════════════════════════════════════════════════════════════════════════
-
-async function handleSubmit(e) {
-  e.preventDefault();
-  if (state.isSubmitting) return;
-
+function handleNext() {
   clearAllErrors();
 
-  // Validation côté client : champs obligatoires vides uniquement
-  const clientErrors = validateRequiredFields(new FormData(els.form));
-  if (Object.keys(clientErrors).length > 0) {
-    displayFieldErrors(clientErrors);
+  const errors = validateCurrentStep();
+
+  if (Object.keys(errors).length > 0) {
+    displayFieldErrors(errors);
     focusFirstError();
     return;
   }
 
-  setSubmitting(true);
-
-  try {
-    const response = await fetch(CONFIG.endpoint, {
-      method: 'POST',
-      body:   new FormData(els.form),
-    });
-
-    const text = await response.text();
-
-    let data;
-
-    try {
-      data = JSON.parse(text);
-    } catch (err) {
-      console.error('Réponse invalide du serveur :', text);
-      showGlobalError('Erreur serveur inattendue.');
-      return;
-    }
-
-    if (!response.ok) {
-  handleFailure(data);
-  return;
-}
-
-if (data.success) {
-  handleSuccess(data);
-} else {
-  handleFailure(data);
-}
-
-  } catch (err) {
-    console.error('[Register] Fetch error:', err);
-    showGlobalError('Une erreur réseau est survenue. Vérifiez votre connexion.');
-  } finally {
-    setSubmitting(false);
+  if (state.currentStep < TOTAL_STEPS) {
+    state.currentStep++;
+    render();
   }
 }
 
-function handleSuccess(data) {
-  els.form.reset();
-  if (data.redirect) {
-    window.location.href = data.redirect;
-  } else {
-    showGlobalError(data.message ?? 'Inscription réussie !');
-  }
-}
-
-function handleFailure(data) {
+function handlePrev() {
   clearAllErrors();
 
-  if (
-    data.errors &&
-    typeof data.errors === 'object' &&
-    Object.keys(data.errors).length > 0
-  ) {
-    navigateToErrorStep(data.errors);
-    displayFieldErrors(data.errors);
-    focusFirstError();
-    return;
+  if (state.currentStep > 1) {
+    state.currentStep--;
+    render();
   }
-
-  // uniquement pour erreurs serveur réelles
-  showGlobalError(
-  data.message || "Une erreur serveur est survenue. Veuillez réessayer."
-);
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-//  VALIDATION CLIENT (champs vides uniquement — la logique métier reste au PHP)
-// ═══════════════════════════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────
+// VALIDATION PAR ÉTAPE
+// ─────────────────────────────────────────────
 
-const REQUIRED_FIELDS = [
-  'school_name',
-  'school_subtype',
-  'school_email',
-  'school_phone',
-  'school_address',
-  'admin_full_name',
-  'admin_email',
-  'password',
-  'password_confirm',
-];
-
-function validateRequiredFields(formData) {
+function validateCurrentStep() {
   const errors = {};
 
-  const fieldMessages = {
-    school_name: "Le nom de l'établissement est requis.",
-    school_subtype: "Veuillez choisir le sous-type de l'établissement.",
-    school_email: "L'email de l'établissement est requis.",
-    school_phone: "Le numéro de téléphone est requis.",
-    school_address: "L'adresse de l'établissement est requise.",
-    admin_full_name: "Le nom complet de l'administrateur est requis.",
-    admin_email: "L'email de connexion est requis.",
-    password: "Le mot de passe est requis.",
-    password_confirm: "Veuillez confirmer le mot de passe.",
-  };
+  const fields = STEP_FIELDS[state.currentStep] || [];
 
-  REQUIRED_FIELDS.forEach((field) => {
-    const value = formData.get(field);
+  fields.forEach((fieldName) => {
+    const field =
+      els.form.querySelector(`[name="${fieldName}"]`);
 
-    if (!value || !String(value).trim()) {
-      errors[field] = fieldMessages[field] || 'Ce champ est requis.';
+    if (!field) return;
+
+    let value;
+
+    // radio
+    if (field.type === 'radio') {
+      value = document.querySelector(
+        `[name="${fieldName}"]:checked`
+      )?.value;
+    } else {
+      value = field.value.trim();
+    }
+
+    if (!value) {
+      errors[fieldName] = getFieldMessage(fieldName);
     }
   });
+
+  // check password confirm
+  if (state.currentStep === 2) {
+    const password =
+      $('[name="password"]')?.value || '';
+
+    const confirm =
+      $('[name="password_confirm"]')?.value || '';
+
+    if (password && confirm && password !== confirm) {
+      errors.password_confirm =
+        'Les mots de passe ne correspondent pas';
+    }
+  }
 
   return errors;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-//  GESTION DES ERREURS
-// ═══════════════════════════════════════════════════════════════════════════════
+function getFieldMessage(field) {
+  const messages = {
+    school_name:
+      "Le nom de l'établissement est requis.",
 
-/** Mapping champ → étape pour remonter automatiquement en cas d'erreur serveur. */
-const FIELD_STEP_MAP = {
-  school_name:      1,
-  school_subtype:   1,
-  school_sub:       1,
-  school_email:     1,
-  school_phone:     1,
-  school_address:   1,
-  admin_full_name:  2,
-  admin_name:       2,
-  admin_email:      2,
-  password:         2,
-  password_confirm: 2,
-};
+    school_subtype:
+      "Veuillez sélectionner un type.",
 
-function navigateToErrorStep(errors) {
-  const firstErrorField = Object.keys(errors)[0];
-  const targetStep      = FIELD_STEP_MAP[firstErrorField] ?? 1;
-  if (targetStep !== state.currentStep) {
-    goToStep(targetStep);
+    school_email:
+      "L'email de l'établissement est requis.",
+
+    school_phone:
+      'Le téléphone est requis.',
+
+    school_address:
+      "L'adresse est requise.",
+
+    admin_full_name:
+      "Le nom de l'administrateur est requis.",
+
+    admin_email:
+      "L'email administrateur est requis.",
+
+    password:
+      'Le mot de passe est requis.',
+
+    password_confirm:
+      'Veuillez confirmer le mot de passe.',
+  };
+
+  return messages[field] || 'Champ requis';
+}
+
+// ─────────────────────────────────────────────
+// SUBMIT
+// ─────────────────────────────────────────────
+
+function initSubmit() {
+  els.form.addEventListener('submit', handleSubmit);
+}
+
+function handleSubmit(e) {
+  clearAllErrors();
+
+  const errors = validateCurrentStep();
+
+  if (Object.keys(errors).length > 0) {
+    e.preventDefault();
+
+    displayFieldErrors(errors);
+
+    focusFirstError();
+
+    return;
+  }
+
+  setSubmitting(true);
+}
+
+// ─────────────────────────────────────────────
+// SUBMIT UI
+// ─────────────────────────────────────────────
+
+function setSubmitting(active) {
+  state.isSubmitting = active;
+
+  if (!els.submitBtn) return;
+
+  els.submitBtn.disabled = active;
+
+  els.btnLabel?.classList.toggle(
+    'hidden',
+    active
+  );
+
+  els.btnSpinner?.classList.toggle(
+    'hidden',
+    !active
+  );
+}
+
+// ─────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────
+
+function goToStep(step) {
+  state.currentStep = step;
+  render();
+}
+
+function render() {
+  renderSteps();
+  renderButtons();
+  renderRecap();
+}
+
+function renderSteps() {
+  for (let i = 1; i <= TOTAL_STEPS; i++) {
+    const panel = $('step' + i);
+
+    if (!panel) continue;
+
+    panel.classList.toggle(
+      'hidden',
+      i !== state.currentStep
+    );
   }
 }
 
+function renderButtons() {
+  const isFirst = state.currentStep === 1;
+
+  const isLast =
+    state.currentStep === TOTAL_STEPS;
+
+  els.prevBtn?.classList.toggle(
+    'hidden',
+    isFirst
+  );
+
+  els.nextBtn?.classList.toggle(
+    'hidden',
+    isLast
+  );
+
+  els.submitBtn?.classList.toggle(
+    'hidden',
+    !isLast
+  );
+}
+
+// ─────────────────────────────────────────────
+// RECAP
+// ─────────────────────────────────────────────
+
+function renderRecap() {
+  if (!els.recapContainer) return;
+
+  const rows = [
+    ['Établissement', els.schoolName?.value],
+    ['Email école', els.schoolEmail?.value],
+    ['Administrateur', els.adminName?.value],
+    ['Email admin', els.adminEmail?.value],
+  ];
+
+  els.recapContainer.innerHTML = rows
+    .map(([label, value]) => {
+      return `
+        <div class="flex justify-between py-2">
+          <span class="text-slate-500">
+            ${escapeHtml(label)}
+          </span>
+
+          <span class="font-medium">
+            ${escapeHtml(value || '-')}
+          </span>
+        </div>
+      `;
+    })
+    .join('');
+}
+
+// ─────────────────────────────────────────────
+// ERRORS
+// ─────────────────────────────────────────────
+
 function displayFieldErrors(errors) {
-  Object.entries(errors).forEach(([field, message]) => {
-    const input   = els.form.querySelector(`[name="${field}"]`);
-    const errorEl = $('error_' + field);
+  Object.entries(errors).forEach(
+    ([fieldName, message]) => {
+      const input =
+        els.form.querySelector(
+          `[name="${fieldName}"]`
+        );
 
-    input?.classList.add('border-red-500');
-    input?.setAttribute('aria-invalid', 'true');
+      const errorEl =
+        $('error_' + fieldName);
 
-    if (errorEl) {
-      errorEl.textContent = message;
-      errorEl.classList.remove('hidden');
+      input?.classList.add(
+        'border-red-500'
+      );
+
+      if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.classList.remove('hidden');
+      }
     }
-  });
+  );
+}
+
+function clearAllErrors() {
+  els.form
+    .querySelectorAll('[id^="error_"]')
+    .forEach((el) => {
+      el.textContent = '';
+      el.classList.add('hidden');
+    });
+
+  els.form
+    .querySelectorAll('.border-red-500')
+    .forEach((el) => {
+      el.classList.remove(
+        'border-red-500'
+      );
+    });
+}
+
+function initInlineClearErrors() {
+  els.form
+    .querySelectorAll(
+      'input, select, textarea'
+    )
+    .forEach((field) => {
+      field.addEventListener(
+        'input',
+        () => {
+          clearFieldError(field.name);
+        }
+      );
+    });
 }
 
 function clearFieldError(fieldName) {
-  const input   = els.form.querySelector(`[name="${fieldName}"]`);
-  const errorEl = $('error_' + fieldName);
+  const input =
+    els.form.querySelector(
+      `[name="${fieldName}"]`
+    );
 
-  input?.classList.remove('border-red-500');
-  input?.removeAttribute('aria-invalid');
+  const errorEl =
+    $('error_' + fieldName);
+
+  input?.classList.remove(
+    'border-red-500'
+  );
 
   if (errorEl) {
     errorEl.textContent = '';
@@ -724,63 +745,61 @@ function clearFieldError(fieldName) {
   }
 }
 
-function clearAllErrors() {
-  els.form.querySelectorAll('[id^="error_"]').forEach((el) => {
-    el.textContent = '';
-    el.classList.add('hidden');
-  });
-  els.form.querySelectorAll('[aria-invalid]').forEach((el) => {
-    el.removeAttribute('aria-invalid');
-    el.classList.remove('border-red-500');
-  });
-  hideGlobalError();
-}
-
-/** Efface l'erreur d'un champ dès que l'utilisateur retape dedans. */
-function initInlineClearErrors() {
-  els.form.querySelectorAll('input, select, textarea').forEach((field) => {
-    field.addEventListener('input', () => clearFieldError(field.name));
-  });
-}
-
 function focusFirstError() {
-  els.form.querySelector('[aria-invalid="true"]')?.focus();
+  els.form
+    .querySelector('.border-red-500')
+    ?.focus();
 }
 
-// ─── Messages globaux ────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// PASSWORD TOGGLE
+// ─────────────────────────────────────────────
 
-function showGlobalError(message) {
-  if (!els.globalError) return;
-  els.globalError.textContent = message;
-  els.globalError.classList.remove('hidden');
+function initPasswordToggles() {
+  document
+    .querySelectorAll('.password-toggle')
+    .forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target =
+          $(btn.dataset.target);
+
+        if (!target) return;
+
+        target.type =
+          target.type === 'password'
+            ? 'text'
+            : 'password';
+      });
+    });
 }
 
-function hideGlobalError() {
-  if (!els.globalError) return;
-  els.globalError.textContent = '';
-  els.globalError.classList.add('hidden');
+// ─────────────────────────────────────────────
+// SERVER ERRORS
+// ─────────────────────────────────────────────
+
+function restoreServerErrors() {
+  if (!window.SERVER_ERRORS) return;
+
+  displayFieldErrors(window.SERVER_ERRORS);
 }
 
-// ─── État bouton submit ──────────────────────────────────────────────────────
-
-function setSubmitting(active) {
-  state.isSubmitting     = active;
-  els.submitBtn.disabled = active;
-  els.btnLabel?.classList.toggle('hidden', active);
-  els.btnSpinner?.classList.toggle('hidden', !active);
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-//  UTILS
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function getRadioValue(name) {
-  return document.querySelector(`input[name="${name}"]:checked`)?.value ?? '';
-}
+// ─────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────
 
 function escapeHtml(str) {
-  return String(str).replace(/[&<>]/g, (c) =>
-    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])
+  return String(str).replace(
+    /[&<>"]/g,
+    (char) => {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+      };
+
+      return map[char];
+    }
   );
 }
   </script>

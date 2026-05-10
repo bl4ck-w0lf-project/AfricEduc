@@ -1,6 +1,6 @@
 <?php
 /**
- * Envoi d'e-mails — EduManager
+ * Envoi d'e-mails — africeduc
  * Remplacez par SMTP (PHPMailer, Symfony Mailer, etc.) en production.
  */
 
@@ -9,10 +9,10 @@ declare(strict_types=1);
 /**
  * @return array{success: bool, message?: string}
  */
-function edumanager_send_mail(string $to, string $subject, string $htmlBody, ?string $textBody = null): array
+function africeduc_send_mail(string $to, string $subject, string $htmlBody, ?string $textBody = null): array
 {
-    $from = getenv('MAIL_FROM') ?: 'noreply@edumanager.local';
-    $app = getenv('APP_NAME') ?: 'EduManager';
+    $from = getenv('MAIL_FROM') ?: 'noreply@africeduc.local';
+    $app = getenv('APP_NAME') ?: 'africeduc';
 
     $headers = [
         'MIME-Version: 1.0',
@@ -24,7 +24,7 @@ function edumanager_send_mail(string $to, string $subject, string $htmlBody, ?st
     $ok = @mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $htmlBody, implode("\r\n", $headers));
 
     if (!$ok && getenv('MAIL_LOG_ONLY') === '1') {
-        error_log('[EduManager mailer] To: ' . $to . ' | Subject: ' . $subject);
+        error_log('[africeduc mailer] To: ' . $to . ' | Subject: ' . $subject);
         return ['success' => true, 'message' => 'Log only mode'];
     }
 
