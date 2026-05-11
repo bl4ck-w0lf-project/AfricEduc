@@ -86,5 +86,5 @@ africeduc_send_mail(
 // ─── RESPONSE ───
 $_SESSION['success'] = "Compte créé avec succès. Vérifiez votre email pour activer votre compte.";
 
-header("Location: ../views/auth/login.php");
+header("Location: ../views/auth/registration_success.php");
 exit;
