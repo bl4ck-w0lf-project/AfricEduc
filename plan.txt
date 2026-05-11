@@ -241,6 +241,7 @@ CREATE TABLE IF NOT EXISTS `teacher_classes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+
 -- ============================================================
 -- email_verifications
 -- Token envoyé par mail pour activer le compte après inscription

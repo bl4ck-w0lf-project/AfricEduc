@@ -29,7 +29,7 @@ final class SchoolService
 
             $schoolId = $this->schoolModel->create([
                 'name' => $d['school_name'],
-                'subtype' => $d['school_sub'],
+                'subtype' => $d['school_subtype'],
                 'email' => $d['school_email'],
                 'phone' => $d['school_phone'],
                 'address' => $d['school_address'],
@@ -38,7 +38,7 @@ final class SchoolService
 
             $this->userModel->createAdmin([
                 'school_id' => $schoolId,
-                'name' => $d['admin_name'],
+                'name' => $d['admin_full_name'],
                 'email' => $d['admin_email'],
                 'password' => password_hash($d['password'], PASSWORD_BCRYPT),
             ]);

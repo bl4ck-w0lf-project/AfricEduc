@@ -1,3 +1,17 @@
+<?php
+
+session_start();
+
+$errors = $_SESSION['errors'] ?? [];
+
+$old = $_SESSION['old'] ?? [];
+
+// IMPORTANT
+unset($_SESSION['errors']);
+unset($_SESSION['old']);
+
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -126,7 +140,7 @@
           </div>
         </div>
 
-        <form id="register-form" method="POST" action="../app/controllers/RegisterController.php">
+        <form id="register-form" method="POST" action="../../controllers/RegisterController.php">
           <input type="hidden" name="school_type" id="school_type" value="college">
 
           <!-- STEP 1 -->
@@ -142,12 +156,26 @@
                 Informations de l'établissement
               </h2>
               <div class="space-y-5">
+
                 <div>
                   <label for="school_name" class="block text-sm font-semibold text-slate-700 mb-1">Nom de l'établissement <span class="text-red-500">*</span></label>
-                  <input type="text" id="school_name" name="school_name" autocomplete="organization" placeholder="Ex: Collège Saint-Michel de Cotonou"
-                    class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
-                    <p id="error_school_name" class="hidden text-xs text-red-500 mt-1"></p>
+                  <input type="text"
+                        id="school_name"
+                        name="school_name"
+                        autocomplete="organization"
+                        placeholder="Ex: Collège Saint-Michel de Cotonou"  
+                        class="mt-1 w-full rounded-xl border <?= isset($errors['school_name']) ? 'border-red-500' : 'border-slate-200' ?> bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
+                        value="<?= htmlspecialchars($old['school_name'] ?? '') ?>"
+                         >
+                    
                 </div>
+                <?php if (isset($errors['school_name'])): ?>
+                  <p class="text-xs text-red-500 mt-1">
+                    <?= htmlspecialchars($errors['school_name']) ?>
+                  </p>
+                <?php endif; ?>
+
+                
                 <div>
                   <span class="block text-sm font-semibold text-slate-700 mb-1">Type d'établissement</span>
                   <div class="flex items-center gap-2 mt-1 rounded-xl bg-slate-50/80 px-5 py-3 border border-slate-200">
@@ -155,42 +183,103 @@
                     <span id="type-display" class="font-medium">Collège/Lycée</span>
                   </div>
                 </div>
-                <fieldset name="school_subtype" class="rounded-xl border border-slate-200 bg-slate-50/30 p-5">
+                <fieldset
+                  name="school_subtype"
+                  class="rounded-xl bg-slate-50/30 p-5 border
+                    <?= isset($errors['school_subtype'])
+                      ? 'border-red-500'
+                      : 'border-slate-200'
+                    ?>"
+                >
                   <legend class="text-sm font-semibold text-slate-700 px-1">Sous-type <span class="text-red-500">*</span></legend>
                   <div class="mt-3 flex flex-wrap gap-6">
                     <label class="flex cursor-pointer items-center gap-2.5 py-1.5 px-3 rounded-lg hover:bg-slate-100 transition">
-                      <input type="radio" name="school_subtype" value="public" class="h-4 w-4 border-slate-300 text-primary focus:ring-primary">
+                      <input type="radio"
+                              name="school_subtype"
+                              value="public"
+                              class="h-4 w-4 border-slate-300 text-primary focus:ring-primary"
+                              <?= (($_SESSION['old']['school_subtype'] ?? '') === 'public') ? 'checked' : '' ?>
+                        >
                       <span> Public</span>
                     </label>
                     <label class="flex cursor-pointer items-center gap-2.5 py-1.5 px-3 rounded-lg hover:bg-slate-100 transition">
-                      <input type="radio" name="school_subtype" value="prive" class="h-4 w-4 border-slate-300 text-primary focus:ring-primary">
+                      <input type="radio"
+                              name="school_subtype"
+                              value="public"
+                              class="h-4 w-4 border-slate-300 text-primary focus:ring-primary"
+                              <?= (($_SESSION['old']['school_subtype'] ?? '') === 'public') ? 'checked' : '' ?>
+                      >
                       <span> Privé</span>
                       
                     </label>
                     
                   </div>
                 </fieldset>
-                <p id="error_school_subtype" class="hidden text-xs text-red-500 mt-1"></p>
+                <?php if (isset($errors['school_subtype'])): ?>
+                  <p class="text-xs text-red-500 mt-1">
+                    <?= htmlspecialchars($errors['school_subtype']) ?>
+                  </p>
+                <?php endif; ?>
+
+
                 <div class="grid gap-5 sm:grid-cols-2">
+
+                  <!-- EMAIL -->
                   <div>
-                    <label for="school_email" class="block text-sm font-semibold text-slate-700 mb-1">Email de l'établissement <span class="text-red-500">*</span></label>
-                    <input type="email" id="school_email" name="school_email" autocomplete="email" placeholder="contact@gmail.com"
-                      class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
-                      <p id="error_school_email" class="hidden text-xs text-red-500 mt-1"></p>
+                    <label for="school_email" class="block text-sm font-semibold text-slate-700 mb-1">
+                      Email de l'établissement <span class="text-red-500">*</span>
+                    </label>
+
+                    <input type="email"
+                      id="school_email"
+                      name="school_email"
+                      autocomplete="email"
+                      placeholder="contact@gmail.com"
+                      class="mt-1 w-full rounded-xl border <?= isset($errors['school_email']) ? 'border-red-500' : 'border-slate-200' ?> bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
+                      value="<?= htmlspecialchars($old['school_email'] ?? '') ?>">
+
+                    <?php if (isset($errors['school_email'])): ?>
+                      <p class="text-xs text-red-500 mt-1">
+                        <?= htmlspecialchars($errors['school_email']) ?>
+                      </p>
+                    <?php endif; ?>
                   </div>
+
+                  <!-- PHONE -->
                   <div>
-                    <label for="school_phone" class="block text-sm font-semibold text-slate-700 mb-1">Téléphone</label>
-                    <input type="tel" id="school_phone" name="school_phone" autocomplete="tel" placeholder="+229 01 XX XX XX XX"
-                      class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
-                      <p id="error_school_phone" class="hidden text-xs text-red-500 mt-1"></p>
+                    <label for="school_phone" class="block text-sm font-semibold text-slate-700 mb-1">
+                      Téléphone
+                    </label>
+
+                    <input type="tel"
+                      id="school_phone"
+                      name="school_phone"
+                      autocomplete="tel"
+                      placeholder="+229 01 XX XX XX XX"
+                      class="mt-1 w-full rounded-xl border <?= isset($errors['school_phone']) ? 'border-red-500' : 'border-slate-200' ?> bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
+                      value="<?= htmlspecialchars($old['school_phone'] ?? '') ?>">
+
+                    <?php if (isset($errors['school_phone'])): ?>
+                      <p class="text-xs text-red-500 mt-1">
+                        <?= htmlspecialchars($errors['school_phone']) ?>
+                      </p>
+                    <?php endif; ?>
                   </div>
+
                 </div>
                 <div>
                   <label for="school_address" class="block text-sm font-semibold text-slate-700 mb-1">Adresse</label>
                   <input type="text" id="school_address" name="school_address" autocomplete="street-address" placeholder="Cotonou, Bénin"
-                    class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
-                    <p id="error_school_address" class="hidden text-xs text-red-500 mt-1"></p>
+                    class="mt-1 w-full rounded-xl border <?= isset($errors['school_address']) ? 'border-red-500' : 'border-slate-200' ?> bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
+                      value="<?= htmlspecialchars($old['school_address'] ?? '') ?>">
                 </div>
+
+                 <?php if (isset($errors['school_address'])): ?>
+                    <p class="text-xs text-red-500 mt-1">
+                      <?= htmlspecialchars($errors['school_address']) ?>
+                    </p>
+                  <?php endif; ?>
+                  
               </div>
             </section>
           </div>
@@ -211,38 +300,83 @@
                 <div>
                   <label for="admin_full_name" class="block text-sm font-semibold text-slate-700 mb-1">Nom complet <span class="text-red-500">*</span></label>
                   <input type="text" id="admin_full_name" name="admin_full_name" autocomplete="name" placeholder="Jean Dupont"
-                    class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
-                    <p id="error_admin_full_name" class="hidden text-xs text-red-500 mt-1"></p>
+                    class="mt-1 w-full rounded-xl border <?= isset($errors['admin_full_name']) ? 'border-red-500' : 'border-slate-200' ?> bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
+                        value="<?= htmlspecialchars($old['admin_full_name'] ?? '') ?>">
                     
                 </div>
+
+                <?php if (isset($errors['admin_full_name'])): ?>
+                  <p class="text-xs text-red-500 mt-1">
+                    <?= htmlspecialchars($errors['admin_full_name']) ?>
+                  </p>
+                <?php endif; ?>
+
                 <div>
                   <label for="admin_email" class="block text-sm font-semibold text-slate-700 mb-1">Email de connexion <span class="text-red-500">*</span></label>
                   <input type="email" id="admin_email" name="admin_email" autocomplete="username" placeholder="admin@ecole.edu"
-                    class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
-                  <p id="error_admin_email" class="hidden text-xs text-red-500 mt-1"></p>
+                        class="mt-1 w-full rounded-xl border <?= isset($errors['admin_email']) ? 'border-red-500' : 'border-slate-200' ?> bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
+                        value="<?= htmlspecialchars($old['admin_email'] ?? '') ?>">
                   </div>
+
+                  <?php if (isset($errors['admin_email'])): ?>
+                  <p class="text-xs text-red-500 mt-1">
+                    <?= htmlspecialchars($errors['admin_email']) ?>
+                  </p>
+                <?php endif; ?>
+
                 <div class="grid gap-5 sm:grid-cols-2">
                   <div>
-                    <label for="password" class="block text-sm font-semibold text-slate-700 mb-1">Mot de passe <span class="text-red-500">*</span></label>
-                    <div class="password-wrapper">
-                      <input type="password" id="password" name="password" autocomplete="new-password" placeholder="••••••••"
-                        class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
-                        <p id="error_password" class="hidden text-xs text-red-500 mt-1"></p>
-                      <button type="button" class="password-toggle" data-target="password">
-                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                          <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                      </button>
+                      <label for="password" class="block text-sm font-semibold text-slate-700 mb-1">
+                        Mot de passe <span class="text-red-500">*</span>
+                      </label>
+
+                      <div class="password-wrapper">
+                        <input type="password"
+                          id="password"
+                          name="password"
+                          autocomplete="new-password"
+                          placeholder="••••••••"
+                          class="mt-1 w-full rounded-xl border 
+                            <?= isset($errors['password']) ? 'border-red-500' : 'border-slate-200' ?>
+                            bg-slate-50/50 px-4 py-3 outline-none transition-all
+                            focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
+                        >
+
+                        <button type="button" class="password-toggle" data-target="password">
+                          <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                          </svg>
+                        </button>
+                      </div>
+
+                      <?php if (isset($errors['password'])): ?>
+                        <p class="text-xs text-red-500 mt-1">
+                          <?= htmlspecialchars($errors['password']) ?>
+                        </p>
+                      <?php endif; ?>
+
+                      <p class="text-xs text-slate-400 mt-1.5">Minimum 8 caractères</p>
                     </div>
-                    <p class="text-xs text-slate-400 mt-1.5">Minimum 8 caractères</p>
-                  </div>
+
+                  
                   <div>
-                    <label for="password_confirm" class="block text-sm font-semibold text-slate-700 mb-1">Confirmer <span class="text-red-500">*</span></label>
+                    <label for="password_confirm" class="block text-sm font-semibold text-slate-700 mb-1">
+                      Confirmer <span class="text-red-500">*</span>
+                    </label>
+
                     <div class="password-wrapper">
-                      <input type="password" id="password_confirm" name="password_confirm" autocomplete="new-password" placeholder="••••••••"
-                        class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
-                        <p id="error_password_confirm" class="hidden text-xs text-red-500 mt-1"></p>
+                      <input type="password"
+                        id="password_confirm"
+                        name="password_confirm"
+                        autocomplete="new-password"
+                        placeholder="••••••••"
+                        class="mt-1 w-full rounded-xl border 
+                          <?= isset($errors['password_confirm']) ? 'border-red-500' : 'border-slate-200' ?>
+                          bg-slate-50/50 px-4 py-3 outline-none transition-all
+                          focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
+                      >
+
                       <button type="button" class="password-toggle" data-target="password_confirm">
                         <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -250,7 +384,14 @@
                         </svg>
                       </button>
                     </div>
+
+                    <?php if (isset($errors['password_confirm'])): ?>
+                      <p class="text-xs text-red-500 mt-1">
+                        <?= htmlspecialchars($errors['password_confirm']) ?>
+                      </p>
+                    <?php endif; ?>
                   </div>
+
                 </div>
               </div>
             </section>
@@ -279,7 +420,6 @@
                     <span class="text-sm text-slate-700">J'accepte les <a href="#" class="font-semibold text-primary underline">conditions d'utilisation</a></span>
                   </label>
                 </div>
-                <p id="form-global-error" class="hidden rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-sm text-red-800 shadow-sm" role="alert"></p>
               </div>
             </section>
           </div>
@@ -299,9 +439,6 @@
                 <path fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4Z" class="opacity-90" />
               </svg>
             </button>
-          </div>
-          <div id="globalError" class="hidden ...">
-            <p id="globalErrorMsg"></p>
           </div>
         </form>
 
@@ -337,471 +474,383 @@
   </div>
 
   <script>
+  'use strict';
 
-'use strict';
+  // ─────────────────────────────────────────────
+  // CONFIG
+  // ─────────────────────────────────────────────
 
-// ─────────────────────────────────────────────
-// CONFIG
-// ─────────────────────────────────────────────
+  const TOTAL_STEPS = 3;
 
-const TOTAL_STEPS = 3;
+  // ─────────────────────────────────────────────
+  // HELPERS
+  // ─────────────────────────────────────────────
 
-// ─────────────────────────────────────────────
-// STATE
-// ─────────────────────────────────────────────
+  const $ = (id) => document.getElementById(id);
 
-const state = {
-  currentStep: 1,
-  isSubmitting: false,
-};
+  // ─────────────────────────────────────────────
+  // STATE
+  // ─────────────────────────────────────────────
 
-// ─────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────
-
-const $ = (id) => document.getElementById(id);
-
-// ─────────────────────────────────────────────
-// ELEMENTS
-// ─────────────────────────────────────────────
-
-const els = {
-  form: $('register-form'),
-
-  prevBtn: $('prev-btn'),
-  nextBtn: $('next-btn'),
-  submitBtn: $('submit-btn'),
-
-  btnLabel: $('btn-label'),
-  btnSpinner: $('btn-spinner'),
-
-  recapContainer: $('recap-container'),
-
-  schoolName: $('school_name'),
-  schoolEmail: $('school_email'),
-  adminName: $('admin_full_name'),
-  adminEmail: $('admin_email'),
-};
-
-// ─────────────────────────────────────────────
-// STEP FIELDS
-// ─────────────────────────────────────────────
-
-const STEP_FIELDS = {
-  1: [
-    'school_name',
-    'school_subtype',
-    'school_email',
-    'school_phone',
-    'school_address',
-  ],
-
-  2: [
-    'admin_full_name',
-    'admin_email',
-    'password',
-    'password_confirm',
-  ],
-};
-
-// ─────────────────────────────────────────────
-// INIT
-// ─────────────────────────────────────────────
-
-document.addEventListener('DOMContentLoaded', () => {
-  if (!els.form) return;
-
-  initNavigation();
-  initPasswordToggles();
-  initInlineClearErrors();
-  initSubmit();
-
-  restoreServerErrors();
-
-  goToStep(1);
-});
-
-// ─────────────────────────────────────────────
-// NAVIGATION
-// ─────────────────────────────────────────────
-
-function initNavigation() {
-  els.nextBtn?.addEventListener('click', handleNext);
-
-  els.prevBtn?.addEventListener('click', handlePrev);
-}
-
-function handleNext() {
-  clearAllErrors();
-
-  const errors = validateCurrentStep();
-
-  if (Object.keys(errors).length > 0) {
-    displayFieldErrors(errors);
-    focusFirstError();
-    return;
-  }
-
-  if (state.currentStep < TOTAL_STEPS) {
-    state.currentStep++;
-    render();
-  }
-}
-
-function handlePrev() {
-  clearAllErrors();
-
-  if (state.currentStep > 1) {
-    state.currentStep--;
-    render();
-  }
-}
-
-// ─────────────────────────────────────────────
-// VALIDATION PAR ÉTAPE
-// ─────────────────────────────────────────────
-
-function validateCurrentStep() {
-  const errors = {};
-
-  const fields = STEP_FIELDS[state.currentStep] || [];
-
-  fields.forEach((fieldName) => {
-    const field =
-      els.form.querySelector(`[name="${fieldName}"]`);
-
-    if (!field) return;
-
-    let value;
-
-    // radio
-    if (field.type === 'radio') {
-      value = document.querySelector(
-        `[name="${fieldName}"]:checked`
-      )?.value;
-    } else {
-      value = field.value.trim();
-    }
-
-    if (!value) {
-      errors[fieldName] = getFieldMessage(fieldName);
-    }
-  });
-
-  // check password confirm
-  if (state.currentStep === 2) {
-    const password =
-      $('[name="password"]')?.value || '';
-
-    const confirm =
-      $('[name="password_confirm"]')?.value || '';
-
-    if (password && confirm && password !== confirm) {
-      errors.password_confirm =
-        'Les mots de passe ne correspondent pas';
-    }
-  }
-
-  return errors;
-}
-
-function getFieldMessage(field) {
-  const messages = {
-    school_name:
-      "Le nom de l'établissement est requis.",
-
-    school_subtype:
-      "Veuillez sélectionner un type.",
-
-    school_email:
-      "L'email de l'établissement est requis.",
-
-    school_phone:
-      'Le téléphone est requis.',
-
-    school_address:
-      "L'adresse est requise.",
-
-    admin_full_name:
-      "Le nom de l'administrateur est requis.",
-
-    admin_email:
-      "L'email administrateur est requis.",
-
-    password:
-      'Le mot de passe est requis.',
-
-    password_confirm:
-      'Veuillez confirmer le mot de passe.',
+  const state = {
+    currentStep: 1,
+    isSubmitting: false,
   };
 
-  return messages[field] || 'Champ requis';
-}
+  // ─────────────────────────────────────────────
+  // ELEMENTS
+  // ─────────────────────────────────────────────
 
-// ─────────────────────────────────────────────
-// SUBMIT
-// ─────────────────────────────────────────────
+  const els = {
+    form: $('register-form'),
 
-function initSubmit() {
-  els.form.addEventListener('submit', handleSubmit);
-}
+    prevBtn: $('prev-btn'),
+    nextBtn: $('next-btn'),
+    submitBtn: $('submit-btn'),
 
-function handleSubmit(e) {
-  clearAllErrors();
+    btnLabel: $('btn-label'),
+    btnSpinner: $('btn-spinner'),
 
-  const errors = validateCurrentStep();
+    recapContainer: $('recap-container'),
 
-  if (Object.keys(errors).length > 0) {
-    e.preventDefault();
+    schoolName: $('school_name'),
+    schoolEmail: $('school_email'),
+   
 
-    displayFieldErrors(errors);
+    adminName: $('admin_full_name'),
+    adminEmail: $('admin_email'),
+  };
 
-    focusFirstError();
+  // ─────────────────────────────────────────────
+  // INIT
+  // ─────────────────────────────────────────────
 
-    return;
+  document.addEventListener('DOMContentLoaded', () => {
+
+    if (!els.form) return;
+
+    initNavigation();
+
+    initPasswordToggles();
+
+    initSubmit();
+
+    render();
+  });
+
+  // ─────────────────────────────────────────────
+  // NAVIGATION
+  // ─────────────────────────────────────────────
+
+  function initNavigation() {
+
+    els.nextBtn?.addEventListener('click', () => {
+
+      if (state.currentStep >= TOTAL_STEPS) {
+        return;
+      }
+
+      state.currentStep++;
+
+      render();
+    });
+
+    els.prevBtn?.addEventListener('click', () => {
+
+      if (state.currentStep <= 1) {
+        return;
+      }
+
+      state.currentStep--;
+
+      render();
+    });
   }
 
-  setSubmitting(true);
-}
+  function render() {
 
-// ─────────────────────────────────────────────
-// SUBMIT UI
-// ─────────────────────────────────────────────
+    renderPanels();
 
-function setSubmitting(active) {
-  state.isSubmitting = active;
+    renderButtons();
 
-  if (!els.submitBtn) return;
+    renderIndicators();
 
-  els.submitBtn.disabled = active;
+    renderRecap();
+  }
 
-  els.btnLabel?.classList.toggle(
-    'hidden',
-    active
-  );
+  // ─────────────────────────────────────────────
+  // STEP PANELS
+  // ─────────────────────────────────────────────
 
-  els.btnSpinner?.classList.toggle(
-    'hidden',
-    !active
-  );
-}
+  function renderPanels() {
 
-// ─────────────────────────────────────────────
-// RENDER
-// ─────────────────────────────────────────────
+    for (let i = 1; i <= TOTAL_STEPS; i++) {
 
-function goToStep(step) {
-  state.currentStep = step;
-  render();
-}
+      const panel = $('step' + i);
 
-function render() {
-  renderSteps();
-  renderButtons();
-  renderRecap();
-}
+      if (!panel) continue;
 
-function renderSteps() {
-  for (let i = 1; i <= TOTAL_STEPS; i++) {
-    const panel = $('step' + i);
+      panel.classList.toggle(
+        'hidden',
+        i !== state.currentStep
+      );
+    }
+  }
 
-    if (!panel) continue;
+  // ─────────────────────────────────────────────
+  // NAV BUTTONS
+  // ─────────────────────────────────────────────
 
-    panel.classList.toggle(
+  function renderButtons() {
+
+    const isFirst =
+      state.currentStep === 1;
+
+    const isLast =
+      state.currentStep === TOTAL_STEPS;
+
+    els.prevBtn?.classList.toggle(
       'hidden',
-      i !== state.currentStep
+      isFirst
+    );
+
+    els.nextBtn?.classList.toggle(
+      'hidden',
+      isLast
+    );
+
+    els.submitBtn?.classList.toggle(
+      'hidden',
+      !isLast
     );
   }
-}
 
-function renderButtons() {
-  const isFirst = state.currentStep === 1;
+  // ─────────────────────────────────────────────
+  // STEP INDICATORS
+  // ─────────────────────────────────────────────
 
-  const isLast =
-    state.currentStep === TOTAL_STEPS;
+  function renderIndicators() {
 
-  els.prevBtn?.classList.toggle(
-    'hidden',
-    isFirst
-  );
+    for (let i = 1; i <= TOTAL_STEPS; i++) {
 
-  els.nextBtn?.classList.toggle(
-    'hidden',
-    isLast
-  );
+      const indicator =
+        $('step' + i + '-indicator');
 
-  els.submitBtn?.classList.toggle(
-    'hidden',
-    !isLast
-  );
-}
+      const label =
+        $('step' + i + '-label');
 
-// ─────────────────────────────────────────────
-// RECAP
-// ─────────────────────────────────────────────
+      if (!indicator || !label) continue;
 
-function renderRecap() {
-  if (!els.recapContainer) return;
+      indicator.classList.remove(
+        'step-active',
+        'step-completed',
+        'step-default'
+      );
 
-  const rows = [
-    ['Établissement', els.schoolName?.value],
-    ['Email école', els.schoolEmail?.value],
-    ['Administrateur', els.adminName?.value],
-    ['Email admin', els.adminEmail?.value],
-  ];
+      label.classList.remove(
+        'step-label-active',
+        'step-label-completed',
+        'step-label-default'
+      );
 
-  els.recapContainer.innerHTML = rows
-    .map(([label, value]) => {
-      return `
-        <div class="flex justify-between py-2">
-          <span class="text-slate-500">
-            ${escapeHtml(label)}
-          </span>
+      if (i < state.currentStep) {
 
-          <span class="font-medium">
-            ${escapeHtml(value || '-')}
-          </span>
-        </div>
-      `;
-    })
-    .join('');
-}
-
-// ─────────────────────────────────────────────
-// ERRORS
-// ─────────────────────────────────────────────
-
-function displayFieldErrors(errors) {
-  Object.entries(errors).forEach(
-    ([fieldName, message]) => {
-      const input =
-        els.form.querySelector(
-          `[name="${fieldName}"]`
+        indicator.classList.add(
+          'step-completed'
         );
 
-      const errorEl =
-        $('error_' + fieldName);
+        label.classList.add(
+          'step-label-completed'
+        );
 
-      input?.classList.add(
-        'border-red-500'
-      );
+        indicator.textContent = '✓';
 
-      if (errorEl) {
-        errorEl.textContent = message;
-        errorEl.classList.remove('hidden');
+      } else if (i === state.currentStep) {
+
+        indicator.classList.add(
+          'step-active'
+        );
+
+        label.classList.add(
+          'step-label-active'
+        );
+
+        indicator.textContent = i;
+
+      } else {
+
+        indicator.classList.add(
+          'step-default'
+        );
+
+        label.classList.add(
+          'step-label-default'
+        );
+
+        indicator.textContent = i;
       }
     }
-  );
-}
 
-function clearAllErrors() {
-  els.form
-    .querySelectorAll('[id^="error_"]')
-    .forEach((el) => {
-      el.textContent = '';
-      el.classList.add('hidden');
-    });
+    renderLines();
+  }
 
-  els.form
-    .querySelectorAll('.border-red-500')
-    .forEach((el) => {
-      el.classList.remove(
-        'border-red-500'
-      );
-    });
-}
+  // ─────────────────────────────────────────────
+  // STEP LINES
+  // ─────────────────────────────────────────────
 
-function initInlineClearErrors() {
-  els.form
-    .querySelectorAll(
-      'input, select, textarea'
-    )
-    .forEach((field) => {
-      field.addEventListener(
-        'input',
+  function renderLines() {
+
+    const line1 = $('line1');
+
+    const line2 = $('line2');
+
+    if (line1) {
+
+      line1.className =
+        state.currentStep > 1
+          ? 'flex-1 h-0.5 mx-2 step-line step-line-completed'
+          : 'flex-1 h-0.5 mx-2 step-line step-line-default';
+    }
+
+    if (line2) {
+
+      line2.className =
+        state.currentStep > 2
+          ? 'flex-1 h-0.5 mx-2 step-line step-line-completed'
+          : 'flex-1 h-0.5 mx-2 step-line step-line-default';
+    }
+  }
+
+  // ─────────────────────────────────────────────
+  // RECAP
+  // ─────────────────────────────────────────────
+
+  function renderRecap() {
+
+    if (!els.recapContainer) return;
+
+    const rows = [
+      ['Établissement', els.schoolName?.value],
+      ['Email école', els.schoolEmail?.value],
+      ['Administrateur', els.adminName?.value],
+      ['Email admin', els.adminEmail?.value],
+    ];
+
+    els.recapContainer.innerHTML =
+      rows.map(([label, value]) => {
+
+        return `
+          <div class="flex justify-between py-2 border-b border-slate-100">
+
+            <span class="text-slate-500">
+              ${escapeHtml(label)}
+            </span>
+
+            <span class="font-medium text-slate-700">
+              ${escapeHtml(value || '-')}
+            </span>
+
+          </div>
+        `;
+      }).join('');
+  }
+
+  // ─────────────────────────────────────────────
+  // SUBMIT
+  // ─────────────────────────────────────────────
+
+  function initSubmit() {
+
+    els.form.addEventListener(
+      'submit',
+      handleSubmit
+    );
+  }
+
+  function handleSubmit() {
+
+    if (state.isSubmitting) {
+      return;
+    }
+
+    disableSubmitButton();
+
+    
+  }
+
+  function disableSubmitButton() {
+
+    state.isSubmitting = true;
+
+    els.submitBtn.disabled = true;
+
+    els.submitBtn.classList.add(
+      'opacity-70',
+      'cursor-not-allowed'
+    );
+
+    els.btnLabel?.classList.add(
+      'hidden'
+    );
+
+    els.btnSpinner?.classList.remove(
+      'hidden'
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  // PASSWORD TOGGLE
+  // ─────────────────────────────────────────────
+
+  function initPasswordToggles() {
+
+    document.querySelectorAll(
+      '.password-toggle'
+    ).forEach((button) => {
+
+      button.addEventListener(
+        'click',
         () => {
-          clearFieldError(field.name);
+
+          const targetId =
+            button.dataset.target;
+
+          if (!targetId) return;
+
+          const input = $(targetId);
+
+          if (!input) return;
+
+          input.type =
+            input.type === 'password'
+              ? 'text'
+              : 'password';
         }
       );
     });
-}
-
-function clearFieldError(fieldName) {
-  const input =
-    els.form.querySelector(
-      `[name="${fieldName}"]`
-    );
-
-  const errorEl =
-    $('error_' + fieldName);
-
-  input?.classList.remove(
-    'border-red-500'
-  );
-
-  if (errorEl) {
-    errorEl.textContent = '';
-    errorEl.classList.add('hidden');
   }
-}
 
-function focusFirstError() {
-  els.form
-    .querySelector('.border-red-500')
-    ?.focus();
-}
+  // ─────────────────────────────────────────────
+  // UTILS
+  // ─────────────────────────────────────────────
 
-// ─────────────────────────────────────────────
-// PASSWORD TOGGLE
-// ─────────────────────────────────────────────
+  function escapeHtml(str) {
 
-function initPasswordToggles() {
-  document
-    .querySelectorAll('.password-toggle')
-    .forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const target =
-          $(btn.dataset.target);
+    return String(str).replace(
+      /[&<>"]/g,
+      (char) => {
 
-        if (!target) return;
+        const map = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+        };
 
-        target.type =
-          target.type === 'password'
-            ? 'text'
-            : 'password';
-      });
-    });
-}
-
-// ─────────────────────────────────────────────
-// SERVER ERRORS
-// ─────────────────────────────────────────────
-
-function restoreServerErrors() {
-  if (!window.SERVER_ERRORS) return;
-
-  displayFieldErrors(window.SERVER_ERRORS);
-}
-
-// ─────────────────────────────────────────────
-// UTILS
-// ─────────────────────────────────────────────
-
-function escapeHtml(str) {
-  return String(str).replace(
-    /[&<>"]/g,
-    (char) => {
-      const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-      };
-
-      return map[char];
-    }
-  );
-}
+        return map[char];
+      }
+    );
+  }
   </script>
 </body>
 </html>
