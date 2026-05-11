@@ -77,11 +77,66 @@ $stmt->execute([$result['user_id'], $token, $expiresAt]);
 // ─── EMAIL LINK ───
 $verifyLink = "http://localhost/AfricEduc/app/views/auth/verify.php?token=" . urlencode($token);
 
-africeduc_send_mail(
+$htmlBody = "
+<div style='font-family: Arial, sans-serif; background:#f4f4f7; padding:30px;'>
+  
+  <div style='max-width:600px;margin:auto;background:white;border-radius:12px;padding:30px;box-shadow:0 10px 30px rgba(0,0,0,0.08)'>
+
+    <!-- HEADER -->
+    <h1 style='text-align:center;color:#7300e9;margin-bottom:10px;'>
+      AfricEduc 🎓
+    </h1>
+
+    <h2 style='text-align:center;color:#333;'>
+      Confirmation de votre compte
+    </h2>
+
+    <!-- MESSAGE -->
+    <p style='font-size:15px;color:#555;line-height:1.6;margin-top:20px;'>
+      Merci d’avoir créé un compte sur <strong>AfricEduc</strong>.
+    </p>
+
+    <p style='font-size:15px;color:#555;line-height:1.6;'>
+      Pour activer votre compte et accéder à la plateforme, vous devez confirmer votre adresse email.
+      Sans cette validation, votre compte restera <strong>inactif</strong>.
+    </p>
+
+    <!-- BUTTON -->
+    <div style='text-align:center;margin:30px 0;'>
+      <a href='$verifyLink'
+         style='background:#7300e9;color:white;padding:14px 25px;
+         text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;'>
+        ✔ Activer mon compte
+      </a>
+    </div>
+
+    <!-- FOOTER -->
+    <p style='font-size:12px;color:#888;text-align:center;'>
+      Si le bouton ne fonctionne pas, copiez ce lien :<br>
+      <a href='$verifyLink' style='color:#7300e9;'>$verifyLink</a>
+    </p>
+
+  </div>
+
+  <p style='text-align:center;font-size:11px;color:#aaa;margin-top:15px;'>
+    © AfricEduc - Tous droits réservés
+  </p>
+
+</div>
+";
+
+$mailResult = africeduc_send_mail(
     $_POST['admin_email'],
     "Activation de votre compte AfricEduc",
-    "Cliquez ici : <a href='$verifyLink'>$verifyLink</a>"
+    $htmlBody
 );
+
+$_SESSION['registered_email'] = $_POST['admin_email'];
+$_SESSION['mail_sent'] = $mailResult['success'] ?? false;
+
+if (!$mailResult['success']) {
+    $_SESSION['mail_error'] = $mailResult['message'] ?? 'Erreur inconnue lors de l’envoi';
+}
 
 // ─── RESPONSE ───
 $_SESSION['success'] = "Compte créé avec succès. Vérifiez votre email pour activer votre compte.";

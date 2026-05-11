@@ -21,7 +21,7 @@ final class SchoolModel
     {
         $stmt = $this->pdo->prepare("
             INSERT INTO schools (name, subtype, email, phone, address, slug, status)
-            VALUES (?, ?, ?, ?, ?, ?, 'inactive')
+            VALUES (?, ?, ?, ?, ?, ?, 'active')
         ");
 
         $stmt->execute([

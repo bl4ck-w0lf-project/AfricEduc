@@ -1,34 +1,43 @@
 <?php
-/**
- * Envoi d'e-mails — africeduc
- * Remplacez par SMTP (PHPMailer, Symfony Mailer, etc.) en production.
- */
 
-declare(strict_types=1);
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-/**
- * @return array{success: bool, message?: string}
- */
-function africeduc_send_mail(string $to, string $subject, string $htmlBody, ?string $textBody = null): array
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+function africeduc_send_mail(string $to, string $subject, string $htmlBody): array
 {
-    $from = getenv('MAIL_FROM') ?: 'noreply@africeduc.local';
-    $app = getenv('APP_NAME') ?: 'africeduc';
+    $mail = new PHPMailer(true);
 
-    $headers = [
-        'MIME-Version: 1.0',
-        'Content-Type: text/html; charset=UTF-8',
-        'From: ' . $app . ' <' . $from . '>',
-        'X-Mailer: PHP/' . PHP_VERSION,
-    ];
+    try {
 
-    $ok = @mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $htmlBody, implode("\r\n", $headers));
+        // SMTP Mailtrap
+        $mail->isSMTP();
+        $mail->Host = 'sandbox.smtp.mailtrap.io';
+        $mail->SMTPAuth = true;
 
-    if (!$ok && getenv('MAIL_LOG_ONLY') === '1') {
-        error_log('[africeduc mailer] To: ' . $to . ' | Subject: ' . $subject);
-        return ['success' => true, 'message' => 'Log only mode'];
+        $mail->Username = 'd3d33bc8fc8087';
+        $mail->Password = 'eea1fa0904aae9';
+
+        $mail->Port = 2525;
+
+        // sender
+        $mail->setFrom('noreply@africeduc.com', 'AfricEduc');
+        $mail->addAddress($to);
+
+        // content
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body = $htmlBody;
+
+        $mail->send();
+
+        return ['success' => true];
+
+    } catch (Exception $e) {
+        return [
+            'success' => false,
+            'message' => $mail->ErrorInfo
+        ];
     }
-
-    return $ok
-        ? ['success' => true]
-        : ['success' => false, 'message' => "Impossible d'envoyer l'e-mail (vérifiez la config serveur)."];
 }
