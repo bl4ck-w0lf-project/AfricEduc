@@ -26,6 +26,20 @@ final class UserModel
 
     return (int) $this->pdo->lastInsertId();
 }
+
+ public function findByEmail(string $email): ?array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT id, name AS full_name, email, password AS password_hash, role, status
+            FROM users 
+            WHERE email = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $user ?: null;
+    }
 }
 
 ?>

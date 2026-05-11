@@ -1,222 +1,55 @@
 <?php
+require_once '../config/database.php';
+require_once '../models/UserModel.php';
+require_once '../services/UserService.php';
 
 session_start();
-header('Content-Type: application/json; charset=utf-8');
-header('Cache-Control: no-store, no-cache, must-revalidate');
-header('X-Content-Type-Options: nosniff');
 
-require_once __DIR__ . '/../config/database.php';
+$userModel = new UserModel($pdo);
+$authService = new AuthService($userModel);
 
-class LoginController
-{
-    private PDO $pdo;
+$errors = [];
+$old = [];
 
-    public function __construct()
-    {
-        require __DIR__ . '/../config/database.php';
-        $this->pdo = $pdo;
-    }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $remember = isset($_POST['remember_me']);
 
-    // ============================================================
-    //  ROUTER
-    // ============================================================
-    public function handle(string $action): void
-    {
-        $csrfExempt = ['get_csrf'];
+    $old['email'] = $email;
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !in_array($action, $csrfExempt)) {
-            $this->verifyCsrf();
-        }
+    // validation simple
+    if (empty($email)) $errors['email'] = "L'email est requis";
+    if (empty($password)) $errors['password'] = "Le mot de passe est requis";
 
-        switch ($action) {
-            case 'login':    $this->login();   break;
-            case 'logout':   $this->logout();  break;
-            case 'get_csrf': $this->getCsrfToken(); break;
-            default:
-                $this->json(['success' => false, 'message' => 'Action invalide.'], 400);
-        }
-    }
+    if (empty($errors)) {
+        $result = $authService->login($email, $password, $remember);
 
-    // ============================================================
-    //  ACTION : login
-    // ============================================================
-    private function login(): void
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->json(['success' => false, 'message' => 'Méthode non autorisée.'], 405);
-        }
-
-        $email    = $this->sanitize($_POST['email'] ?? '');
-        $password = $_POST['password'] ?? '';
-        $remember = !empty($_POST['remember']) || !empty($_POST['remember_me']);
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL) || empty($password)) {
-            $this->json(['success' => false, 'message' => 'Email ou mot de passe invalide.'], 422);
-        }
-
-        if ($this->isLoginBlocked($email)) {
-            $this->json([
-                'success' => false,
-                'message' => 'Compte temporairement bloqué après plusieurs tentatives échouées. Réessayez dans 15 minutes.'
-            ], 429);
-        }
-
-        $stmt = $this->pdo->prepare('
-            SELECT u.id, u.school_id, u.name, u.email, u.password, u.role, u.status,
-                   s.status AS school_status, s.name AS school_name
-            FROM users u
-            LEFT JOIN schools s ON s.id = u.school_id
-            WHERE u.email = ?
-            LIMIT 1
-        ');
-        $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$user || !password_verify($password, $user['password'])) {
-            $this->recordFailedAttempt($email);
-            usleep(random_int(100000, 300000));
-            $this->json(['success' => false, 'message' => 'Email ou mot de passe incorrect.'], 401);
-        }
-
-        if ($user['role'] === 'admin' && $user['status'] === 'inactive') {
-            $this->json([
-                'success' => false,
-                'message' => 'Votre compte n\'est pas encore activé. Vérifiez votre boîte email.'
-            ], 403);
-        }
-
-        if ($user['role'] !== 'super_admin') {
-            if ($user['school_status'] === 'suspended') {
-                $this->json(['success' => false, 'message' => 'Votre établissement est suspendu. Contactez le support.'], 403);
+        if ($result['success']) {
+            // redirection selon le rôlee
+            switch ($result['role']) {
+                case 'super_admin':
+                    header("Location: /AfricEduc/app/views/superadmin/dashboard_superadmin.php");
+                    break;
+                case 'admin':
+                    header("Location: /AfricEduc/app/views/admin/dashboard_admin.php");
+                    break;
+                case 'agent':
+                    header("Location: /AfricEduc/app/views/agents/dashboard_agent.php");
+                    break;
+                default:
+                    header("Location: /AfricEduc/index.php");
             }
-            if ($user['school_status'] === 'inactive') {
-                $this->json(['success' => false, 'message' => 'Votre établissement n\'est pas encore activé.'], 403);
-            }
+            exit;
+        } else {
+            $errors = $result['errors'];
         }
-
-        $this->clearFailedAttempts($email);
-        session_regenerate_id(true);
-
-        $_SESSION['user_id']     = (int)$user['id'];
-        $_SESSION['role']        = $user['role'];
-        $_SESSION['school_id']   = $user['school_id'] ? (int)$user['school_id'] : null;
-        $_SESSION['name']        = $user['name'];
-        $_SESSION['email']       = $user['email'];
-        $_SESSION['school_name'] = $user['school_name'] ?? 'africeduc';
-        $_SESSION['logged_in']   = true;
-        $_SESSION['login_time']  = time();
-
-        if ($remember) {
-            $cookieToken = bin2hex(random_bytes(32));
-            setcookie('edu_remember', $cookieToken, time() + (30 * 86400), '/', '', isset($_SERVER['HTTPS']), true);
-        }
-
-        $stmt = $this->pdo->prepare('UPDATE users SET last_login = NOW() WHERE id = ?');
-        $stmt->execute([$user['id']]);
-
-        $redirectMap = [
-            'super_admin' => '../pages/dashboard_superadmin.html',
-            'admin'       => '../pages/dashboard_admin.html',
-            'agent'       => '../pages/dashboard_agent.html',
-        ];
-        $redirect = $redirectMap[$user['role']] ?? '../pages/login.html';
-
-        if ($user['role'] === 'admin') {
-            $stmt = $this->pdo->prepare('SELECT id FROM school_settings WHERE school_id = ? LIMIT 1');
-            $stmt->execute([$user['school_id']]);
-            if (!$stmt->fetch()) {
-                $redirect = '../../pages/setup_school.html';
-            }
-        }
-
-        $this->json(['success' => true, 'role' => $user['role'], 'name' => $user['name'], 'redirect' => $redirect]);
     }
 
-    // ============================================================
-    //  ACTION : logout
-    // ============================================================
-    private function logout(): void
-    {
-        if (isset($_COOKIE['edu_remember'])) {
-            setcookie('edu_remember', '', time() - 3600, '/', '', isset($_SERVER['HTTPS']), true);
-        }
-        $_SESSION = [];
-        if (ini_get('session.use_cookies')) {
-            $params = session_get_cookie_params();
-            setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
-        }
-        session_destroy();
-        $this->json(['success' => true, 'redirect' => '../pages/login.html']);
-    }
+    // ❌ IMPORTANT : stocker erreurs et old et redirect
+    $_SESSION['errors'] = $errors;
+    $_SESSION['old'] = $old;
 
-    // ============================================================
-    //  ACTION : get_csrf
-    // ============================================================
-    private function getCsrfToken(): void
-    {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        $this->json(['csrf_token' => $_SESSION['csrf_token']]);
-    }
-
-    // ============================================================
-    //  HELPERS PRIVÉS
-    // ============================================================
-    private function verifyCsrf(): void
-    {
-        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
-
-        if (
-            empty($_SESSION['csrf_token']) ||
-            empty($token) ||
-            !hash_equals($_SESSION['csrf_token'], $token)
-        ) {
-            $this->json(['success' => false, 'message' => 'Token de sécurité invalide. Rechargez la page.'], 403);
-        }
-
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
-
-    private function isLoginBlocked(string $email): bool
-    {
-        $key = 'login_attempts_' . md5($email);
-        if (!isset($_SESSION[$key])) return false;
-        $attempts = $_SESSION[$key];
-        if ($attempts['count'] >= 5) {
-            if (time() - $attempts['last_attempt'] < 900) return true;
-            unset($_SESSION[$key]);
-        }
-        return false;
-    }
-
-    private function recordFailedAttempt(string $email): void
-    {
-        $key = 'login_attempts_' . md5($email);
-        if (!isset($_SESSION[$key])) $_SESSION[$key] = ['count' => 0, 'last_attempt' => time()];
-        $_SESSION[$key]['count']++;
-        $_SESSION[$key]['last_attempt'] = time();
-    }
-
-    private function clearFailedAttempts(string $email): void
-    {
-        unset($_SESSION['login_attempts_' . md5($email)]);
-    }
-
-    private function sanitize(string $value): string
-    {
-        return htmlspecialchars(strip_tags(trim($value)), ENT_QUOTES, 'UTF-8');
-    }
-
-    private function json(array $data, int $statusCode = 200): never
-    {
-        http_response_code($statusCode);
-        echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        exit;
-    }
+    header("Location: ../views/auth/login.php");
+    exit;
 }
-
-// ============================================================
-//  POINT D'ENTRÉE
-// ============================================================
-$controller = new LoginController();
-$action     = $_POST['action'] ?? $_POST['auth_action'] ?? $_GET['action'] ?? '';
-$controller->handle($action);

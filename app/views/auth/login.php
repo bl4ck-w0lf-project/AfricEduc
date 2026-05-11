@@ -1,4 +1,11 @@
+<?php
+session_start();
 
+$errors = $_SESSION['errors'] ?? [];
+$old = $_SESSION['old'] ?? [];
+
+unset($_SESSION['errors'], $_SESSION['old']);
+?>
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -114,21 +121,30 @@
         </p>
       </div>
 
-      <form id="login-form" class="mt-8 space-y-5" novalidate>
+      <form id="login-form" class="mt-8 space-y-5" method="POST" action="../../controllers/LoginController.php"  >
         <input type="hidden" name="auth_action" value="login">
 
         <div>
           <label for="email" class="block text-sm font-medium text-slate-700">Email</label>
-          <input type="email" id="email" name="email" required autocomplete="username"
-            class="mt-1.5 w-full rounded-xl border border-slate-200/90 bg-white/80 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30">
-          <p class="field-error mt-1.5 text-sm text-red-600" id="err-email" role="alert"></p>
+          <input type="email" id="email" name="email"  autocomplete="username"
+            class="mt-1.5 w-full rounded-xl border border-slate-200/90 bg-white/80 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30
+             <?= isset($errors['email']) ? 'border-red-500' : 'border-slate-200' ?>"
+          value="<?= htmlspecialchars($old['email'] ?? '') ?>">
+          
+
+           <?php if (isset($errors['email'])): ?>
+            <p class="text-xs text-red-500 mt-1">
+              <?= htmlspecialchars($errors['email']) ?>
+            </p>
+          <?php endif; ?>
         </div>
 
         <div>
           <label for="password" class="block text-sm font-medium text-slate-700">Mot de passe</label>
           <div class="relative mt-1.5">
-            <input type="password" id="password" name="password" required autocomplete="current-password"
-              class="w-full rounded-xl border border-slate-200/90 bg-white/80 py-3 pl-4 pr-12 text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30">
+            <input type="password" id="password" name="password"  autocomplete="current-password"
+              class="w-full rounded-xl border border-slate-200/90 bg-white/80 py-3 pl-4 pr-12 text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30
+               <?= isset($errors['password']) ? 'border-red-500' : 'border-slate-200' ?>">
             <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-slate-500 transition hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
               aria-label="Afficher le mot de passe" aria-pressed="false">
               <svg id="icon-eye" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
@@ -141,7 +157,13 @@
               </svg>
             </button>
           </div>
-          <p class="field-error mt-1.5 text-sm text-red-600" id="err-password" role="alert"></p>
+
+          <?php if (isset($errors['password'])): ?>
+            <p class="text-xs text-red-500 mt-1">
+              <?= htmlspecialchars($errors['password']) ?>
+            </p>
+          <?php endif; ?>
+          
         </div>
 
         <div class="flex items-center justify-between gap-3">
@@ -155,7 +177,7 @@
           </a>
         </div>
 
-        <p id="form-global-error" class="hidden rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert"></p>
+        
 
         <button type="submit" id="submit-btn"
           class="inline-flex w-full min-h-[48px] items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-glow transition hover:bg-violet-800 disabled:cursor-not-allowed disabled:opacity-60">
@@ -191,7 +213,7 @@
   let isSubmitting = false;
 
   // ────────────────
-  // PASSWORD TOGGLE 👁️
+  // PASSWORD TOGGLE 
   // ────────────────
   togglePwd.addEventListener("click", function () {
     password.type = password.type === "password" ? "text" : "password";
@@ -205,17 +227,26 @@
   // ────────────────
   // SPINNER DURANT SUBMIT ⏳
   // ────────────────
-  form.addEventListener("submit", function () {
-    if (isSubmitting) return;
+  fform.addEventListener("submit", function (e) {
+  const email = document.getElementById("email").value.trim();
+  const pwd = password.value.trim();
 
-    isSubmitting = true;
-    submitBtn.disabled = true;
-    btnLabel.textContent = "Connexion en cours...";
-    btnSpinner.classList.remove("hidden");
+  if (!email || !pwd) {
+    e.preventDefault();
+    return;
+  }
 
-    // laisse PHP gérer le submit normalement
-    setTimeout(() => form.submit(), 100); // fallback léger
-  });
+  if (isSubmitting) return;
+
+  isSubmitting = true;
+  submitBtn.disabled = true;
+  btnLabel.textContent = "Connexion en cours...";
+  btnSpinner.classList.remove("hidden");
+
+  // ⚡ petite astuce pour voir le spinner avant que le submit HTML classique se fasse
+  setTimeout(() => form.submit(), 50);
+  e.preventDefault();
+});
 })();
 </script>
 </body>

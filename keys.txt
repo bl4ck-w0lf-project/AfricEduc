@@ -1,0 +1,12 @@
+SUPER ADMIN 
+email : superadmin@gmail.com
+password : superadmin123
+
+ADMIN 
+email : admin@gmail.com
+password : admin123
+
+AGENT MARIE 
+email : agentmarie@gmail.com
+password : agentmarie123
+
