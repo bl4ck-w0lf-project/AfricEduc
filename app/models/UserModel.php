@@ -40,6 +40,92 @@ final class UserModel
 
         return $user ?: null;
     }
+
+public function findByEmailForReset(string $email): ?array
+{
+    $stmt = $this->pdo->prepare(
+        "SELECT id, email, role
+         FROM users
+         WHERE email = ?
+         LIMIT 1"
+    );
+    $stmt->execute([$email]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user) {
+        return null;
+    }
+
+    // Restriction : uniquement admin et superadmin
+    if (!in_array($user['role'], ['admin', 'superadmin'], true)) {
+        return null;
+    }
+
+    return $user;
+}
+
+/**
+ * Supprime les anciens tokens de l'email puis insère le nouveau.
+ */
+public function createPasswordResetToken(
+    string $email,
+    string $tokenHash,
+    string $expiresAt
+): bool {
+    // Purge les tokens précédents pour cet email
+    $del = $this->pdo->prepare(
+        "DELETE FROM password_resets WHERE email = ?"
+    );
+    $del->execute([$email]);
+
+    $stmt = $this->pdo->prepare(
+        "INSERT INTO password_resets (email, token_hash, expires_at)
+         VALUES (?, ?, ?)"
+    );
+    return $stmt->execute([$email, $tokenHash, $expiresAt]);
+}
+
+/**
+ * Cherche un token valide (non expiré). Retourne la ligne ou null.
+ */
+public function findValidResetToken(string $tokenHash): ?array
+{
+    $stmt = $this->pdo->prepare(
+        "SELECT *
+         FROM password_resets
+         WHERE token_hash = ?
+           AND expires_at > NOW()
+         LIMIT 1"
+    );
+    $stmt->execute([$tokenHash]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $row ?: null;
+}
+
+/**
+ * Met à jour le mot de passe d'un utilisateur par email.
+ */
+public function updatePasswordByEmail(
+    string $email,
+    string $hashedPassword
+): bool {
+    $stmt = $this->pdo->prepare(
+        "UPDATE users SET password = ? WHERE email = ?"
+    );
+    return $stmt->execute([$hashedPassword, $email]);
+}
+
+/**
+ * Invalide tous les tokens de reset pour cet email (après usage).
+ */
+public function deleteResetTokensByEmail(string $email): void
+{
+    $stmt = $this->pdo->prepare(
+        "DELETE FROM password_resets WHERE email = ?"
+    );
+    $stmt->execute([$email]);
+}
 }
 
 ?>

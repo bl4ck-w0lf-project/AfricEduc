@@ -1,195 +1,86 @@
 <?php
-
-session_start();
-header('Content-Type: application/json; charset=utf-8');
-header('Cache-Control: no-store, no-cache, must-revalidate');
-header('X-Content-Type-Options: nosniff');
+declare(strict_types=1);
 
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../helpers/mailer.php';
+require_once __DIR__ . '/../models/UserModel.php';
+require_once __DIR__ . '/../services/UserService.php';
 
-class PasswordController
+session_start();
+
+$pdo       = Database::getConnection();
+$userModel = new UserModel($pdo);
+$service   = new UserService($userModel);
+
+$action = $_GET['action'] ?? '';
+
+match ($action) {
+    'forgot' => handleForgot($service),
+    'reset'  => handleReset($service),
+    default  => http_response_code(404),
+};
+
+// ──────────────────────────────────────────────────────────────────────────────
+
+function handleForgot(UserService $service): void
 {
-    private PDO $pdo;
-
-    public function __construct()
-    {
-        require __DIR__ . '/../config/database.php';
-        $this->pdo = $pdo;
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        return;
     }
 
-    // ============================================================
-    //  ROUTER
-    // ============================================================
-    public function handle(string $action): void
-    {
-        $csrfExempt = ['get_csrf'];
+    $email  = trim($_POST['email'] ?? '');
+    $errors = [];
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !in_array($action, $csrfExempt)) {
-            $this->verifyCsrf();
-        }
-
-        switch ($action) {
-            case 'forgot_password':
-            case 'forgot':          $this->forgotPassword(); break;
-            case 'reset_password':
-            case 'reset':           $this->resetPassword();  break;
-            case 'get_csrf':        $this->getCsrfToken();   break;
-            default:
-                $this->json(['success' => false, 'message' => 'Action invalide.'], 400);
-        }
+    // Validation
+    if ($email === '') {
+        $errors['email'] = "L'email est obligatoire.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = "Adresse email invalide.";
     }
 
-    // ============================================================
-    //  ACTION : forgot_password
-    // ============================================================
-    private function forgotPassword(): void
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->json(['success' => false, 'message' => 'Méthode non autorisée.'], 405);
-        }
-
-        $email = $this->sanitize($_POST['email'] ?? '');
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->json(['success' => false, 'message' => 'Adresse email invalide.'], 422);
-        }
-
-        $successMsg = 'Si cet email existe dans notre système, un lien de réinitialisation vous a été envoyé.';
-
-        $stmt = $this->pdo->prepare('SELECT id, name FROM users WHERE email = ? AND status = \'active\' LIMIT 1');
-        $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$user) {
-            usleep(random_int(200000, 500000));
-            $this->json(['success' => true, 'message' => $successMsg]);
-        }
-
-        try {
-            $this->pdo->exec('
-                CREATE TABLE IF NOT EXISTS password_resets (
-                    id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
-                    email      VARCHAR(150) NOT NULL,
-                    token      VARCHAR(64)  NOT NULL UNIQUE,
-                    expires_at DATETIME     NOT NULL,
-                    created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    PRIMARY KEY (id),
-                    KEY idx_pr_email (email)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-            ');
-
-            $stmt = $this->pdo->prepare('DELETE FROM password_resets WHERE email = ?');
-            $stmt->execute([$email]);
-
-            $token     = bin2hex(random_bytes(32));
-            $expiresAt = date('Y-m-d H:i:s', time() + 3600);
-
-            $stmt = $this->pdo->prepare('INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)');
-            $stmt->execute([$email, $token, $expiresAt]);
-
-            Mailer::sendPasswordResetEmail($email, $user['name'], $token);
-
-            $this->json(['success' => true, 'message' => $successMsg]);
-
-        } catch (PDOException $e) {
-            error_log('[africeduc][Password][forgot] DB error: ' . $e->getMessage());
-            $this->json(['success' => false, 'message' => 'Erreur serveur. Réessayez.'], 500);
-        }
-    }
-
-    // ============================================================
-    //  ACTION : reset_password
-    // ============================================================
-    private function resetPassword(): void
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->json(['success' => false, 'message' => 'Méthode non autorisée.'], 405);
-        }
-
-        $token        = $this->sanitize($_POST['token']            ?? '');
-        $password     = $_POST['password']         ?? '';
-        $passwordConf = $_POST['password_confirm'] ?? '';
-
-        $errors = [];
-        if (empty($token))               $errors['token']            = 'Token manquant ou invalide.';
-        if (strlen($password) < 8)       $errors['password']         = 'Minimum 8 caractères requis.';
-        if ($password !== $passwordConf) $errors['password_confirm'] = 'Les mots de passe ne correspondent pas.';
-
-        if (!empty($errors)) {
-            $this->json(['success' => false, 'errors' => $errors], 422);
-        }
-
-        try {
-            $stmt = $this->pdo->prepare('
-                SELECT email FROM password_resets WHERE token = ? AND expires_at > NOW() LIMIT 1
-            ');
-            $stmt->execute([$token]);
-            $reset = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$reset) {
-                $this->json(['success' => false, 'message' => 'Ce lien est invalide ou a expiré. Faites une nouvelle demande.'], 400);
-            }
-
-            $hashedPassword = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
-
-            $stmt = $this->pdo->prepare('UPDATE users SET password = ?, updated_at = NOW() WHERE email = ?');
-            $stmt->execute([$hashedPassword, $reset['email']]);
-
-            $stmt = $this->pdo->prepare('DELETE FROM password_resets WHERE token = ?');
-            $stmt->execute([$token]);
-
-            $this->json(['success' => true, 'message' => 'Mot de passe modifié avec succès !', 'redirect' => '../pages/login.html']);
-
-        } catch (PDOException $e) {
-            error_log('[africeduc][Password][reset] DB error: ' . $e->getMessage());
-            $this->json(['success' => false, 'message' => 'Erreur serveur. Réessayez.'], 500);
-        }
-    }
-
-    // ============================================================
-    //  ACTION : get_csrf
-    // ============================================================
-    private function getCsrfToken(): void
-    {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        $this->json(['csrf_token' => $_SESSION['csrf_token']]);
-    }
-
-    // ============================================================
-    //  HELPERS PRIVÉS
-    // ============================================================
-    private function verifyCsrf(): void
-    {
-        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
-
-        if (
-            empty($_SESSION['csrf_token']) ||
-            empty($token) ||
-            !hash_equals($_SESSION['csrf_token'], $token)
-        ) {
-            $this->json(['success' => false, 'message' => 'Token de sécurité invalide. Rechargez la page.'], 403);
-        }
-
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
-
-    private function sanitize(string $value): string
-    {
-        return htmlspecialchars(strip_tags(trim($value)), ENT_QUOTES, 'UTF-8');
-    }
-
-    private function json(array $data, int $statusCode = 200): never
-    {
-        http_response_code($statusCode);
-        echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    if (!empty($errors)) {
+        $_SESSION['forgot_errors'] = $errors;
+        $_SESSION['forgot_old']    = ['email' => $email];
+        header('Location: /app/views/auth/forgot_password.php');
         exit;
     }
+
+    $result = $service->sendPasswordResetLink($email);
+
+    if (isset($result['error'])) {
+        $_SESSION['forgot_errors'] = ['global' => $result['error']];
+        $_SESSION['forgot_old']    = ['email' => $email];
+        header('Location: /app/views/auth/forgot_password.php');
+        exit;
+    }
+
+    $_SESSION['forgot_success'] = true;
+    header('Location: /app/views/auth/forgot_password.php');
+    exit;
 }
 
-// ============================================================
-//  POINT D'ENTRÉE
-// ============================================================
-$controller = new PasswordController();
-$action     = $_POST['action'] ?? $_POST['auth_action'] ?? $_GET['action'] ?? '';
-$controller->handle($action);
+function handleReset(UserService $service): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        return;
+    }
+
+    $rawToken = trim($_POST['token']            ?? '');
+    $password = $_POST['password']              ?? '';
+    $confirm  = $_POST['password_confirm']      ?? '';
+
+    $result = $service->resetPassword($rawToken, $password, $confirm);
+
+    if (isset($result['errors'])) {
+        $_SESSION['reset_errors'] = $result['errors'];
+        // On remet le token dans l'URL pour repré-remplir le champ caché
+        header('Location: /app/views/auth/reset_password.php?token='
+               . urlencode($rawToken));
+        exit;
+    }
+
+    $_SESSION['reset_success'] = true;
+    header('Location: /app/views/auth/login.php?reset=1');
+    exit;
+}
