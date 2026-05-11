@@ -177,140 +177,46 @@
   </div>
 
   <script>
-    (function () {
-      var API_URL = "app/controllers/AuthController.php";
-      var ROLE_REDIRECT = {
-        super_admin: "dashboard_superadmin.html",
-        admin: "../dashboard_admin.php",
-        agent: "dashboard_agent.php"
-      };
+(function () {
+  const form = document.getElementById("login-form");
+  const submitBtn = document.getElementById("submit-btn");
+  const btnLabel = document.getElementById("btn-label");
+  const btnSpinner = document.getElementById("btn-spinner");
 
-      var form = document.getElementById("login-form");
-      var submitBtn = document.getElementById("submit-btn");
-      var btnLabel = document.getElementById("btn-label");
-      var btnSpinner = document.getElementById("btn-spinner");
-      var globalErr = document.getElementById("form-global-error");
-      var pwdInput = document.getElementById("password");
-      var togglePwd = document.getElementById("toggle-password");
-      var iconEye = document.getElementById("icon-eye");
-      var iconEyeOff = document.getElementById("icon-eye-off");
+  const password = document.getElementById("password");
+  const togglePwd = document.getElementById("toggle-password");
+  const iconEye = document.getElementById("icon-eye");
+  const iconEyeOff = document.getElementById("icon-eye-off");
 
-      function setFieldError(id, message) {
-        var err = document.getElementById("err-" + id);
-        var input = document.getElementById(id);
-        if (!err) return;
-        if (message) {
-          err.textContent = message;
-          err.classList.add("is-visible");
-          if (input) input.classList.add("input-invalid");
-        } else {
-          err.textContent = "";
-          err.classList.remove("is-visible");
-          if (input) input.classList.remove("input-invalid");
-        }
-      }
+  let isSubmitting = false;
 
-      function clearErrors() {
-        setFieldError("email", "");
-        setFieldError("password", "");
-        globalErr.classList.add("hidden");
-        globalErr.textContent = "";
-      }
+  // ────────────────
+  // PASSWORD TOGGLE 👁️
+  // ────────────────
+  togglePwd.addEventListener("click", function () {
+    password.type = password.type === "password" ? "text" : "password";
+    const isText = password.type === "text";
+    togglePwd.setAttribute("aria-pressed", isText);
+    togglePwd.setAttribute("aria-label", isText ? "Masquer le mot de passe" : "Afficher le mot de passe");
+    iconEye.classList.toggle("hidden", isText);
+    iconEyeOff.classList.toggle("hidden", !isText);
+  });
 
-      function isValidEmail(value) {
-        return value && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value).trim());
-      }
+  // ────────────────
+  // SPINNER DURANT SUBMIT ⏳
+  // ────────────────
+  form.addEventListener("submit", function () {
+    if (isSubmitting) return;
 
-      function validateForm() {
-        var errors = {};
-        var email = (document.getElementById("email").value || "").trim();
-        var password = document.getElementById("password").value || "";
+    isSubmitting = true;
+    submitBtn.disabled = true;
+    btnLabel.textContent = "Connexion en cours...";
+    btnSpinner.classList.remove("hidden");
 
-        if (!email) errors.email = "L'email est obligatoire.";
-        else if (!isValidEmail(email)) errors.email = "Adresse email invalide.";
-
-        if (!password) errors.password = "Le mot de passe est obligatoire.";
-
-        return errors;
-      }
-
-      togglePwd.addEventListener("click", function () {
-        pwdInput.type = pwdInput.type === "password" ? "text" : "password";
-        var plain = pwdInput.type === "text";
-        togglePwd.setAttribute("aria-pressed", plain ? "true" : "false");
-        togglePwd.setAttribute("aria-label", plain ? "Masquer le mot de passe" : "Afficher le mot de passe");
-        iconEye.classList.toggle("hidden", plain);
-        iconEyeOff.classList.toggle("hidden", !plain);
-      });
-
-      form.addEventListener("submit", function (ev) {
-        ev.preventDefault();
-        clearErrors();
-
-        var errors = validateForm();
-        if (Object.keys(errors).length > 0) {
-          Object.keys(errors).forEach(function (k) {
-            setFieldError(k, errors[k]);
-          });
-          return;
-        }
-
-        submitBtn.disabled = true;
-        btnLabel.textContent = "Connexion…";
-        btnSpinner.classList.remove("hidden");
-
-        var fd = new FormData(form);
-
-        fetch(API_URL, {
-          method: "POST",
-          body: fd,
-          headers: { Accept: "application/json" },
-          credentials: "same-origin"
-        })
-          .then(function (res) {
-            var ct = res.headers.get("content-type") || "";
-            if (ct.indexOf("application/json") !== -1) {
-              return res.json().then(function (data) {
-                return { ok: res.ok, status: res.status, data: data };
-              });
-            }
-            return res.text().then(function (text) {
-              return { ok: res.ok, status: res.status, data: { message: text } };
-            });
-          })
-          .then(function (result) {
-            btnSpinner.classList.add("hidden");
-            btnLabel.textContent = "Se connecter";
-            submitBtn.disabled = false;
-
-            var data = result.data || {};
-            if (result.ok && (data.success === true || data.success === "true")) {
-              var url = data.redirect || data.redirect_url || data.url;
-              if (!url && data.role && ROLE_REDIRECT[data.role]) {
-                url = ROLE_REDIRECT[data.role];
-              }
-              if (url) {
-                window.location.href = url;
-                return;
-              }
-              globalErr.textContent = "Réponse serveur incomplète (redirection manquante).";
-              globalErr.classList.remove("hidden");
-              return;
-            }
-
-            var msg = data.message || data.error || "Identifiants incorrects ou compte inactif.";
-            globalErr.textContent = msg;
-            globalErr.classList.remove("hidden");
-          })
-          .catch(function () {
-            btnSpinner.classList.add("hidden");
-            btnLabel.textContent = "Se connecter";
-            submitBtn.disabled = false;
-            globalErr.textContent = "Impossible de joindre le serveur. Vérifiez votre connexion.";
-            globalErr.classList.remove("hidden");
-          });
-      });
-    })();
-  </script>
+    // laisse PHP gérer le submit normalement
+    setTimeout(() => form.submit(), 100); // fallback léger
+  });
+})();
+</script>
 </body>
 </html>
