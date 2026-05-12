@@ -49,6 +49,7 @@ public function findByEmailForReset(string $email): ?array
          WHERE email = ?
          LIMIT 1"
     );
+
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -56,8 +57,8 @@ public function findByEmailForReset(string $email): ?array
         return null;
     }
 
-    // Restriction : uniquement admin et superadmin
-    if (!in_array($user['role'], ['admin', 'superadmin'], true)) {
+    // 🔥 FIX ICI
+    if (!in_array($user['role'], ['admin', 'super_admin'], true)) {
         return null;
     }
 

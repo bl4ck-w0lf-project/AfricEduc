@@ -60,8 +60,7 @@ public function sendPasswordResetLink(string $email): array
     $user = $this->userModel->findByEmailForReset($email);
 
     if (!$user) {
-        // Réponse neutre : on ne révèle pas si le compte existe
-        // (anti-énumération). On ne fait rien mais on répond success.
+        
         return ['success' => true];
     }
 

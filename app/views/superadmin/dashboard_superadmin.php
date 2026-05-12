@@ -453,18 +453,6 @@
       });
 
       var rowsData = [
-        { nom: "Collège Saint-Michel", type: "Collège", sub: "Privé", ville: "Cotonou", admin: "A. Kossi", eleves: 612, abonnement: "Premium", statut: "actif" },
-        { nom: "Lycée Béhanzin", type: "Collège", sub: "Public", ville: "Porto-Novo", admin: "M. Hounkpe", eleves: 892, abonnement: "Premium", statut: "actif" },
-        { nom: "Complexe Les Lauriers", type: "Collège", sub: "Privé", ville: "Cotonou", admin: "S. Ahouanvo", eleves: 445, abonnement: "Standard", statut: "actif" },
-        { nom: "Université Partenaire Atlantique", type: "Université", sub: "Privé", ville: "Abomey-Calavi", admin: "Dr. T. Mensah", eleves: 1240, abonnement: "Premium", statut: "actif" },
-        { nom: "Cours Secondaire Ste Thérèse", type: "Collège", sub: "Privé", ville: "Parakou", admin: "Sr. B. Lawson", eleves: 328, abonnement: "Standard", statut: "suspendu" },
-        { nom: "Institut Technique de Porto-Novo", type: "Collège", sub: "Public", ville: "Porto-Novo", admin: "I. Sossou", eleves: 756, abonnement: "Premium", statut: "actif" },
-        { nom: "École Le Savoir", type: "Collège", sub: "Privé", ville: "Cotonou", admin: "G. Dossou", eleves: 189, abonnement: "Free", statut: "actif" },
-        { nom: "Groupe scolaire Les Phénix", type: "Collège", sub: "Privé", ville: "Lokossa", admin: "K. Bio", eleves: 512, abonnement: "Premium", statut: "suspendu" },
-        { nom: "Faculté des Sciences Lokossa", type: "Université", sub: "Public", ville: "Lokossa", admin: "Prof. Zinsou", eleves: 2104, abonnement: "Premium", statut: "actif" },
-        { nom: "Centre Maria-Goretti", type: "Collège", sub: "Privé", ville: "Cotonou", admin: "P. Aïssi", eleves: 267, abonnement: "Standard", statut: "actif" },
-        { nom: "Lycée Moderne de Parakou", type: "Collège", sub: "Public", ville: "Parakou", admin: "B. Orou", eleves: 1340, abonnement: "Premium", statut: "actif" },
-        { nom: "Institut Cardinal Gantin", type: "Université", sub: "Privé", ville: "Abomey-Calavi", admin: "P. Adjovi", eleves: 890, abonnement: "Premium", statut: "actif" }
       ];
 
       var perPage = 5;

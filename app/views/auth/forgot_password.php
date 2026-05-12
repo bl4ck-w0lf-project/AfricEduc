@@ -125,7 +125,7 @@ unset(
 
       <!-- ── Formulaire ──────────────────────────────────────────────── -->
       <form method="POST"
-            action="/app/controllers/PasswordController.php?action=forgot"
+            action="../../controllers/PasswordController.php?action=forgot"
             class="mt-8 space-y-5"
             novalidate>
 
@@ -174,7 +174,7 @@ unset(
 
     <!-- Retour connexion -->
     <p class="mt-8 text-center">
-      <a href="/app/views/auth/login.php"
+      <a href="login.php"
          class="inline-flex items-center gap-2 text-sm font-semibold
                 text-primary transition hover:text-violet-800">
         <span aria-hidden="true">←</span> Retour à la connexion
