@@ -23,7 +23,6 @@ final class UserModel
         $data['email'],
         $data['password'],
     ]);
-
     return (int) $this->pdo->lastInsertId();
 }
 
@@ -41,7 +40,7 @@ final class UserModel
         return $user ?: null;
     }
 
-public function findByEmailForReset(string $email): ?array
+public function findByEmailForReset(string $email): array|null
 {
     $stmt = $this->pdo->prepare(
         "SELECT id, email, role
@@ -51,19 +50,30 @@ public function findByEmailForReset(string $email): ?array
     );
 
     $stmt->execute([$email]);
+
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // utilisateur inexistant
     if (!$user) {
-        return null;
+        return [
+            'status' => 'not_found'
+        ];
     }
 
-    // 🔥 FIX ICI
+    // rôle interdit
     if (!in_array($user['role'], ['admin', 'super_admin'], true)) {
-        return null;
+        return [
+            'status' => 'forbidden'
+        ];
     }
 
-    return $user;
+    // utilisateur valide
+    return [
+        'status' => 'success',
+        'user'   => $user
+    ];
 }
+
 
 /**
  * Supprime les anciens tokens de l'email puis insère le nouveau.

@@ -119,7 +119,7 @@ if (!$success && $token === '') {
           <p class="mt-2 text-sm text-slate-600">
             Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.
           </p>
-          <a href="/app/views/auth/login.php"
+          <a href="login.php"
              class="mt-4 inline-flex items-center justify-center gap-2
                     rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold
                     text-white transition hover:bg-violet-800">
@@ -132,7 +132,7 @@ if (!$success && $token === '') {
 
       <!-- ── Formulaire ──────────────────────────────────────────────── -->
       <form method="POST"
-            action="/app/controllers/PasswordController.php?action=reset"
+            action="/AfricEduc/app/controllers/PasswordController.php?action=reset"
             class="mt-8 space-y-5"
             novalidate>
 
@@ -246,7 +246,7 @@ if (!$success && $token === '') {
     <?php endif; ?>
 
     <p class="mt-8 text-center">
-      <a href="/app/views/auth/login.php"
+      <a href="login.php"
          class="inline-flex items-center gap-2 text-sm font-semibold
                 text-primary transition hover:text-violet-800">
         <span aria-hidden="true">←</span> Retour à la connexion

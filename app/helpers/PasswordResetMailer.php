@@ -16,14 +16,14 @@ class PasswordResetMailer
         $m = $this->mail;
 
         $m->isSMTP();
-        $m->Host       = MAIL_HOST;
+        $m->Host       = 'sandbox.smtp.mailtrap.io';
         $m->SMTPAuth   = true;
-        $m->Username   = MAIL_USERNAME;
-        $m->Password   = MAIL_PASSWORD;
+        $m->Username   = 'd3d33bc8fc8087';
+        $m->Password   = 'eea1fa0904aae9';
         $m->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $m->Port       = MAIL_PORT;
+        $m->Port       = 2525;
         $m->CharSet    = 'UTF-8';
-        $m->setFrom(MAIL_FROM_EMAIL, MAIL_FROM_NAME);
+        $m->setFrom( 'no-reply@africeduc.com', 'AfricEduc' );
     }
 
     public function sendResetLink(string $toEmail, string $resetUrl): bool

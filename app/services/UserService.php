@@ -59,10 +59,22 @@ public function sendPasswordResetLink(string $email): array
 
     $user = $this->userModel->findByEmailForReset($email);
 
-    if (!$user) {
-        
-        return ['success' => true];
-    }
+            
+        if ($user['status'] === 'not_found') {
+            return [
+                'error' => 'Aucun compte trouvé avec cette adresse email.'
+            ];
+        }
+
+        if ($user['status'] === 'forbidden') {
+            return [
+                'error' => 'Seuls les administrateurs peuvent réinitialiser leur mot de passe.'
+            ];
+        }
+
+        $user = $user['user'];
+
+
 
     // Token brut (envoyé dans l'URL) + hash (stocké en DB)
     $rawToken  = bin2hex(random_bytes(32));       // 64 chars
@@ -83,10 +95,15 @@ public function sendPasswordResetLink(string $email): array
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
                 ? 'https' : 'http';
     $host     = $_SERVER['HTTP_HOST'];              // ex: localhost ou africeduc.com
-    $base     = $protocol . '://' . $host;
+    $base = $protocol . '://' . $host . '/AfricEduc';
 
-    // Le fichier reset_password.php est à la racine du projet
-    $resetUrl = $base . '/reset_password.php?token=' . $rawToken;
+
+
+    $resetUrl = $base
+        . '/app/views/auth/reset_password.php?token='
+        . urlencode($rawToken);
+
+
 
     require_once __DIR__ . '/../helpers/PasswordResetMailer.php';
     $mailer = new PasswordResetMailer();

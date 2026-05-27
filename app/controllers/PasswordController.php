@@ -65,13 +65,25 @@ function handleReset(AuthService $authService): void
 
     $result = $authService->resetPassword($rawToken, $password, $confirm);
 
+    // 🔴 CAS ERREURS
     if (isset($result['errors'])) {
         $_SESSION['reset_errors'] = $result['errors'];
-        header('Location: ../views/auth/reset_password.php?token=' . urlencode($rawToken));
+    }
+
+    // 🔴 CAS ERROR SIMPLE
+    if (isset($result['error'])) {
+        $_SESSION['reset_errors'] = [
+            'global' => $result['error']
+        ];
+    }
+
+    if (isset($_SESSION['reset_errors'])) {
+        header('Location: /AfricEduc/app/views/auth/reset_password.php?token=' . urlencode($rawToken));
         exit;
     }
 
+    // 🟢 SUCCESS
     $_SESSION['reset_success'] = true;
-    header('Location: ../views/auth/login.php?reset=1');
+    header('Location: /AfricEduc/app/views/auth/login.php?reset=1');
     exit;
 }
