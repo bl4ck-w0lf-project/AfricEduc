@@ -190,7 +190,7 @@ unset($_SESSION['errors'], $_SESSION['old']);
       </form>
 
       <p class="mt-8 text-center">
-        <a href="../index.php" class="inline-flex items-center gap-2 text-sm font-semibold text-primary transition hover:text-violet-800">
+        <a href="../../../index.php" class="inline-flex items-center gap-2 text-sm font-semibold text-primary transition hover:text-violet-800">
           <span aria-hidden="true">←</span>
           Retournez à l'accueil
         </a>
