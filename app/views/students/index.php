@@ -4,6 +4,7 @@
  * @var array $students Liste des objets Student
  * @var string $title Titre de la page
  */
+ session_start();
 $title = $title ?? 'Gestion des élèves';
 ?>
 <!DOCTYPE html>
@@ -58,52 +59,7 @@ $title = $title ?? 'Gestion des élèves';
   <div id="sidebar-overlay" class="fixed inset-0 z-40 bg-slate-900/50 lg:hidden"></div>
 
   <!-- Sidebar -->
-  <aside id="sidebar" class="fixed left-0 top-0 z-50 flex h-full w-[260px] -translate-x-full flex-col bg-gradient-to-b from-primary to-primaryDark text-white shadow-2xl transition-transform duration-300 lg:translate-x-0">
-    <div class="flex h-16 items-center gap-3 border-b border-white/20 px-4">
-      <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 shadow-lg">
-        <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6.75C4 5.78 4.78 5 5.75 5h4.5c.46 0 .9.18 1.22.51l.56.56c.33.33.77.51 1.24.51h5.98c.97 0 1.75.78 1.75 1.75v8.92c0 .97-.78 1.75-1.75 1.75H5.75A1.75 1.75 0 0 1 4 17.25V6.75Z"/><path d="M8 11.5h8M8 14.5h5"/></svg>
-      </span>
-      <span class="font-heading text-xl font-bold tracking-tight">EduManager</span>
-    </div>
-    <nav class="flex-1 overflow-y-auto px-3 py-6 text-sm">
-      <a href="/dashboard" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 mb-1">
-        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3.75 6A2.25 2.25 0 0 1 6 3.75h3A2.25 2.25 0 0 1 11.25 6v3A2.25 2.25 0 0 1 9 11.25H6A2.25 2.25 0 0 1 3.75 9V6ZM3.75 15A2.25 2.25 0 0 1 6 12.75h3A2.25 2.25 0 0 1 11.25 15v3A2.25 2.25 0 0 1 9 20.25H6A2.25 2.25 0 0 1 3.75 18v-3ZM13.5 6A2.25 2.25 0 0 1 15.75 3.75h3A2.25 2.25 0 0 1 21 6v3A2.25 2.25 0 0 1 18.75 11.25h-3A2.25 2.25 0 0 1 13.5 9V6ZM13.5 15A2.25 2.25 0 0 1 15.75 12.75h3A2.25 2.25 0 0 1 21 15v3A2.25 2.25 0 0 1 18.75 20.25h-3A2.25 2.25 0 0 1 13.5 18v-3Z"/></svg>
-        Dashboard
-      </a>
-      <div class="mt-2">
-        <button type="button" class="sidebar-toggle flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-left text-white/95 hover:bg-white/10" data-submenu="sub-ecole">
-          <span class="flex items-center gap-3"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5V8.25L12 4l8 4.25V19.5"/><path d="M9 19.5V12h6v7.5"/></svg>Mon école</span>
-          <svg class="chevron h-4 w-4 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-        <div id="sub-ecole" class="submenu open pl-2">
-          <a href="#" class="sidebar-link block rounded-lg py-2 pl-10 pr-3">Configuration</a>
-          <a href="#" class="sidebar-link block rounded-lg py-2 pl-10 pr-3">Identité & contact</a>
-        </div>
-      </div>
-      <div class="mt-1">
-        <button type="button" class="sidebar-toggle flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-left text-white/95 hover:bg-white/10" data-submenu="sub-org">
-          <span class="flex items-center gap-3"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3.75 21h16.5M4.5 3h15A1.5 1.5 0 0 1 21 4.5v13.5A1.5 1.5 0 0 1 19.5 19.5h-15A1.5 1.5 0 0 1 4.5 18v-13.5A1.5 1.5 0 0 1 4.5 3zm4.5 4.5h3M9 12h3m-3 4.5h3M15 7.5h3M15 12h3m-3 4.5h3"/></svg>Organisation</span>
-          <svg class="chevron h-4 w-4 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-        <div id="sub-org" class="submenu open pl-2">
-          <a href="#" class="sidebar-link block rounded-lg py-2 pl-10 pr-3">Classes / Groupes</a>
-          <a href="#" class="sidebar-link block rounded-lg py-2 pl-10 pr-3">Matières</a>
-        </div>
-      </div>
-      <a href="/students" class="sidebar-link active flex items-center gap-3 rounded-xl px-3 py-2.5 mt-1">
-        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 17a4 4 0 1 1 8 0"/><path d="M15 11a3 3 0 1 0-6 0 3 3 0 0 0 6 0Z"/></svg>
-        <span>Élèves</span>
-      </a>
-      <a href="#" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5">Notes & Moyennes</a>
-      <a href="#" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5">Scolarité & Paiements</a>
-      <a href="#" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5">Agents</a>
-      <a href="#" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5">Bulletins & Documents</a>
-      <a href="#" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5">Statistiques</a>
-      <div class="mt-8 border-t border-white/15 pt-4">
-        <a href="/logout" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-red-200 hover:bg-red-500/20">Déconnexion</a>
-      </div>
-    </nav>
-  </aside>
+        <?php include __DIR__ . '/../components/sidebar.php'; ?>
 
   <!-- Main content -->
   <div class="min-h-screen lg:pl-[260px]">
@@ -133,7 +89,7 @@ $title = $title ?? 'Gestion des élèves';
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-8">
           <div class="kpi-card rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm" style="border-left-color: #7300e9;">
             <p class="text-xs font-semibold uppercase text-slate-500">Total élèves</p>
-            <p class="text-3xl font-bold text-slate-900"><?= count($students) ?></p>
+            <p class="text-3xl font-bold text-slate-900"><?= count($students) ?></p> 
           </div>
           <div class="kpi-card rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm" style="border-left-color: #22c55e;">
             <p class="text-xs font-semibold uppercase text-slate-500">Élèves actifs</p>

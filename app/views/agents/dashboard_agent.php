@@ -1,5 +1,10 @@
 <?php
 session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -106,57 +111,8 @@ session_start();
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-50 to-slate-100 text-slate-800 antialiased">
-  <div id="sidebar-overlay" class="fixed inset-0 z-40 bg-slate-900/50 lg:hidden" aria-hidden="true"></div>
+  <div id="c" class="fixed inset-0 z-40 bg-slate-900/50 lg:hidden" aria-hidden="true"></div>
 
-  <!-- <aside id="sidebar" class="fixed left-0 top-0 z-50 flex h-full w-[280px] -translate-x-full flex-col border-r border-white/10 bg-gradient-to-b from-primary to-primary-dark text-white shadow-2xl transition-transform duration-300 lg:translate-x-0">
-    <div class="flex h-16 items-center gap-3 border-b border-white/15 px-5">
-      <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
-        <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6.75C4 5.78 4.78 5 5.75 5h4.5c.46 0 .9.18 1.22.51l.56.56c.33.33.77.51 1.24.51h5.98c.97 0 1.75.78 1.75 1.75v8.92c0 .97-.78 1.75-1.75 1.75H5.75A1.75 1.75 0 0 1 4 17.25V6.75Z" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8 11.5h8M8 14.5h5" />
-        </svg>
-      </span>
-      <div>
-        <span class="font-heading block text-sm font-bold tracking-tight">EduManager</span>
-        <span class="text-[10px] font-medium uppercase tracking-wider text-white/70">Espace agent · Productivité</span>
-      </div>
-    </div>
-
-    <nav class="flex-1 space-y-0.5 overflow-y-auto px-3 py-6 text-sm" aria-label="Navigation agent">
-      <a href="dashboard_agent.html" class="sidebar-link sidebar-link--active flex items-center gap-3 rounded-xl px-3 py-2.5" data-nav="dashboard">
-        <svg class="h-5 w-5 shrink-0 opacity-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h3A2.25 2.25 0 0 1 11.25 6v3A2.25 2.25 0 0 1 9 11.25H6A2.25 2.25 0 0 1 3.75 9V6ZM13.5 6A2.25 2.25 0 0 1 15.75 3.75h3A2.25 2.25 0 0 1 21 6v3A2.25 2.25 0 0 1 18.75 11.25h-3A2.25 2.25 0 0 1 13.5 9V6ZM3.75 15A2.25 2.25 0 0 1 6 12.75h3A2.25 2.25 0 0 1 11.25 15v3A2.25 2.25 0 0 1 9 20.25H6A2.25 2.25 0 0 1 3.75 18v-3ZM13.5 15A2.25 2.25 0 0 1 15.75 12.75h3A2.25 2.25 0 0 1 21 15v3A2.25 2.25 0 0 1 18.75 20.25h-3A2.25 2.25 0 0 1 13.5 18v-3Z" /></svg>
-        Tableau de bord
-      </a>
-
-    
-      <a href="#" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5" data-nav="students">
-        <svg class="h-5 w-5 shrink-0 opacity-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H8m0 0a4 4 0 0 1 8 0m-9 0a4 4 0 1 1 8 0M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" /></svg>
-        Élèves
-      </a>
-
-      <a href="#" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5" data-nav="grades">
-        <svg class="h-5 w-5 shrink-0 opacity-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M6 4h12l2 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8l2-4Z" /></svg>
-        Notes
-      </a>
-
-      <a href="#" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5" data-nav="payments">
-        <svg class="h-5 w-5 shrink-0 opacity-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.5 8.5h17M6 5h12a2.5 2.5 0 0 1 2.5 2.5v9A2.5 2.5 0 0 1 18 19H6a2.5 2.5 0 0 1-2.5-2.5v-9A2.5 2.5 0 0 1 6 5Z" /><path stroke-linecap="round" d="M7.5 14h4M7.5 11h9" /></svg>
-        Paiements
-      </a>
-
-      <a href="#" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5" data-nav="bulletins">
-        <svg class="h-5 w-5 shrink-0 opacity-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3.75h10.5l3 4.5v9.75a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25l3-4.5Z" /><path stroke-linecap="round" d="M9 12h6M9 15.75h3" /></svg>
-        Bulletins
-      </a>
-
-      <div class="mt-8 border-t border-white/15 pt-4">
-        <a href="login.html" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-red-200 transition-all hover:bg-red-500/20 hover:text-white">
-          <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" /></svg>
-          Déconnexion
-        </a>
-      </div>
-    </nav>
-  </aside> -->
    <?php include __DIR__ . '/../components/sidebar.php'; ?>
 
 
@@ -167,20 +123,40 @@ session_start();
           <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
         <div>
-          <p class="font-heading text-sm font-semibold text-primary sm:text-base">Collège Saint-Michel</p>
-          <p class="text-xs text-slate-500">Cotonou · Centre d'action agent</p>
+          <p class="font-heading text-sm font-semibold text-primary sm:text-base"><?= htmlspecialchars($_SESSION['school_name'] ?? 'École inconnue') ?> </p>
+          <p class="text-xs text-slate-500"><?= htmlspecialchars($_SESSION['school_address'] ?? 'Addresse école inconnue') ?></p>
         </div>
       </div>
       <div class="flex items-center gap-3">
         <div class="hidden md:flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-full px-3 py-1.5">
           <div class="h-2 w-2 rounded-full bg-urgent animate-pulse"></div>
-          <span class="text-xs font-medium text-amber-800">3 tâches urgentes</span>
+          <?php
+        $currentYear = date("Y");
+        $nextYear = $currentYear + 1;
+        $schoolYear = $currentYear . "–" . $nextYear;
+        ?>
+
+          <span class="text-xs font-medium text-amber-800"> Année scolaire <?= $schoolYear ?></span>
         </div>
         <button type="button" class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-1.5 pr-3 shadow-sm transition-all hover:border-primary/30 hover:shadow-md">
-          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent-dark text-sm font-bold text-primary">JM</span>
+           <?php
+                $userName = $_SESSION['user_name'] ?? 'User';
+
+                // on récupère les initiales
+                $words = explode(' ', trim($userName));
+                $initials = '';
+
+                foreach ($words as $w) {
+                    $initials .= strtoupper($w[0] ?? '');
+                }
+
+                // limite à 2 caractères max
+                $initials = substr($initials, 0, 2);
+            ?>
+          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent-dark text-sm font-bold text-primary"><?= $initials ?></span>
           <span class="hidden text-left text-sm sm:block">
-            <span class="block font-medium text-slate-900">José Mensah</span>
-            <span class="text-xs text-slate-500">Agent · Secrétariat</span>
+            <span class="block font-medium text-slate-900"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
+            <span class="text-xs text-slate-500"><?= htmlspecialchars($_SESSION['user_role']) ?></span>
           </span>
         </button>
       </div>
@@ -191,14 +167,25 @@ session_start();
       <section class="rounded-2xl bg-gradient-to-r from-primary/5 via-primary/10 to-accent/20 border border-primary/20 p-6 shadow-sm sm:p-8">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 class="font-heading text-2xl font-bold text-slate-900 sm:text-3xl">Bonjour José 👋</h1>
+            <?php
+                      $heure = date("H");
+
+                      if ($heure < 12) {
+                          $salutation = "Bonjour";
+                      } elseif ($heure < 18) {
+                          $salutation = "Bon après-midi";
+                      } else {
+                          $salutation = "Bonsoir";
+                      }
+              ?>
+            <h1 class="font-heading text-2xl font-bold text-slate-900 sm:text-3xl"><?= $salutation ?> <?= htmlspecialchars($_SESSION['user_name']) ?> 👋 <p class="font-heading text-sm font-semibold text-primary sm:text-base"><?= htmlspecialchars($_SESSION['school_name'] ?? 'École inconnue') ?> </p></h1>
             <p class="mt-2 max-w-2xl text-sm text-slate-600">
               Voici votre espace de travail personnalisé. Concentrez-vous sur les tâches prioritaires et vos actions quotidiennes.
             </p>
           </div>
           <div class="flex gap-2">
-            <span class="px-3 py-1.5 bg-white rounded-full text-xs font-medium text-slate-600 shadow-sm">📅 Lundi 7 avril</span>
-            <span class="px-3 py-1.5 bg-white rounded-full text-xs font-medium text-slate-600 shadow-sm">⏰ 09:42</span>
+            <span class="px-3 py-1.5 bg-white rounded-full text-xs font-medium text-slate-600 shadow-sm" id="date">📅</span>
+            <span class="px-3 py-1.5 bg-white rounded-full text-xs font-medium text-slate-600 shadow-sm" id="clock" >⏰</span>
           </div>
         </div>
       </section>
@@ -522,6 +509,8 @@ session_start();
           if (action) handleAction(action);
         });
       });
+
+      
 
       // Éléments prioritaires (tâches)
       document.querySelectorAll('.priority-item').forEach(item => {

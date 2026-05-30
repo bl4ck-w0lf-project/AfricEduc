@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit;
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -25,6 +32,7 @@ session_start();
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
   <style>
+    
     body { font-family: "Outfit", sans-serif; }
     h1, h2, h3, .font-heading { font-family: "Quicksand", sans-serif; }
     .sidebar-link { transition: all 0.2s ease; }
@@ -44,6 +52,16 @@ session_start();
     .modal-overlay.is-open .modal-content { transform: scale(1); }
     .toast { position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 12px 20px; border-radius: 12px; font-size: 0.875rem; z-index: 10000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
     .toast.show { opacity: 1; }
+      #clock {
+      font-family: "Quicksand", sans-serif;
+      letter-spacing: 2px;
+  }
+
+  .time-glow {
+      box-shadow:
+          0 0 20px rgba(115, 0, 233, 0.15),
+          0 0 40px rgba(115, 0, 233, 0.08);
+  }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 text-slate-800 antialiased">
@@ -57,13 +75,35 @@ session_start();
     <header class="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-slate-200 bg-white/95 px-4 backdrop-blur-md shadow-sm sm:px-6">
       <div class="flex items-center gap-3">
         <button id="btn-menu" class="inline-flex rounded-xl border border-slate-200 p-2 text-slate-700 hover:bg-slate-50 lg:hidden"><svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-        <div><p class="font-heading text-sm font-semibold text-primary sm:text-base" id="school-name-header">Collège Saint-Michel</p><p class="text-xs text-slate-500" id="school-location">Cotonou, Bénin</p></div>
+        <div><p class="font-heading text-sm font-semibold text-primary sm:text-base"><?= htmlspecialchars($_SESSION['school_name'] ?? 'École inconnue') ?> </p><p class="text-xs text-slate-500"><?= htmlspecialchars($_SESSION['school_address'] ?? 'Adresse non renseignée') ?></p></div>
       </div>
       <div class="flex items-center gap-3">
-        <span class="hidden rounded-full border border-accent/50 bg-accent/20 px-3 py-1 text-xs font-medium text-slate-800 sm:inline-flex" id="school-year">Année 2025–2026</span>
+                <?php
+        $currentYear = date("Y");
+        $nextYear = $currentYear + 1;
+        $schoolYear = $currentYear . "–" . $nextYear;
+        ?>
+
+        <span class="hidden rounded-full border border-accent/50 bg-accent/20 px-3 py-1 text-xs font-medium text-slate-800 sm:inline-flex" id="school-year">
+          Année scolaire <?= $schoolYear ?>
+        </span>
         <button class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-1.5 pr-3 shadow-sm">
-          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md"></span>
-          <span class="hidden text-left text-sm sm:block"><span class="block font-medium text-slate-900"></span><span class="text-xs text-slate-500">Administratrice</span></span>
+            <?php
+                $userName = $_SESSION['user_name'] ?? 'User';
+
+                // on récupère les initiales
+                $words = explode(' ', trim($userName));
+                $initials = '';
+
+                foreach ($words as $w) {
+                    $initials .= strtoupper($w[0] ?? '');
+                }
+
+                // limite à 2 caractères max
+                $initials = substr($initials, 0, 2);
+            ?>
+          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md"> <?= $initials ?></span>
+          <span class="hidden text-left text-sm sm:block"><span class="block font-medium text-slate-900"><?= htmlspecialchars($_SESSION['user_name']) ?></span><span class="text-xs text-slate-500"><?= htmlspecialchars($_SESSION['user_role']) ?></span></span>
         </button>
       </div>
     </header>
@@ -73,13 +113,43 @@ session_start();
       <div id="dynamic-content">
         <section class="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-primary/5 p-6 shadow-lg sm:p-8 animate-fade-in">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div><h1 class="font-heading text-2xl font-bold text-slate-900 sm:text-3xl">Bonjour  👋 — <span class="text-primary">Collège Saint-Michel</span></h1>
-              <p class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-600"><span class="inline-flex items-center gap-1.5"><svg class="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6.75 3v2.25M17.25 3v2.25M3 9.75h18M5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V6.75A2.25 2.25 0 0 0 18.75 4.5H5.25A2.25 2.25 0 0 0 3 6.75v12A2.25 2.25 0 0 0 5.25 21Z"/></svg><span id="today-date-text"></span></span>
-                <span id="badge-config-ok" class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-200/80"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>École configurée</span>
-              </p>
+               <?php
+                      $heure = date("H");
+
+                      if ($heure < 12) {
+                          $salutation = "Bonjour";
+                      } elseif ($heure < 18) {
+                          $salutation = "Bon après-midi";
+                      } else {
+                          $salutation = "Bonsoir";
+                      }
+              ?>
+            <div><h1 class="font-heading text-xl font-bold text-slate-900 sm:text-2xl"><?= $salutation ?>  <?= htmlspecialchars($_SESSION['user_name']) ?>
+        (<?= htmlspecialchars($_SESSION['user_role']) ?>)  👋   —  <span class="text-primary"><?= htmlspecialchars($_SESSION['school_name'] ?? 'Aucune école') ?></span></h1>
+              <div class="mt-4 inline-flex flex-col gap-1 rounded-2xl bg-white/70 px-4 py-3 shadow-sm backdrop-blur border border-slate-200">
+    
+                    <div class="flex items-center gap-2 text-primary font-semibold text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M12 8v4l3 3"></path>
+                            <circle cx="12" cy="12" r="9"></circle>
+                        </svg>
+                        Heure actuelle
+                    </div>
+
+                    <p id="clock" class="text-2xl font-bold text-slate-900 tracking-tight"></p>
+
+                    <div class="flex items-center gap-2 text-slate-500 text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span id="date"></span>
+                    </div>
+
+              </div>
             </div>
             <div class="flex gap-2"><span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>Dernière synchro: aujourd'hui</span></div>
           </div>
+          
         </section>
 
         <section class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
@@ -146,9 +216,38 @@ session_start();
       }
 
       // Date et heure
+      function updateClock() {
       const now = new Date();
-      document.getElementById("today-date-text").innerText = now.toLocaleDateString("fr-BJ", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-      document.getElementById("last-update").innerText = new Date().toLocaleTimeString("fr-FR");
+
+        const time = now.toLocaleTimeString('fr-FR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+
+        document.getElementById("clock").innerText = time;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function updateDateTime() {
+    const now = new Date();
+
+    document.getElementById("clock").innerText =
+        now.toLocaleTimeString("fr-FR");
+
+    document.getElementById("date").innerText =
+        now.toLocaleDateString("fr-FR", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        });
+}
+
+updateDateTime();
+setInterval(updateDateTime, 1000);
 
       // Sidebar toggles
       document.querySelectorAll(".sidebar-toggle").forEach(btn => {

@@ -60,45 +60,45 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
 
 <h4 class="mt-5 mb-2 px-3 text-xs text-white/60 uppercase">Mon école</h4>
 
-<a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../school_setup/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-gear"></i> Configuration
 </a>
 
-<a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../school_identity/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-id-card"></i> Identité & contact
 </a>
 
 <h4 class="mt-5 mb-2 px-3 text-xs text-white/60 uppercase">Organisation</h4>
 
-<a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../classes/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-school"></i> Classes / Groupes
 </a>
 
-<a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../matieres/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-book"></i> Matières
 </a>
 
-<a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../students/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-user-graduate"></i> Élèves
 </a>
 
-<a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../notes/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-pen"></i> Notes & Moyennes
 </a>
 
-<a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../paiements/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-credit-card"></i> Paiements
 </a>
 
-<a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../agents/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-users"></i> Agents
 </a>
 
-<a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../bulletins/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-file-pdf"></i> Bulletins
 </a>
 
-<a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../stats_admin/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-chart-line"></i> Statistiques
 </a>
 
@@ -113,19 +113,23 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
     <i class="fa-solid fa-gauge"></i> Tableau de bord
 </a>
 
-<a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../students/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-user-graduate"></i> Élèves
 </a>
 
-<a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../notes/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-pen"></i> Notes
 </a>
 
-<a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../paiements/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-credit-card"></i> Paiements
 </a>
 
-<a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../bulletins/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+    <i class="fa-solid fa-file-pdf"></i> Bulletins
+</a>
+
+<a href="../stats_agents/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-file-pdf"></i> Bulletins
 </a>
 
@@ -134,7 +138,7 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
 <!-- LOGOUT -->
 <div class="mt-8 border-t border-white/20 pt-4">
 
-<a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 text-red-300 hover:bg-red-500/20 rounded-xl">
+<a href="../auth/logout.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 text-red-300 hover:bg-red-500/20 rounded-xl">
     <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
 </a>
 

@@ -1,3 +1,4 @@
+<?php
 class StudentModel {
 
     private PDO $db;
@@ -74,3 +75,4 @@ class StudentModel {
         return $stmt->execute(['id' => $id]);
     }
 }
+?>

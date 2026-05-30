@@ -27,18 +27,33 @@ final class UserModel
 }
 
  public function findByEmail(string $email): ?array
-    {
-        $stmt = $this->pdo->prepare("
-            SELECT id, name AS full_name, email, password AS password_hash, role, status
-            FROM users 
-            WHERE email = ?
-            LIMIT 1
-        ");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+{
+    $stmt = $this->pdo->prepare("
+        SELECT 
+            u.id,
+            u.school_id,
+            u.name AS full_name,
+            u.email,
+            u.password AS password_hash,
+            u.role,
+            u.status,
 
-        return $user ?: null;
-    }
+            s.name AS school_name,
+            s.address AS school_address,
+            s.phone AS school_phone,
+            s.email AS school_email,
+            s.logo AS school_logo,
+            s.slug AS school_slug
+
+        FROM users u
+        LEFT JOIN schools s ON s.id = u.school_id
+        WHERE u.email = ?
+        LIMIT 1
+    ");
+
+    $stmt->execute([$email]);
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+}
 
 public function findByEmailForReset(string $email): array|null
 {

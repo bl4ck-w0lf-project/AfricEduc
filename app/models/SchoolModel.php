@@ -35,5 +35,7 @@ final class SchoolModel
 
         return (int) $this->pdo->lastInsertId();
     }
+
+      
 }
 ?>

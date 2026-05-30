@@ -2,7 +2,7 @@
 final class SchoolService
 {
     public function __construct(
-        private SchoolModel $schoolModel,
+      
         private UserModel $userModel,
         private PDO $pdo
     ) {}

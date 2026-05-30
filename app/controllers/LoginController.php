@@ -1,11 +1,13 @@
 <?php
 require_once '../config/database.php';
 require_once '../models/UserModel.php';
+require_once '../models/SchoolModel.php';
 require_once '../services/UserService.php';
 
 session_start();
 
 $userModel = new UserModel($pdo);
+
 $authService = new AuthService($userModel);
 
 $errors = [];
