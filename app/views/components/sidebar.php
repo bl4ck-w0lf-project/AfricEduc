@@ -6,7 +6,7 @@ $role = $_SESSION['user_role'];
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EduManager Sidebar</title>
+<title>AfricEduc Sidebar</title>
 
 <!-- TAILWIND -->
 <script src="https://cdn.tailwindcss.com"></script>
@@ -33,6 +33,15 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
     color: #99fbe3;
     border-left: 3px solid #99fbe3;
 }
+#sidebar-overlay {
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    #sidebar-overlay.is-open {
+      pointer-events: auto;
+      opacity: 1;
+    }
 </style>
 
 </head>
@@ -46,7 +55,7 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
     <div class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/20">
         <i class="fa-solid fa-graduation-cap"></i>
     </div>
-    <h1 class="text-xl font-bold">EduManager</h1>
+    <h1 class="text-xl font-bold">AfricEduc</h1>
 </div>
 
 <nav class="flex-1 overflow-y-auto px-3 py-6 text-sm">

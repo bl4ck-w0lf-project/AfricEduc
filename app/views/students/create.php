@@ -5,13 +5,17 @@
  */
  session_start();
 $title = $title ?? 'Ajouter un élève';
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?= htmlspecialchars($title) ?> | EduManager</title>
+  <title><?= htmlspecialchars($title) ?> | AfricEduc</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -52,13 +56,32 @@ $title = $title ?? 'Ajouter un élève';
     <header class="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-slate-200 bg-white/95 px-4 backdrop-blur-md shadow-sm sm:px-6">
       <div class="flex items-center gap-3">
         <button id="btn-menu" class="inline-flex rounded-xl border border-slate-200 p-2 text-slate-700 hover:bg-slate-50 lg:hidden"><svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-        <div><p class="font-heading text-sm font-semibold text-primary sm:text-base">Collège Saint-Michel</p><p class="text-xs text-slate-500">Cotonou, Bénin</p></div>
+        <div><p class="font-heading text-sm font-semibold text-primary sm:text-base"><?= htmlspecialchars($_SESSION['school_name'] ?? 'Addresse école inconnue') ?></p><p class="text-xs text-slate-500"><?= htmlspecialchars($_SESSION['school_address'] ?? 'Addresse école inconnue') ?></p></div>
       </div>
       <div class="flex items-center gap-3">
-        <span class="hidden rounded-full border border-accent/50 bg-accent/20 px-3 py-1 text-xs font-medium text-slate-800 sm:inline-flex">Année 2025–2026</span>
+         <?php
+        $currentYear = date("Y");
+        $nextYear = $currentYear + 1;
+        $schoolYear = $currentYear . "–" . $nextYear;
+        ?>
+        <span class="hidden rounded-full border border-accent/50 bg-accent/20 px-3 py-1 text-xs font-medium text-slate-800 sm:inline-flex"> Année scolaire <?= $schoolYear ?></span>
         <button class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-1.5 pr-3 shadow-sm">
-          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md">AK</span>
-          <span class="hidden text-left text-sm sm:block"><span class="block font-medium text-slate-900">Aminata Kossi</span><span class="text-xs text-slate-500">Administratrice</span></span>
+          <?php
+                $userName = $_SESSION['user_name'] ?? 'User';
+
+                // on récupère les initiales
+                $words = explode(' ', trim($userName));
+                $initials = '';
+
+                foreach ($words as $w) {
+                    $initials .= strtoupper($w[0] ?? '');
+                }
+
+                // limite à 2 caractères max
+                $initials = substr($initials, 0, 2);
+            ?>
+          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md"><?=$initials ?></span>
+          <span class="hidden text-left text-sm sm:block"><span class="block font-medium text-slate-900"><?= htmlspecialchars($_SESSION['user_name']) ?></span><span class="text-xs text-slate-500"><?= htmlspecialchars($_SESSION['user_role']) ?></span></span>
         </button>
       </div>
     </header>
@@ -78,12 +101,12 @@ $title = $title ?? 'Ajouter un élève';
             </div>
             <div class="p-6 space-y-4">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><label class="block text-sm font-medium text-slate-700 mb-1">Matricule <span class="text-red-500">*</span></label><input type="text" name="matricule" required class="form-input w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"></div>
-                <div><label class="block text-sm font-medium text-slate-700 mb-1">Genre <span class="text-red-500">*</span></label><select name="gender" required class="w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"><option value="">Sélectionner</option><option value="M">Masculin</option><option value="F">Féminin</option></select></div>
+                <div><label class="block text-sm font-medium text-slate-700 mb-1">Matricule <span class="text-red-500">*</span></label><input type="text" name="matricule"  class="form-input w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"></div>
+                <div><label class="block text-sm font-medium text-slate-700 mb-1">Genre <span class="text-red-500">*</span></label><select name="gender"  class="w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"><option value="">Sélectionner</option><option value="M">Masculin</option><option value="F">Féminin</option></select></div>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><label class="block text-sm font-medium text-slate-700 mb-1">Prénom <span class="text-red-500">*</span></label><input type="text" name="firstname" required class="w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"></div>
-                <div><label class="block text-sm font-medium text-slate-700 mb-1">Nom <span class="text-red-500">*</span></label><input type="text" name="lastname" required class="w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"></div>
+                <div><label class="block text-sm font-medium text-slate-700 mb-1">Prénom <span class="text-red-500">*</span></label><input type="text" name="firstname"  class="w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"></div>
+                <div><label class="block text-sm font-medium text-slate-700 mb-1">Nom <span class="text-red-500">*</span></label><input type="text" name="lastname"  class="w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"></div>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div><label class="block text-sm font-medium text-slate-700 mb-1">Date de naissance</label><input type="date" name="birthdate" class="w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"></div>
@@ -121,11 +144,11 @@ $title = $title ?? 'Ajouter un élève';
             </div>
             <div class="p-6 space-y-4">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><label class="block text-sm font-medium text-slate-700 mb-1">ID École <span class="text-red-500">*</span></label><input type="number" name="school_id" required class="w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"></div>
+                <div><label class="block text-sm font-medium text-slate-700 mb-1">ID École <span class="text-red-500">*</span></label><input type="number" name="school_id"  class="w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"></div>
                 <div><label class="block text-sm font-medium text-slate-700 mb-1">ID Classe</label><input type="number" name="class_id" class="w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"></div>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><label class="block text-sm font-medium text-slate-700 mb-1">Statut <span class="text-red-500">*</span></label><select name="status" required class="w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"><option value="actif">Actif</option><option value="inactif">Inactif</option><option value="exclu">Exclu</option><option value="diplome">Diplômé</option></select></div>
+                <div><label class="block text-sm font-medium text-slate-700 mb-1">Statut <span class="text-red-500">*</span></label><select name="status"  class="w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"><option value="actif">Actif</option><option value="inactif">Inactif</option><option value="exclu">Exclu</option><option value="diplome">Diplômé</option></select></div>
                 <div><label class="block text-sm font-medium text-slate-700 mb-1">Date d'inscription</label><input type="date" name="enrolled_at" class="w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"></div>
               </div>
               <div><label class="block text-sm font-medium text-slate-700 mb-1">Notes</label><textarea name="notes" rows="3" class="w-full rounded-xl border border-slate-200 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Informations complémentaires..."></textarea></div>
@@ -140,7 +163,7 @@ $title = $title ?? 'Ajouter un élève';
           </div>
         </form>
       </div>
-      <footer class="mt-12 pb-8 text-center text-xs text-slate-400">EduManager — Collège Saint-Michel · Formulaire d'ajout</footer>
+      <footer class="mt-12 pb-8 text-center text-xs text-slate-400">AfricEduc — Collège Saint-Michel · Formulaire d'ajout</footer>
     </main>
   </div>
 

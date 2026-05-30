@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EduManager | Agent — Centre d'action</title>
+  <title>AfricEduc | Agent — Centre d'action</title>
   <meta name="description" content="Votre espace agent — tâches prioritaires, actions rapides et indicateurs de productivité.">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -111,7 +111,7 @@ if (!isset($_SESSION['user_id'])) {
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-50 to-slate-100 text-slate-800 antialiased">
-  <div id="c" class="fixed inset-0 z-40 bg-slate-900/50 lg:hidden" aria-hidden="true"></div>
+  <div id="sidebar-overlay" class="fixed inset-0 z-40 bg-slate-900/50 lg:hidden" aria-hidden="true"></div>
 
    <?php include __DIR__ . '/../components/sidebar.php'; ?>
 
@@ -178,7 +178,8 @@ if (!isset($_SESSION['user_id'])) {
                           $salutation = "Bonsoir";
                       }
               ?>
-            <h1 class="font-heading text-2xl font-bold text-slate-900 sm:text-3xl"><?= $salutation ?> <?= htmlspecialchars($_SESSION['user_name']) ?> 👋 <p class="font-heading text-sm font-semibold text-primary sm:text-base"><?= htmlspecialchars($_SESSION['school_name'] ?? 'École inconnue') ?> </p></h1>
+            <h1 class="font-heading text-xl font-bold text-slate-900 sm:text-2xl"><?= $salutation ?>  <?= htmlspecialchars($_SESSION['user_name']) ?>
+        (<?= htmlspecialchars($_SESSION['user_role']) ?>)  👋   —  <span class="text-primary"><?= htmlspecialchars($_SESSION['school_name'] ?? 'Aucune école') ?></span></h1>
             <p class="mt-2 max-w-2xl text-sm text-slate-600">
               Voici votre espace de travail personnalisé. Concentrez-vous sur les tâches prioritaires et vos actions quotidiennes.
             </p>
@@ -477,7 +478,7 @@ if (!isset($_SESSION['user_id'])) {
       </div>
 
       <footer class="mt-12 pb-8 text-center text-xs text-slate-400">
-        EduManager — Collège Saint-Michel · Productivité & Efficacité
+        AfricEduc — <?= htmlspecialchars($_SESSION['school_name'] ?? 'Addresse école inconnue') ?> — <?= htmlspecialchars($_SESSION['school_address'] ?? 'Addresse école inconnue') ?> · Productivité & Efficacité
       </footer>
     </main>
   </div>
@@ -581,6 +582,38 @@ if (!isset($_SESSION['user_id'])) {
         });
       }
     })();
+    function updateDateTime() {
+  const now = new Date();
+
+  // Date
+  const dateOptions = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  };
+
+  const dateStr = now.toLocaleDateString('fr-FR', dateOptions);
+
+  // Heure
+  const timeStr = now.toLocaleTimeString('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+
+  const dateEl = document.getElementById("date");
+  const clockEl = document.getElementById("clock");
+
+  if (dateEl) dateEl.innerHTML = "📅 " + dateStr;
+  if (clockEl) clockEl.innerHTML = "⏰ " + timeStr;
+}
+
+// mise à jour immédiate
+updateDateTime();
+
+// mise à jour chaque seconde
+setInterval(updateDateTime, 1000);
   </script>
 </body>
 </html>

@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_id'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard | EduManager</title>
+  <title>Dashboard | AfricEduc</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -190,7 +190,7 @@ if (!isset($_SESSION['user_id'])) {
         </section>
       </div>
       <footer class="mt-12 pb-8 text-center text-xs text-slate-400">
-        EduManager — <span id="footer-school">Collège Saint-Michel</span> · Données en temps réel · Dernière mise à jour : <span id="last-update"></span>
+        AfricEduc — <span id="footer-school"><?= htmlspecialchars($_SESSION['school_name'] ?? 'Addresse école inconnue') ?> — <?= htmlspecialchars($_SESSION['school_address'] ?? 'Addresse école inconnue') ?> </span> · Données en temps réel · Dernière mise à jour : <span id="last-update"></span>
       </footer>
     </main>
   </div>
