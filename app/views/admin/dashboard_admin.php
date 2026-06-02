@@ -65,7 +65,7 @@ if (!isset($_SESSION['user_id'])) {
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 text-slate-800 antialiased">
-  <div id="sidebar-overlay" class="fixed inset-0 z-40 bg-slate-900/50 lg:hidden"></div>
+  
 
   <!-- Sidebar -->
  <?php include __DIR__ . '/../components/sidebar.php'; ?>
@@ -248,24 +248,6 @@ if (!isset($_SESSION['user_id'])) {
 
 updateDateTime();
 setInterval(updateDateTime, 1000);
-
-      // Sidebar toggles
-      document.querySelectorAll(".sidebar-toggle").forEach(btn => {
-        const id = btn.getAttribute("data-submenu");
-        const panel = document.getElementById(id);
-        const chev = btn.querySelector(".chevron");
-        if (panel) btn.addEventListener("click", () => { const open = panel.classList.toggle("open"); if (chev) chev.style.transform = open ? "rotate(180deg)" : ""; });
-      });
-
-      // Menu mobile
-      const sidebar = document.getElementById("sidebar");
-      const overlay = document.getElementById("sidebar-overlay");
-      const btnMenu = document.getElementById("btn-menu");
-      function openMenu() { sidebar.classList.remove("-translate-x-full"); overlay.classList.add("is-open"); document.body.style.overflow = "hidden"; }
-      function closeMenu() { sidebar.classList.add("-translate-x-full"); overlay.classList.remove("is-open"); document.body.style.overflow = ""; }
-      btnMenu?.addEventListener("click", openMenu);
-      overlay?.addEventListener("click", closeMenu);
-      window.addEventListener("resize", () => { if (window.innerWidth >= 1024) closeMenu(); });
 
       // Gestion modale
       const modal = document.getElementById("modal-generic");

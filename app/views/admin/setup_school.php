@@ -277,7 +277,7 @@ if (!isset($_SESSION['user_id'])) {
               
               <div class="mt-8 grid gap-4 sm:grid-cols-2">
                 <label class="group relative cursor-pointer">
-                  <input type="radio" name="period_system" value="semester" class="peer sr-only" checked>
+                  <input type="radio" name="period_system" value="semestre" class="peer sr-only" checked>
                   <div class="rounded-2xl border-2 border-slate-200 bg-slate-50/50 p-5 transition peer-checked:border-primary peer-checked:bg-primary/[0.06] peer-checked:shadow-md hover:border-primary/40">
                     <div class="flex items-start gap-3">
                       <span class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -295,7 +295,7 @@ if (!isset($_SESSION['user_id'])) {
                 </label>
                 
                 <label class="group relative cursor-pointer">
-                  <input type="radio" name="period_system" value="trimester" class="peer sr-only">
+                  <input type="radio" name="period_system" value="trimestre" class="peer sr-only">
                   <div class="rounded-2xl border-2 border-slate-200 bg-slate-50/50 p-5 transition peer-checked:border-primary peer-checked:bg-primary/[0.06] peer-checked:shadow-md hover:border-primary/40">
                     <div class="flex items-start gap-3">
                       <span class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/50 text-slate-800">
@@ -343,11 +343,7 @@ if (!isset($_SESSION['user_id'])) {
                   <span class="relative h-7 w-12 shrink-0 rounded-full bg-slate-200 transition peer-checked:bg-primary after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5"></span>
                 </label>
 
-                <label class="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3 transition hover:border-primary/30">
-                  <span class="font-medium text-slate-900">Devoir 3 <span class="text-slate-500">(D3)</span></span>
-                  <input type="checkbox" name="hw_d3" value="1" checked class="peer sr-only hom-toggle">
-                  <span class="relative h-7 w-12 shrink-0 rounded-full bg-slate-200 transition peer-checked:bg-primary after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5"></span>
-                </label>
+                
                 
                 <label class="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3 transition hover:border-primary/30">
                   <span class="font-medium text-slate-900">Devoir hebdomadaire <span class="text-slate-500">(DH)</span></span>
@@ -435,390 +431,177 @@ if (!isset($_SESSION['user_id'])) {
 </div>
 
 <div id="toast" class="toast"></div>
-
 <script>
-  (function() {
-    // Variables
-    let currentStep = 1;
-    const totalSteps = 4;
-    
-    // Éléments DOM
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    const btnMenu = document.getElementById('btn-menu');
-    const prevBtn = document.getElementById('btn-prev');
-    const nextBtn = document.getElementById('btn-next');
-    const submitBtn = document.getElementById('btn-submit');
-    const form = document.getElementById('setup-form');
-    
-    // === GESTION DU MENU HAMBURGER ===
-    function toggleSidebar(open) {
-      if (open) {
-        sidebar.classList.add('is-open');
-        overlay.classList.add('is-open');
-        document.body.style.overflow = 'hidden';
-      } else {
-        sidebar.classList.remove('is-open');
-        overlay.classList.remove('is-open');
-        document.body.style.overflow = '';
-      }
+(function () {
+
+  let currentStep = 1;
+  const totalSteps = 4;
+
+  const prevBtn = document.getElementById('btn-prev');
+  const nextBtn = document.getElementById('btn-next');
+  const submitBtn = document.getElementById('btn-submit');
+  const form = document.getElementById('setup-form');
+
+  const conductEnabled = document.getElementById('conduct_enabled');
+  const conductFields = document.getElementById('conduct-fields');
+
+  // =========================
+  // STEP CONTROL
+  // =========================
+  function showStep(step) {
+    currentStep = step;
+
+    document.querySelectorAll('.step-panel').forEach(p => {
+      p.classList.toggle('is-active', parseInt(p.dataset.step) === step);
+    });
+
+    // boutons
+    prevBtn.disabled = step === 1;
+
+    nextBtn.classList.toggle('hidden', step === totalSteps);
+    submitBtn.classList.toggle('hidden', step !== totalSteps);
+    submitBtn.classList.toggle('flex', step === totalSteps);
+
+    updateProgress();
+    if (step === totalSteps) buildSummary();
+  }
+
+  function updateProgress() {
+    const bar = document.getElementById('progress-bar');
+    bar.style.width = (currentStep / totalSteps) * 100 + '%';
+  }
+
+  // =========================
+  // CONDUITE (FIX IMPORTANT)
+  // =========================
+  function toggleConduct() {
+    if (!conductEnabled || !conductFields) return;
+
+    const active = conductEnabled.checked;
+
+    conductFields.classList.toggle('hidden', !active);
+
+    // important: enable/disable inputs proprement
+    conductFields.querySelectorAll('input').forEach(input => {
+      input.disabled = !active;
+    });
+
+    buildSummary();
+  }
+
+  // =========================
+  // RÉCAP (FIX COMPLET)
+  // =========================
+  function buildSummary() {
+
+    const period = document.querySelector('input[name="period_system"]:checked')?.value || 'semestre';
+
+    const hw = [];
+    if (document.querySelector('[name="hw_mi"]').checked) hw.push('MI');
+    if (document.querySelector('[name="hw_d1"]').checked) hw.push('D1');
+    if (document.querySelector('[name="hw_d2"]').checked) hw.push('D2');
+    if (document.querySelector('[name="hw_dh"]').checked) hw.push('DH');
+
+    const conductOn = conductEnabled?.checked;
+
+    const coeff = document.getElementById('conduct_coeff')?.value || 1;
+    const max = document.getElementById('conduct_max')?.value || 20;
+
+    const dl = document.getElementById('summary-dl');
+    if (!dl) return;
+
+    dl.innerHTML = `
+      <div class="flex justify-between border-b pb-2">
+        <dt>Système</dt><dd>${period}</dd>
+      </div>
+
+      <div class="flex justify-between border-b pb-2">
+        <dt>Devoirs</dt><dd>${hw.length ? hw.join(', ') : 'Aucun'}</dd>
+      </div>
+
+      <div class="flex justify-between border-b pb-2">
+        <dt>Conduite</dt>
+        <dd>${conductOn ? `Oui (coef ${coeff}, max ${max})` : 'Non'}</dd>
+      </div>
+
+      <div class="flex justify-between">
+        <dt>Devise</dt><dd>FCFA</dd>
+      </div>
+    `;
+  }
+
+  // =========================
+  // VALIDATION SIMPLE (IMPORTANT POUR BTN SUIVANT)
+  // =========================
+  function validate(step) {
+
+    if (step === 1) {
+      return document.querySelector('input[name="period_system"]:checked') !== null;
     }
-    
-    if (btnMenu) {
-      btnMenu.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleSidebar(true);
-      });
+
+    if (step === 2) {
+      return document.querySelectorAll('input[name^="hw_"]:checked').length > 0;
     }
-    
-    if (overlay) {
-      overlay.addEventListener('click', () => {
-        toggleSidebar(false);
-      });
+
+    if (step === 3) {
+      if (!conductEnabled.checked) return true;
+
+      const c = parseFloat(document.getElementById('conduct_coeff').value);
+      const m = parseFloat(document.getElementById('conduct_max').value);
+
+      return c > 0 && m > 0;
     }
-    
-    // Fermer sidebar quand on redimensionne au-delà de lg
-    window.addEventListener('resize', () => {
-      if (window.innerWidth >= 1024) {
-        toggleSidebar(false);
+
+    return true;
+  }
+
+  // =========================
+  // EVENTS (FIX DU BOUTON SUIVANT)
+  // =========================
+  nextBtn.addEventListener('click', () => {
+    if (!validate(currentStep)) {
+      alert("Complète l'étape avant de continuer");
+      return;
+    }
+
+    if (currentStep < totalSteps) {
+      showStep(currentStep + 1);
+    }
+  });
+
+  prevBtn.addEventListener('click', () => {
+    if (currentStep > 1) showStep(currentStep - 1);
+  });
+
+  // labels clickable
+  document.querySelectorAll('.step-label').forEach(l => {
+    l.addEventListener('click', () => {
+      const step = parseInt(l.dataset.step);
+      if (step < currentStep || validate(currentStep)) {
+        showStep(step);
       }
     });
-    
-    // === GESTION DES SOUS-MENUS ===
-    document.querySelectorAll('.sidebar-toggle').forEach(btn => {
-      const submenuId = btn.getAttribute('data-submenu');
-      const submenu = document.getElementById(submenuId);
-      const chevron = btn.querySelector('.chevron');
-      
-      if (submenu) {
-        btn.addEventListener('click', () => {
-          const isOpen = submenu.classList.toggle('open');
-          if (chevron) {
-            chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
-          }
-        });
-      }
-    });
-    
-    // === FONCTIONS DU WIZARD ===
-    function updateFormulaPeriod() {
-      const radio = document.querySelector('input[name="period_system"]:checked');
-      const period = radio ? radio.value : 'semester';
-      const text = period === 'semester' 
-        ? 'MA = (MGS1 × 1 + MGS2 × 2) / 3' 
-        : 'MA = (MGT1 + MGT2 + MGT3) / 3';
-      
-      const formulaEl = document.getElementById('formula-period');
-      const formulaFullEl = document.getElementById('formula-period-full');
-      if (formulaEl) formulaEl.textContent = text;
-      if (formulaFullEl) formulaFullEl.textContent = text;
-      
-      if (currentStep === totalSteps) buildSummary();
-    }
-    
-    function toggleConductFields() {
-      const conductEnabled = document.getElementById('conduct_enabled');
-      const conductFields = document.getElementById('conduct-fields');
-      if (conductEnabled && conductFields) {
-        conductFields.classList.toggle('hidden', !conductEnabled.checked);
-      }
-      if (currentStep === totalSteps) buildSummary();
-    }
-    
-    function buildSummary() {
-      const radio = document.querySelector('input[name="period_system"]:checked');
-      const period = radio ? radio.value : 'semester';
-      const periodLabel = period === 'semester' ? 'Semestre (S1, S2)' : 'Trimestre (T1, T2, T3)';
-      const formulaText = period === 'semester' 
-        ? 'MA = (MGS1 × 1 + MGS2 × 2) / 3' 
-        : 'MA = (MGT1 + MGT2 + MGT3) / 3';
-      
-      const hwMi = document.querySelector('input[name="hw_mi"]')?.checked || false;
-      const hwD1 = document.querySelector('input[name="hw_d1"]')?.checked || false;
-      const hwD2 = document.querySelector('input[name="hw_d2"]')?.checked || false;
-      const hwDh = document.querySelector('input[name="hw_dh"]')?.checked || false;
-      
-      const activeHomeworks = [];
-      if (hwMi) activeHomeworks.push('MI');
-      if (hwD1) activeHomeworks.push('D1');
-      if (hwD2) activeHomeworks.push('D2');
-      if (hwDh) activeHomeworks.push('DH');
-      const homeworksStr = activeHomeworks.length ? activeHomeworks.join(', ') : '—';
-      
-      const conductEnabled = document.getElementById('conduct_enabled')?.checked || false;
-      const conductCoeff = document.getElementById('conduct_coeff')?.value || '1';
-      const conductMax = document.getElementById('conduct_max')?.value || '20';
-      const conductStr = conductEnabled ? `Oui (coef. ${conductCoeff}, max ${conductMax})` : 'Non';
-      
-      const currency = document.querySelector('input[name="currency"]')?.value || 'FCFA';
-      
-      const summaryDl = document.getElementById('summary-dl');
-      if (summaryDl) {
-        summaryDl.innerHTML = `
-          <div class="flex flex-col gap-0.5 border-b border-slate-200/80 pb-3 last:border-0 sm:flex-row sm:justify-between">
-            <dt class="font-medium text-slate-500">Système de périodes</dt>
-            <dd class="text-slate-900">${escapeHtml(periodLabel)}</dd>
-          </div>
-          <div class="flex flex-col gap-0.5 border-b border-slate-200/80 pb-3 last:border-0 sm:flex-row sm:justify-between">
-            <dt class="font-medium text-slate-500">Formule annuelle</dt>
-            <dd class="text-slate-900">${escapeHtml(formulaText)}</dd>
-          </div>
-          <div class="flex flex-col gap-0.5 border-b border-slate-200/80 pb-3 last:border-0 sm:flex-row sm:justify-between">
-            <dt class="font-medium text-slate-500">Devoirs suivis</dt>
-            <dd class="text-slate-900">${escapeHtml(homeworksStr)}</dd>
-          </div>
-          <div class="flex flex-col gap-0.5 border-b border-slate-200/80 pb-3 last:border-0 sm:flex-row sm:justify-between">
-            <dt class="font-medium text-slate-500">Note de conduite</dt>
-            <dd class="text-slate-900">${escapeHtml(conductStr)}</dd>
-          </div>
-          <div class="flex flex-col gap-0.5 border-b border-slate-200/80 pb-3 last:border-0 sm:flex-row sm:justify-between">
-            <dt class="font-medium text-slate-500">Devise</dt>
-            <dd class="text-slate-900">${escapeHtml(currency)}</dd>
-          </div>
-        `;
-      }
-    }
-    
-    function escapeHtml(str) {
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
-    }
-    
-    function validateStep(step) {
-      const err1 = document.getElementById('err-step1');
-      const err2 = document.getElementById('err-step2');
-      const err3 = document.getElementById('err-step3');
-      
-      if (err1) err1.classList.add('hidden');
-      if (err2) err2.classList.add('hidden');
-      if (err3) err3.classList.add('hidden');
-      
-      if (step === 1) {
-        if (!document.querySelector('input[name="period_system"]:checked')) {
-          if (err1) {
-            err1.textContent = 'Choisissez un système de périodes.';
-            err1.classList.remove('hidden');
-          }
-          return false;
-        }
-        return true;
-      }
-      
-      if (step === 2) {
-        const hwMi = document.querySelector('input[name="hw_mi"]')?.checked || false;
-        const hwD1 = document.querySelector('input[name="hw_d1"]')?.checked || false;
-        const hwD2 = document.querySelector('input[name="hw_d2"]')?.checked || false;
-        const hwDh = document.querySelector('input[name="hw_dh"]')?.checked || false;
-        
-        if (!hwMi && !hwD1 && !hwD2 && !hwDh) {
-          if (err2) {
-            err2.textContent = 'Activez au moins un type de devoir.';
-            err2.classList.remove('hidden');
-          }
-          return false;
-        }
-        return true;
-      }
-      
-      if (step === 3) {
-        const conductEnabled = document.getElementById('conduct_enabled')?.checked || false;
-        if (conductEnabled) {
-          const coeff = parseFloat(document.getElementById('conduct_coeff')?.value);
-          const max = parseFloat(document.getElementById('conduct_max')?.value);
-          
-          if (isNaN(coeff) || coeff <= 0) {
-            if (err3) {
-              err3.textContent = 'Coefficient de conduite invalide.';
-              err3.classList.remove('hidden');
-            }
-            return false;
-          }
-          if (isNaN(max) || max < 1) {
-            if (err3) {
-              err3.textContent = 'Note max. conduite invalide.';
-              err3.classList.remove('hidden');
-            }
-            return false;
-          }
-        }
-        return true;
-      }
-      
-      return true;
-    }
-    
-    function showStep(step) {
-      if (step < 1 || step > totalSteps) return;
-      
-      currentStep = step;
-      
-      // Afficher/masquer les panels
-      document.querySelectorAll('.step-panel').forEach(panel => {
-        const panelStep = parseInt(panel.getAttribute('data-step'), 10);
-        panel.classList.toggle('is-active', panelStep === step);
-      });
-      
-      // Mettre à jour les labels
-      document.querySelectorAll('.step-label').forEach(label => {
-        const labelStep = parseInt(label.getAttribute('data-step'), 10);
-        if (labelStep === step) {
-          label.classList.add('text-primary', 'font-bold');
-          label.classList.remove('text-slate-500');
-        } else {
-          label.classList.remove('text-primary', 'font-bold');
-          label.classList.add('text-slate-500');
-        }
-      });
-      
-      // Mettre à jour la barre de progression
-      const progressPercent = (step / totalSteps) * 100;
-      const progressBar = document.getElementById('progress-bar');
-      if (progressBar) {
-        progressBar.style.width = `${progressPercent}%`;
-        progressBar.setAttribute('aria-valuenow', step);
-      }
-      
-      // Mettre à jour le texte du banner
-      const titles = [
-        '',
-        'Étape 1/4 — Système pédagogique',
-        'Étape 2/4 — Types de devoirs',
-        'Étape 3/4 — Conduite',
-        'Étape 4/4 — Scolarité & Confirmation'
-      ];
-      const banner = document.getElementById('step-banner');
-      if (banner) banner.textContent = titles[step];
-      
-      // Gérer les boutons
-      if (prevBtn) prevBtn.disabled = (step === 1);
-      if (nextBtn) nextBtn.classList.toggle('hidden', step === totalSteps);
-      if (submitBtn) {
-        submitBtn.classList.toggle('hidden', step !== totalSteps);
-        submitBtn.classList.toggle('flex', step === totalSteps);
-      }
-      
-      // Mettre à jour le récapitulatif si on est à la dernière étape
-      if (step === totalSteps) {
-        buildSummary();
-      }
-      
-      // Scroll en haut doucement
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    
-    function showToast(message, isError = false) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.style.backgroundColor = isError ? '#ef4444' : '#10b981';
-      toast.classList.add('show');
-      
-    }
-    
-    // === ÉVÉNEMENTS ===
-    document.querySelectorAll('input[name="period_system"]').forEach(radio => {
-      radio.addEventListener('change', updateFormulaPeriod);
-    });
-    
-    document.querySelectorAll('.hom-toggle').forEach(checkbox => {
-      checkbox.addEventListener('change', () => {
-        if (currentStep === totalSteps) buildSummary();
-      });
-    });
-    
-    const conductEnabled = document.getElementById('conduct_enabled');
-    if (conductEnabled) {
-      conductEnabled.addEventListener('change', toggleConductFields);
-    }
-    
-    const conductCoeff = document.getElementById('conduct_coeff');
-    const conductMaxElem = document.getElementById('conduct_max');
-    if (conductCoeff) conductCoeff.addEventListener('input', () => {
+  });
+
+  // conduite toggle
+  conductEnabled?.addEventListener('change', toggleConduct);
+
+  // live update
+  document.querySelectorAll('input').forEach(i => {
+    i.addEventListener('change', () => {
       if (currentStep === totalSteps) buildSummary();
     });
-    if (conductMaxElem) conductMaxElem.addEventListener('input', () => {
-      if (currentStep === totalSteps) buildSummary();
-    });
-    
-    if (nextBtn) {
-      nextBtn.addEventListener('click', () => {
-        if (validateStep(currentStep)) {
-          if (currentStep < totalSteps) {
-            showStep(currentStep + 1);
-          }
-        } else {
-          showToast('Veuillez corriger les erreurs avant de continuer.', true);
-        }
-      });
-    }
-    
-    if (prevBtn) {
-      prevBtn.addEventListener('click', () => {
-        if (currentStep > 1) {
-          showStep(currentStep - 1);
-        }
-      });
-    }
-    
-    document.querySelectorAll('.step-label').forEach(label => {
-      label.addEventListener('click', () => {
-        const step = parseInt(label.getAttribute('data-step'), 10);
-        if (step && step < currentStep) {
-          showStep(step);
-        } else if (step && step > currentStep) {
-          let allValid = true;
-          for (let i = currentStep; i < step; i++) {
-            if (!validateStep(i)) {
-              allValid = false;
-              showToast(`Veuillez compléter l'étape ${i} correctement.`, true);
-              break;
-            }
-          }
-          if (allValid) showStep(step);
-        }
-      });
-    });
-    
-    if (form) {
-      form.addEventListener('submit', (e) => {
-     
-        
-        for (let i = 1; i <= 3; i++) {
-          if (!validateStep(i)) {
-            showStep(i);
-            showToast(`Veuillez corriger l'étape ${i} avant de valider.`, true);
-            return;
-          }
-        }
-        
-        if (submitBtn) {
-          submitBtn.disabled = true;
-          const label = document.getElementById('btn-submit-label');
-          const spinner = document.getElementById('btn-submit-spinner');
-          if (label) label.textContent = 'Enregistrement...';
-          if (spinner) spinner.classList.remove('hidden');
-        }
-        
-        
-        
-        
-      });
-    }
-    
-    function init() {
-      updateFormulaPeriod();
-      toggleConductFields();
-      showStep(1);
-      
-      const lastUpdateSpan = document.getElementById('last-update');
-      if (lastUpdateSpan) {
-        const now = new Date();
-        lastUpdateSpan.textContent = now.toLocaleTimeString('fr-FR');
-      }
-    }
-    
-    init();
-  })();
+  });
+
+  // init
+  function init() {
+    toggleConduct();
+    showStep(1);
+  }
+
+  init();
+
+})();
 </script>
 </body>
 </html>

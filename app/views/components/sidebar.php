@@ -1,3 +1,4 @@
+
 <?php
 $role = $_SESSION['user_role'];
 ?>
@@ -33,23 +34,51 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
     color: #99fbe3;
     border-left: 3px solid #99fbe3;
 }
+
+/* RESPONSIVE SIDEBAR */
+#sidebar{
+    transition: transform 0.3s ease;
+}
+
+@media (max-width: 1023px){
+    #sidebar{
+        transform: translateX(-100%);
+    }
+    #sidebar.is-open{
+        transform: translateX(0);
+    }
+}
+
+@media (min-width: 1024px){
+    #sidebar{
+        transform: translateX(0) !important;
+    }
+}
+
 #sidebar-overlay {
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-    #sidebar-overlay.is-open {
-      pointer-events: auto;
-      opacity: 1;
-    }
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+#sidebar-overlay.is-open {
+    pointer-events: auto;
+    opacity: 1;
+}
 </style>
 
 </head>
 
 <body class="bg-slate-100">
+
+<!-- BOUTON HAMBURGER -->
+<button id="sidebar-toggle" type="button"
+    class="fixed top-4 left-4 z-[60] lg:hidden w-11 h-11 rounded-xl bg-purple-700 text-white shadow-xl flex items-center justify-center">
+    <i class="fa-solid fa-bars"></i>
+</button>
+
 <div id="sidebar-overlay" class="fixed inset-0 z-40 bg-slate-900/50 lg:hidden"></div>
 
-<aside class="fixed left-0 top-0 w-[270px] h-full bg-gradient-to-b from-purple-700 to-purple-900 text-white shadow-2xl flex flex-col">
+<aside id="sidebar" class="fixed left-0 top-0 w-[270px] h-screen bg-gradient-to-b from-purple-700 to-purple-900 text-white shadow-2xl flex flex-col z-50">
 
 <!-- LOGO -->
 <div class="flex items-center gap-3 h-16 px-4 border-b border-white/20">
@@ -118,8 +147,6 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
 
 <?php endif; ?>
 
-
-
 <!-- AGENT -->
 <?php if($role === 'agent'): ?>
 
@@ -161,5 +188,48 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
 </nav>
 </aside>
 
+<script>
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebar-overlay');
+const toggleBtn = document.getElementById('sidebar-toggle');
+
+function openSidebar() {
+    sidebar.classList.add('is-open');
+    overlay.classList.add('is-open');
+    document.body.classList.add('overflow-hidden');
+}
+
+function closeSidebar() {
+    sidebar.classList.remove('is-open');
+    overlay.classList.remove('is-open');
+    document.body.classList.remove('overflow-hidden');
+}
+
+toggleBtn?.addEventListener('click', () => {
+    if (sidebar.classList.contains('is-open')) {
+        closeSidebar();
+    } else {
+        openSidebar();
+    }
+});
+
+overlay?.addEventListener('click', closeSidebar);
+
+document.querySelectorAll('#sidebar a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth < 1024) {
+            closeSidebar();
+        }
+    });
+});
+
+window.addEventListener('resize', () => {
+    if (window.innerWidth >= 1024) {
+        closeSidebar();
+    }
+});
+</script>
+
 </body>
 </html>
+
