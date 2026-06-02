@@ -12,8 +12,8 @@ if (!isset($_SESSION['user_id'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Configuration | EduManager Collège</title>
-  <meta name="description" content="Assistant de configuration initiale de votre collège sur EduManager.">
+  <title>Configuration | AfricEduc Collège</title>
+  <meta name="description" content="Assistant de configuration initiale de votre collège sur AfricEduc.">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -56,21 +56,6 @@ if (!isset($_SESSION['user_id'])) {
     h1, h2, h3, .font-heading {
       font-family: "Quicksand", sans-serif;
     }
-    
-    /* Sidebar styles */
-    .sidebar-link {
-      transition: all 0.2s ease;
-    }
-    .sidebar-link:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      transform: translateX(4px);
-    }
-    .sidebar-link.active {
-      background-color: rgba(153, 251, 227, 0.2);
-      color: #99fbe3;
-      border-left: 3px solid #99fbe3;
-    }
-    
     /* Sous-menus */
     .submenu {
       max-height: 0;
@@ -138,24 +123,6 @@ if (!isset($_SESSION['user_id'])) {
       width: 100%;
     }
     
-    /* Sidebar fixe à gauche */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100vh;
-      width: 280px;
-      background: linear-gradient(135deg, #7300e9, #5c00bd);
-      color: white;
-      z-index: 50;
-      transition: transform 0.3s ease;
-      transform: translateX(-100%);
-      overflow-y: auto;
-    }
-    
-    .sidebar.is-open {
-      transform: translateX(0);
-    }
     
     /* Contenu principal - poussé à droite */
     .main-content {
@@ -170,29 +137,13 @@ if (!isset($_SESSION['user_id'])) {
     
     /* Sur desktop, la sidebar est visible */
     @media (min-width: 1024px) {
-      .sidebar {
-        transform: translateX(0);
-      }
+      
       .main-content {
-        margin-left: 280px;
+        margin-left: 260px;
         width: calc(100% - 280px);
       }
     }
     
-    /* Overlay mobile */
-    .sidebar-overlay {
-      position: fixed;
-      inset: 0;
-      background-color: rgba(15, 23, 42, 0.5);
-      z-index: 40;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-    .sidebar-overlay.is-open {
-      opacity: 1;
-      visibility: visible;
-    }
     
     /* Header fixe */
     .app-header {
@@ -209,7 +160,6 @@ if (!isset($_SESSION['user_id'])) {
 
 <div class="app-container">
   <!-- Overlay sidebar mobile -->
-  <div id="sidebar-overlay" class="sidebar-overlay"></div>
 
   <!-- Sidebar -->
    <?php include __DIR__ . '/../components/sidebar.php'; ?>
@@ -219,24 +169,39 @@ if (!isset($_SESSION['user_id'])) {
     <!-- Header -->
     <header class="app-header">
       <div class="flex h-16 items-center justify-between gap-4 px-4 sm:px-6">
-        <div class="flex items-center gap-3">
-          <button id="btn-menu" class="inline-flex rounded-xl border border-slate-200 p-2 text-slate-700 hover:bg-slate-50 transition lg:hidden">
-            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 7h16M4 12h16M4 17h16"/>
-            </svg>
-          </button>
+        <div class="flex items-center gap-3 ml-14 lg:ml-0">
+          
           <div>
-            <p class="font-heading text-sm font-semibold text-primary sm:text-base" id="school-name-header">Collège Saint-Michel</p>
-            <p class="text-xs text-slate-500" id="school-location">Cotonou, Bénin</p>
+            <p class="font-heading text-sm font-semibold text-primary sm:text-base" id="school-name-header"><?= htmlspecialchars($_SESSION['school_name'] ?? 'École inconnue') ?> </p>
+            <p class="text-xs text-slate-500" id="school-location"><?= htmlspecialchars($_SESSION['school_address'] ?? 'École inconnue') ?> </p>
           </div>
         </div>
         <div class="flex items-center gap-3">
-          <span class="hidden rounded-full border border-accent/50 bg-accent/20 px-3 py-1 text-xs font-medium text-slate-800 sm:inline-flex" id="school-year">Année 2025–2026</span>
+          <?php
+        $currentYear = date("Y");
+        $nextYear = $currentYear + 1;
+        $schoolYear = $currentYear . "–" . $nextYear;
+        ?>
+          <span class="hidden rounded-full border border-accent/50 bg-accent/20 px-3 py-1 text-xs font-medium text-slate-800 sm:inline-flex" id="school-year">Année scolaire  <?= $schoolYear ?></span>
           <button class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-1.5 pr-3 shadow-sm hover:shadow-md transition">
-            <span id="header-avatar" class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md">AK</span>
+            <?php
+                $userName = $_SESSION['user_name'] ?? 'User';
+
+                // on récupère les initiales
+                $words = explode(' ', trim($userName));
+                $initials = '';
+
+                foreach ($words as $w) {
+                    $initials .= strtoupper($w[0] ?? '');
+                }
+
+                // limite à 2 caractères max
+                $initials = substr($initials, 0, 2);
+            ?>
+            <span id="header-avatar" class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md"><?= $initials ?></span>
             <span class="hidden text-left text-sm sm:block">
-              <span class="block font-medium text-slate-900">Aminata Kossi</span>
-              <span class="text-xs text-slate-500">Administratrice</span>
+              <span class="block font-medium text-slate-900"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
+              <span class="text-xs text-slate-500"><?= htmlspecialchars($_SESSION['user_role']) ?></span>
             </span>
           </button>
         </div>
@@ -314,7 +279,7 @@ if (!isset($_SESSION['user_id'])) {
               
               <div class="formula-box mt-8 rounded-2xl border border-violet-100 bg-violet-50/60 px-4 py-4 sm:px-5">
                 <p class="text-xs font-semibold uppercase tracking-wide text-primary">Formule annuelle (aperçu)</p>
-                <p id="formula-period" class="mt-2 font-mono text-sm text-slate-800 sm:text-base">MA = (MGS1 × 1 + MGS2 × 2) / 3</p>
+                <p id="formula-period" class="mt-2 font-mono text-sm text-slate-800 sm:text-base"></p>
               </div>
               <p class="field-error mt-2 hidden text-sm text-red-600" id="err-step1"></p>
             </div>
@@ -382,7 +347,7 @@ if (!isset($_SESSION['user_id'])) {
               
               <div class="formula-box mt-6 rounded-2xl border border-violet-100 bg-violet-50/60 px-4 py-4">
                 <p class="text-xs font-semibold uppercase text-primary">Formule annuelle (rappel)</p>
-                <p id="formula-period-full" class="mt-2 font-mono text-sm text-slate-800">MA = (MGS1 × 1 + MGS2 × 2) / 3</p>
+                <p id="formula-period-full" class="mt-2 font-mono text-sm text-slate-800"></p>
               </div>
               <p class="field-error mt-2 hidden text-sm text-red-600" id="err-step3"></p>
             </div>
@@ -424,7 +389,7 @@ if (!isset($_SESSION['user_id'])) {
       </div>
       
       <footer class="mt-12 pb-8 text-center text-xs text-slate-400">
-        EduManager — Collège Saint-Michel · Dernière mise à jour : <span id="last-update"></span>
+        AfricEduc — <?= htmlspecialchars($_SESSION['school_name'] ?? 'École inconnue') ?>  · <span id="last-update"></span>
       </footer>
     </main>
   </div>
@@ -470,6 +435,27 @@ if (!isset($_SESSION['user_id'])) {
     const bar = document.getElementById('progress-bar');
     bar.style.width = (currentStep / totalSteps) * 100 + '%';
   }
+
+  function updateFormulaPreview() {
+  const period = document.querySelector('input[name="period_system"]:checked')?.value;
+
+  const formula1 = document.getElementById('formula-period');
+  const formula2 = document.getElementById('formula-period-full');
+
+  if (!formula1 && !formula2) return;
+
+  if (period === 'semestre') {
+    const text = "MA = (MGS1 × 1 + MGS2 × 2) / 3";
+    if (formula1) formula1.textContent = text;
+    if (formula2) formula2.textContent = text;
+  }
+
+  if (period === 'trimestre') {
+    const text = "MA = (T1 + T2 + T3) / 3";
+    if (formula1) formula1.textContent = text;
+    if (formula2) formula2.textContent = text;
+  }
+}
 
   // =========================
   // CONDUITE (FIX IMPORTANT)
@@ -600,6 +586,10 @@ if (!isset($_SESSION['user_id'])) {
   }
 
   init();
+  updateFormulaPreview();
+  document.querySelectorAll('input[name="period_system"]').forEach(radio => {
+  radio.addEventListener('change', updateFormulaPreview);
+});
 
 })();
 </script>

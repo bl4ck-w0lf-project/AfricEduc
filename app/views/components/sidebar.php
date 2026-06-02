@@ -1,6 +1,8 @@
 
 <?php
 $role = $_SESSION['user_role'];
+$currentPage = basename($_SERVER['PHP_SELF']);
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -18,48 +20,48 @@ $role = $_SESSION['user_role'];
 <!-- GOOGLE FONTS -->
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 
-<style>
-body{font-family:"Outfit",sans-serif}
-h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
+<style>body { font-family: "Outfit", sans-serif; }
+h1,h2,h3,h4 { font-family: "Quicksand", sans-serif; }
 
 .sidebar-link{
     transition: all .2s ease;
 }
+
 .sidebar-link:hover{
     background-color: rgba(255,255,255,0.1);
     transform: translateX(4px);
 }
+
 .sidebar-link.active{
     background-color: rgba(153,251,227,0.2);
     color: #99fbe3;
     border-left: 3px solid #99fbe3;
 }
 
-/* RESPONSIVE SIDEBAR */
+/* ===== SIDEBAR MOBILE ===== */
 #sidebar{
-    transition: transform 0.3s ease;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
 }
 
-@media (max-width: 1023px){
-    #sidebar{
-        transform: translateX(-100%);
-    }
-    #sidebar.is-open{
-        transform: translateX(0);
-    }
+#sidebar.is-open{
+    transform: translateX(0);
 }
 
+/* ===== DESKTOP ===== */
 @media (min-width: 1024px){
     #sidebar{
         transform: translateX(0) !important;
     }
 }
 
+/* ===== OVERLAY ===== */
 #sidebar-overlay {
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.2s ease;
 }
+
 #sidebar-overlay.is-open {
     pointer-events: auto;
     opacity: 1;
@@ -74,6 +76,7 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
 <button id="sidebar-toggle" type="button"
     class="fixed top-4 left-4 z-[60] lg:hidden w-11 h-11 rounded-xl bg-purple-700 text-white shadow-xl flex items-center justify-center">
     <i class="fa-solid fa-bars"></i>
+    
 </button>
 
 <div id="sidebar-overlay" class="fixed inset-0 z-40 bg-slate-900/50 lg:hidden"></div>
@@ -93,55 +96,59 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
 <!-- ADMIN -->
 <?php if($role === 'admin'): ?>
 
-<a href="#" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl">
+<a href="../admin/dashboard_admin.php"
+ class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl
+    <?= $currentPage === 'dashboard_admin.php' ? 'active' : '' ?>">
     <i class="fa-solid fa-gauge"></i> Dashboard
 </a>
 
 <h4 class="mt-5 mb-2 px-3 text-xs text-white/60 uppercase">Mon école</h4>
 
-<a href="../admin/setup_school.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../admin/setup_school.php"
+   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg
+   <?= $currentPage === 'setup_school.php' ? 'active' : '' ?>">
     <i class="fa-solid fa-gear"></i> Configuration
 </a>
 
-<a href="../school_identity/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../school_identity/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-id-card"></i> Identité & contact
 </a>
 
 <h4 class="mt-5 mb-2 px-3 text-xs text-white/60 uppercase">Organisation</h4>
 
-<a href="../classes/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../classes/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-school"></i> Classes / Groupes
 </a>
 
-<a href="../matieres/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../matieres/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-book"></i> Matières
 </a>
 
-<a href="../students/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../students/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-user-graduate"></i> Élèves
 </a>
 
-<a href="../notes/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../notes/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-pen"></i> Notes & Moyennes
 </a>
 
-<a href="../paiements/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../paiements/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-credit-card"></i> Paiements
 </a>
 
-<a href="../agents/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../agents/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-users"></i> Agents
 </a>
 
-<a href="../agents/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../agents/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-users"></i> Professeurs
 </a>
 
-<a href="../bulletins/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../bulletins/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-file-pdf"></i> Bulletins
 </a>
 
-<a href="../stats_admin/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../stats_admin/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-chart-line"></i> Statistiques
 </a>
 
@@ -154,23 +161,23 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
     <i class="fa-solid fa-gauge"></i> Tableau de bord
 </a>
 
-<a href="../students/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../students/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-user-graduate"></i> Élèves
 </a>
 
-<a href="../notes/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../notes/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-pen"></i> Notes & Moyennes
 </a>
 
-<a href="../paiements/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../paiements/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-credit-card"></i> Paiements
 </a>
 
-<a href="../bulletins/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../bulletins/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-file-pdf"></i> Professeurs
 </a>
 
-<a href="../stats_agents/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../stats_agents/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-file-pdf"></i> Bulletins
 </a>
 
@@ -187,9 +194,7 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
 
 </nav>
 </aside>
-
-<script>
-const sidebar = document.getElementById('sidebar');
+<script>const sidebar = document.getElementById('sidebar');
 const overlay = document.getElementById('sidebar-overlay');
 const toggleBtn = document.getElementById('sidebar-toggle');
 
@@ -197,15 +202,22 @@ function openSidebar() {
     sidebar.classList.add('is-open');
     overlay.classList.add('is-open');
     document.body.classList.add('overflow-hidden');
+
+    // cache le hamburger
+    toggleBtn.style.display = 'none';
 }
 
 function closeSidebar() {
     sidebar.classList.remove('is-open');
     overlay.classList.remove('is-open');
     document.body.classList.remove('overflow-hidden');
+
+    // réaffiche le hamburger
+    toggleBtn.style.display = 'flex';
 }
 
-toggleBtn?.addEventListener('click', () => {
+/* Toggle hamburger */
+toggleBtn.addEventListener('click', () => {
     if (sidebar.classList.contains('is-open')) {
         closeSidebar();
     } else {
@@ -213,8 +225,10 @@ toggleBtn?.addEventListener('click', () => {
     }
 });
 
-overlay?.addEventListener('click', closeSidebar);
+/* click overlay */
+overlay.addEventListener('click', closeSidebar);
 
+/* click link => close on mobile */
 document.querySelectorAll('#sidebar a').forEach(link => {
     link.addEventListener('click', () => {
         if (window.innerWidth < 1024) {
@@ -224,9 +238,22 @@ document.querySelectorAll('#sidebar a').forEach(link => {
 });
 
 window.addEventListener('resize', () => {
+
     if (window.innerWidth >= 1024) {
-        closeSidebar();
+
+        sidebar.classList.remove('is-open');
+        overlay.classList.remove('is-open');
+        document.body.classList.remove('overflow-hidden');
+
+        // cacher le hamburger sur desktop
+        toggleBtn.style.display = 'none';
+
+    } else {
+
+        // réafficher sur mobile
+        toggleBtn.style.display = 'flex';
     }
+
 });
 </script>
 

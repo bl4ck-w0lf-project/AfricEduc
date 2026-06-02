@@ -18,9 +18,8 @@ $nbPeriods = ($periodType === 'semestre') ? 2 : 3;
 $data = [
     'school_id' => $_SESSION['school_id'],
 
-    // ⚠️ mapping correct
-    'period_type' => $periodType,
-    'nb_periods' => $nbPeriods,
+    'period_type' => $_POST['period_system'] ?? 'semestre',
+    'nb_periods' => $_POST['period_system'] === 'trimestre' ? 3 : 2,
 
     'use_interro' => isset($_POST['hw_mi']) ? 1 : 0,
     'use_d1' => isset($_POST['hw_d1']) ? 1 : 0,
@@ -31,11 +30,9 @@ $data = [
     'conduite_coef' => $_POST['conduct_coefficient'] ?? 1,
     'conduite_max' => $_POST['conduct_max'] ?? 20,
 
-    // valeurs par défaut (pas encore dans ton form)
-    'passing_grade' => $_POST['passing_grade'] ?? 10,
-
-    'poids_s1' => $_POST['poids_s1'] ?? 1,
-    'poids_s2' => $_POST['poids_s2'] ?? 2,
+    'passing_grade' => 10,
+    'poids_s1' => 1,
+    'poids_s2' => 2,
 
     'currency' => $_POST['currency'] ?? 'FCFA'
 ];
@@ -56,7 +53,7 @@ if ($data['conduite_max'] < 1) {
 $success = $model->saveConfig($data);
 
 if ($success) {
-    header("Location: ../views/dashboard.php");
+    header("Location: ../views/admin/dashboard_admin.php");
     exit;
 }
 
