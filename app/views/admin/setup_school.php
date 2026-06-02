@@ -269,7 +269,7 @@ if (!isset($_SESSION['user_id'])) {
         <div class="mt-8 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xl shadow-violet-100/50 sm:p-10">
           <p id="step-banner" class="mb-6 text-center text-sm font-semibold text-primary">Étape 1/4 — Système pédagogique</p>
 
-          <form id="setup-form" novalidate>
+          <form method="POST" id="setup-form" novalidate action="../../controllers/SetupSchoolController.php">
             <!-- Étape 1 : Pédagogie -->
             <div class="step-panel is-active" data-step="1">
               <h2 class="font-heading text-xl font-bold text-slate-900 sm:text-2xl">Comment fonctionne votre établissement ?</h2>
@@ -340,6 +340,12 @@ if (!isset($_SESSION['user_id'])) {
                 <label class="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3 transition hover:border-primary/30">
                   <span class="font-medium text-slate-900">Devoir 2 <span class="text-slate-500">(D2)</span></span>
                   <input type="checkbox" name="hw_d2" value="1" checked class="peer sr-only hom-toggle">
+                  <span class="relative h-7 w-12 shrink-0 rounded-full bg-slate-200 transition peer-checked:bg-primary after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5"></span>
+                </label>
+
+                <label class="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3 transition hover:border-primary/30">
+                  <span class="font-medium text-slate-900">Devoir 3 <span class="text-slate-500">(D3)</span></span>
+                  <input type="checkbox" name="hw_d3" value="1" checked class="peer sr-only hom-toggle">
                   <span class="relative h-7 w-12 shrink-0 rounded-full bg-slate-200 transition peer-checked:bg-primary after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5"></span>
                 </label>
                 
@@ -706,7 +712,7 @@ if (!isset($_SESSION['user_id'])) {
       toast.textContent = message;
       toast.style.backgroundColor = isError ? '#ef4444' : '#10b981';
       toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
+      
     }
     
     // === ÉVÉNEMENTS ===
@@ -775,7 +781,7 @@ if (!isset($_SESSION['user_id'])) {
     
     if (form) {
       form.addEventListener('submit', (e) => {
-        e.preventDefault();
+     
         
         for (let i = 1; i <= 3; i++) {
           if (!validateStep(i)) {
@@ -793,29 +799,9 @@ if (!isset($_SESSION['user_id'])) {
           if (spinner) spinner.classList.remove('hidden');
         }
         
-        const formData = {
-          action: 'save_school_settings',
-          period_system: document.querySelector('input[name="period_system"]:checked')?.value || 'semester',
-          hw_mi: document.querySelector('input[name="hw_mi"]')?.checked ? '1' : '0',
-          hw_d1: document.querySelector('input[name="hw_d1"]')?.checked ? '1' : '0',
-          hw_d2: document.querySelector('input[name="hw_d2"]')?.checked ? '1' : '0',
-          hw_dh: document.querySelector('input[name="hw_dh"]')?.checked ? '1' : '0',
-          conduct_enabled: document.getElementById('conduct_enabled')?.checked ? '1' : '0',
-          conduct_coefficient: document.getElementById('conduct_coeff')?.value || '1',
-          conduct_max: document.getElementById('conduct_max')?.value || '20',
-          currency: document.querySelector('input[name="currency"]')?.value || 'FCFA'
-        };
         
-        console.log('Données à envoyer au serveur :', formData);
         
-        setTimeout(() => {
-          localStorage.setItem('college_config', JSON.stringify(formData));
-          showToast('Configuration enregistrée avec succès ! Redirection...');
-          
-          setTimeout(() => {
-            window.location.href = 'dashboard.html';
-          }, 1000);
-        }, 800);
+        
       });
     }
     

@@ -207,7 +207,7 @@ unset($_SESSION['old']);
                               name="school_subtype"
                               value="public"
                               class="h-4 w-4 border-slate-300 text-primary focus:ring-primary"
-                              <?= (($_SESSION['old']['school_subtype'] ?? '') === 'public') ? 'checked' : '' ?>
+                              <?= (($_SESSION['old']['school_subtype'] ?? '') === 'prive') ? 'checked' : '' ?>
                       >
                       <span> Privé</span>
                       

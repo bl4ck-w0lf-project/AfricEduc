@@ -47,6 +47,7 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
 </head>
 
 <body class="bg-slate-100">
+<div id="sidebar-overlay" class="fixed inset-0 z-40 bg-slate-900/50 lg:hidden"></div>
 
 <aside class="fixed left-0 top-0 w-[270px] h-full bg-gradient-to-b from-purple-700 to-purple-900 text-white shadow-2xl flex flex-col">
 
@@ -103,6 +104,10 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
     <i class="fa-solid fa-users"></i> Agents
 </a>
 
+<a href="../agents/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+    <i class="fa-solid fa-users"></i> Professeurs
+</a>
+
 <a href="../bulletins/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-file-pdf"></i> Bulletins
 </a>
@@ -127,7 +132,7 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
 </a>
 
 <a href="../notes/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
-    <i class="fa-solid fa-pen"></i> Notes
+    <i class="fa-solid fa-pen"></i> Notes & Moyennes
 </a>
 
 <a href="../paiements/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
@@ -135,7 +140,7 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
 </a>
 
 <a href="../bulletins/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
-    <i class="fa-solid fa-file-pdf"></i> Bulletins
+    <i class="fa-solid fa-file-pdf"></i> Professeurs
 </a>
 
 <a href="../stats_agents/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
