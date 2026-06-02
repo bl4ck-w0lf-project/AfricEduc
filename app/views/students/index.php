@@ -6,6 +6,11 @@
  */
  session_start();
 $title = $title ?? 'Gestion des élèves';
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -66,13 +71,13 @@ $title = $title ?? 'Gestion des élèves';
     <header class="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-slate-200 bg-white/95 px-4 backdrop-blur-md shadow-sm sm:px-6">
       <div class="flex items-center gap-3">
         <button id="btn-menu" class="inline-flex rounded-xl border border-slate-200 p-2 text-slate-700 hover:bg-slate-50 lg:hidden"><svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-        <div><p class="font-heading text-sm font-semibold text-primary sm:text-base" id="school-name-header">Collège Saint-Michel</p><p class="text-xs text-slate-500" id="school-location">Cotonou, Bénin</p></div>
+        <div><p class="font-heading text-sm font-semibold text-primary sm:text-base" id="school-name-header"></p><p class="text-xs text-slate-500" id="school-location"></p></div>
       </div>
       <div class="flex items-center gap-3">
-        <span class="hidden rounded-full border border-accent/50 bg-accent/20 px-3 py-1 text-xs font-medium text-slate-800 sm:inline-flex" id="school-year">Année 2025–2026</span>
+        <span class="hidden rounded-full border border-accent/50 bg-accent/20 px-3 py-1 text-xs font-medium text-slate-800 sm:inline-flex" id="school-year"></span>
         <button class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-1.5 pr-3 shadow-sm">
-          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md">AK</span>
-          <span class="hidden text-left text-sm sm:block"><span class="block font-medium text-slate-900">Aminata Kossi</span><span class="text-xs text-slate-500">Administratrice</span></span>
+          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md"></span>
+          <span class="hidden text-left text-sm sm:block"><span class="block font-medium text-slate-900"></span><span class="text-xs text-slate-500"></span></span>
         </button>
       </div>
     </header>
@@ -89,19 +94,19 @@ $title = $title ?? 'Gestion des élèves';
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-8">
           <div class="kpi-card rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm" style="border-left-color: #7300e9;">
             <p class="text-xs font-semibold uppercase text-slate-500">Total élèves</p>
-            <p class="text-3xl font-bold text-slate-900"><?= count($students) ?></p> 
+            <p class="text-3xl font-bold text-slate-900"></p> 
           </div>
           <div class="kpi-card rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm" style="border-left-color: #22c55e;">
             <p class="text-xs font-semibold uppercase text-slate-500">Élèves actifs</p>
             <p class="text-3xl font-bold text-slate-900">
-              <?= count(array_filter($students, fn($s) => $s['status'] === 'actif')) ?>
+              
             </p>
           </div>
           <div class="kpi-card rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm" style="border-left-color: #ef4444;">
             <p class="text-xs font-semibold uppercase text-slate-500">Filles / Garçons</p>
             <p class="text-xl font-bold text-slate-900">
-              <?= count(array_filter($students, fn($s) => $s['gender'] === 'F')) ?> F / 
-              <?= count(array_filter($students, fn($s) => $s['gender'] === 'M')) ?> G
+               F / 
+             G
             </p>
           </div>
         </div>
