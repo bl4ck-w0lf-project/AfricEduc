@@ -107,7 +107,7 @@ h1,h2,h3,h4 { font-family: "Quicksand", sans-serif; }
 <a href="../admin/setup_school.php"
    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg
    <?= $currentPage === 'setup_school.php' ? 'active' : '' ?>">
-    <i class="fa-solid fa-gear"></i> Configuration
+    <i class="fa-solid fa-gear"></i> Configuration de mon école
 </a>
 
 <a href="../school_identity/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
@@ -150,6 +150,10 @@ h1,h2,h3,h4 { font-family: "Quicksand", sans-serif; }
 
 <a href="../stats_admin/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
     <i class="fa-solid fa-chart-line"></i> Statistiques
+</a>
+
+<a href="../stats_admin/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
+    <i class="fa-solid fa-chart-line"></i> Mon compte administrateur 
 </a>
 
 <?php endif; ?>
