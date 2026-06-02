@@ -69,7 +69,7 @@ h1,h2,h3,h4{font-family:"Quicksand",sans-serif}
 
 <h4 class="mt-5 mb-2 px-3 text-xs text-white/60 uppercase">Mon école</h4>
 
-<a href="../school_setup/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
+<a href="../admin/setup_school.php" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg">
     <i class="fa-solid fa-gear"></i> Configuration
 </a>
 
