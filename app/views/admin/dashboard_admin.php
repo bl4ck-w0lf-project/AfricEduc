@@ -1,10 +1,13 @@
 <?php
 session_start();
 
+$isConfigured = $data['isConfigured'] ?? 0;
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php");
     exit;
 }
+
 
 
 ?>
@@ -117,6 +120,7 @@ if (!isset($_SESSION['user_id'])) {
             <i class="fa-solid fa-triangle-exclamation text-4xl" style="color: rgb(255, 41, 0);"></i>
              Votre école n’est pas encore configurée...
           </div>
+          
 
           <a href="setup_school.php"
             class="bg-red-500 text-white px-5 py-3 rounded-lg text-md font-semibold">

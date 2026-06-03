@@ -28,7 +28,8 @@ class SchoolConfigModel
         passing_grade,
         poids_s1,
         poids_s2,
-        currency
+        currency,
+        is_configured
     ) VALUES (
         :school_id,
         :period_type,
@@ -46,7 +47,8 @@ class SchoolConfigModel
         :passing_grade,
         :poids_s1,
         :poids_s2,
-        :currency
+        :currency,
+        :is_configured
     )
     ON DUPLICATE KEY UPDATE
         period_type = VALUES(period_type),
@@ -64,7 +66,8 @@ class SchoolConfigModel
         passing_grade = VALUES(passing_grade),
         poids_s1 = VALUES(poids_s1),
         poids_s2 = VALUES(poids_s2),
-        currency = VALUES(currency)
+        currency = VALUES(currency),
+        is_configured = VALUES(is_configured),
     ";
 
     $stmt = $this->db->prepare($sql);
@@ -87,7 +90,8 @@ class SchoolConfigModel
             ':poids_s1' => $d['poids_s1'] ?? 1,
             ':poids_s2' => $d['poids_s2'] ?? 2,
 
-            ':currency' => $d['currency'] ?? 'FCFA'
+            ':currency' => $d['currency'] ?? 'FCFA',
+            ':is_configured' => 1
         ]);
 }
 }
