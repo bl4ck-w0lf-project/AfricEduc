@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header("Location: /AfricEduc/app/views/superadmin/dashboard_superadmin.php");
                     break;
                 case 'admin':
-                    header("Location: /AfricEduc/app/controllers/DashboardAdminController.php");
+                     header("Location: /AfricEduc/public/index.php?url=dashboard");
                     break;
                 case 'agent':
                     header("Location: /AfricEduc/app/views/agents/dashboard_agent.php");

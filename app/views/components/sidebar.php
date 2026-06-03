@@ -1,7 +1,8 @@
 
 <?php
 $role = $_SESSION['user_role'];
-$currentPage = basename($_SERVER['PHP_SELF']);
+$currentPage = $_GET['url'] ?? 'dashboard';
+$baseUrl = "/AfricEduc/public/index.php?url=";
 
 ?>
 <!DOCTYPE html>
@@ -96,9 +97,9 @@ h1,h2,h3,h4 { font-family: "Quicksand", sans-serif; }
 <!-- ADMIN -->
 <?php if($role === 'admin'): ?>
 
-<a href="../admin/dashboard_admin.php"
+<a href="<?= $baseUrl ?>dashboard"
  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl
-    <?= $currentPage === 'dashboard_admin.php' ? 'active' : '' ?>">
+    <?= $currentPage === 'dashboard' ? 'active' : '' ?>">
     <i class="fa-solid fa-gauge"></i> Dashboard
 </a>
 
