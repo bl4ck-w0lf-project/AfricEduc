@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // redirection selon le rôlee
             switch ($result['role']) {
                 case 'super_admin':
-                    header("Location: /AfricEduc/public/index.php?url=dashboard_superadmin");
+                    header("Location: /AfricEduc/public/index.php?url=dashboard_super_admin");
                     break;
                 case 'admin':
                      header("Location: /AfricEduc/public/index.php?url=dashboard_admin");

@@ -9,7 +9,7 @@ $url = $_GET['url'] ?? 'dashboard';
 
 switch ($url) {
 
-    case 'dashboard_superadmin':
+    case 'dashboard_super_admin':
         require_once __DIR__ . '/../app/controllers/DashboardSuperAdminController.php';
         $controller = new DashboardSuperAdminController($pdo);
         $controller->index();
@@ -53,7 +53,6 @@ switch ($url) {
     
     case 'logout':
         require_once __DIR__ . '/../app/controllers/LogoutController.php';
-
         $controller = new LogoutController();
         $controller->index();
         break;

@@ -1,14 +1,31 @@
 <?php
 
-class LogoutController
-{
+class LogoutController {
+
     public function index()
     {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
-        session_unset();
+        // 🧹 vider session
+        $_SESSION = [];
+
+        // 🧨 détruire session
         session_destroy();
 
+        // 🍪 supprimer cookie session (propre)
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"],
+                $params["domain"],
+                $params["secure"],
+                $params["httponly"]
+            );
+        }
+
+        // 🔥 redirection finale
         header("Location: /AfricEduc/public/index.php?url=login");
         exit;
     }

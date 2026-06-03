@@ -1,4 +1,5 @@
 <?php
+
 class AuthMiddleware
 {
     public static function check()
@@ -18,9 +19,8 @@ class AuthMiddleware
         self::check();
 
         if (($_SESSION['user_role'] ?? null) !== $role) {
-            http_response_code(403);
-            die("Accès refusé");
+            header("Location: /AfricEduc/public/index.php?url=dashboard_" . $_SESSION['user_role']);
+            exit;
         }
     }
 }
-?>

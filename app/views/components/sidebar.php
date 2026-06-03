@@ -163,9 +163,9 @@ h1,h2,h3,h4 { font-family: "Quicksand", sans-serif; }
 <!-- ADMIN -->
 <?php if($role === 'admin'): ?>
 
-<a href="<?= $baseUrl ?>dashboard"
+<a href="<?= $baseUrl ?>dashboard_admin"
  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl
-    <?= $currentPage === 'dashboard' ? 'active' : '' ?>">
+    <?= $currentPage === 'dashboard_admin' ? 'active' : '' ?>">
     <i class="fa-solid fa-gauge"></i> Dashboard
 </a>
 
@@ -257,7 +257,7 @@ h1,h2,h3,h4 { font-family: "Quicksand", sans-serif; }
 <!-- LOGOUT -->
 <div class="mt-8 border-t border-white/20 pt-4">
 
-<a href="/AfricEduc/public/index.php?url=logout" class="sidebar-link flex items-center gap-3 px-3 py-2.5 text-red-300 hover:bg-red-500/20 rounded-xl">
+<a href="<?= $baseUrl ?>logout" class="sidebar-link flex items-center gap-3 px-3 py-2.5 text-red-300 hover:bg-red-500/20 rounded-xl">
     <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
 </a>
 
