@@ -17,5 +17,5 @@ if (ini_get("session.use_cookies")) {
 }
 
 // redirection vers login
-header("Location: ../auth/login.php");
+header("Location: /AfricEduc/public/index.php?url=login");
 exit;

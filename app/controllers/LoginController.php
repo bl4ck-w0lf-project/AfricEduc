@@ -1,10 +1,12 @@
 <?php
-require_once '../config/database.php';
-require_once '../models/UserModel.php';
-require_once '../models/SchoolModel.php';
-require_once '../services/UserService.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../models/UserModel.php';
+require_once __DIR__ . '/../models/SchoolModel.php';
+require_once __DIR__ . '/../services/UserService.php';
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $userModel = new UserModel($pdo);
 
@@ -31,13 +33,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // redirection selon le rôlee
             switch ($result['role']) {
                 case 'super_admin':
-                    header("Location: /AfricEduc/app/views/superadmin/dashboard_superadmin.php");
+                    header("Location: /AfricEduc/public/index.php?url=dashboard_superadmin");
                     break;
                 case 'admin':
-                     header("Location: /AfricEduc/public/index.php?url=dashboard");
+                     header("Location: /AfricEduc/public/index.php?url=dashboard_admin");
                     break;
                 case 'agent':
-                    header("Location: /AfricEduc/app/views/agents/dashboard_agent.php");
+                    header("Location: /AfricEduc/public/index.php?url=dashboard_agent");
                     break;
                 default:
                     header("Location: /AfricEduc/index.php");

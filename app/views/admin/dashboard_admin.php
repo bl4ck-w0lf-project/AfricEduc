@@ -1,13 +1,4 @@
-<?php
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login.php");
-    exit;
-}
-
-
-
-?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -124,7 +115,6 @@ if (!isset($_SESSION['user_id'])) {
             class="bg-red-500 text-white px-5 py-3 rounded-lg text-md font-semibold">
             Configurer maintenant !!
           </a>
-
         </div>  
     <?php endif; ?>
 
@@ -144,7 +134,7 @@ if (!isset($_SESSION['user_id'])) {
                       }
               ?>
             <div><h1 class="font-heading text-xl font-bold text-slate-900 sm:text-2xl"><?= $salutation ?>  <?= htmlspecialchars($_SESSION['user_name']) ?>
-        (<?= htmlspecialchars($_SESSION['user_role']) ?>)  👋   —  <span class="text-primary"><?= htmlspecialchars($_SESSION['school_name'] ?? 'Aucune école') ?></span></h1>
+        (<?= htmlspecialchars($_SESSION['user_role']) ?>)    —  <span class="text-primary"><?= htmlspecialchars($_SESSION['school_name'] ?? 'Aucune école') ?></span></h1>
               <div class="mt-4 inline-flex flex-col gap-1 rounded-2xl bg-white/70 px-4 py-3 shadow-sm backdrop-blur border border-slate-200">
     
                     <div class="flex items-center gap-2 text-primary font-semibold text-sm">
