@@ -109,6 +109,23 @@ if (!isset($_SESSION['user_id'])) {
     </header>
 
     <main class="px-4 py-6 sm:px-6 lg:px-8">
+
+    <?php if (!$isConfigured): ?>
+        <div class="bg-red-100 border-[1px] rounded-2xl my-3 text-black p-8 text-sm flex justify-between items-center">
+          
+          <div class="text-xl" >
+            <i class="fa-solid fa-triangle-exclamation text-4xl" style="color: rgb(255, 41, 0);"></i>
+             Votre école n’est pas encore configurée...
+          </div>
+
+          <a href="setup_school.php"
+            class="bg-red-500 text-white px-5 py-3 rounded-lg text-md font-semibold">
+            Configurer maintenant !!
+          </a>
+
+        </div>  
+    <?php endif; ?>
+
       <!-- Conteneur dynamique (les données viendront de PHP) -->
       <div id="dynamic-content">
         <section class="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-primary/5 p-6 shadow-lg sm:p-8 animate-fade-in">
