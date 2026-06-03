@@ -1,24 +1,25 @@
 <?php
 class DashboardAdminModel {
 
-    private $db;
+    private PDO $db;
 
-    public function __construct($db) {
+    public function __construct(PDO $db) {
         $this->db = $db;
     }
 
-    public function isSchoolConfigured($schoolId) {
+    public function getIsConfigured($schoolId): int
+    {
+        $stmt = $this->db->prepare("
+            SELECT is_configured 
+            FROM school_settings 
+            WHERE school_id = ?
+            LIMIT 1
+        ");
 
-    $stmt = $this->db->prepare("
-        SELECT is_configured 
-        FROM school_settings 
-        WHERE school_id = ?
-        LIMIT 1
-    ");
+        $stmt->execute([$schoolId]);
 
-    $stmt->execute([$schoolId]);
-
-    return (int) $stmt->fetchColumn();
-}
+        return (int)($stmt->fetchColumn() ?? 0);
+    }
 }
 ?>
+

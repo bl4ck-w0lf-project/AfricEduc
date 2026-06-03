@@ -34,7 +34,8 @@ $data = [
     'poids_s1' => 1,
     'poids_s2' => 2,
 
-    'currency' => $_POST['currency'] ?? 'FCFA'
+    'currency' => $_POST['currency'] ?? 'FCFA',
+    'is_configured' => 1
 ];
 
 // validation simple backend

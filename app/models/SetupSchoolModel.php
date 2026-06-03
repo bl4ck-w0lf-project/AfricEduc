@@ -67,7 +67,7 @@ class SchoolConfigModel
         poids_s1 = VALUES(poids_s1),
         poids_s2 = VALUES(poids_s2),
         currency = VALUES(currency),
-        is_configured = VALUES(is_configured),
+        is_configured = VALUES(is_configured)
     ";
 
     $stmt = $this->db->prepare($sql);
@@ -91,7 +91,7 @@ class SchoolConfigModel
             ':poids_s2' => $d['poids_s2'] ?? 2,
 
             ':currency' => $d['currency'] ?? 'FCFA',
-            ':is_configured' => 1
+            ':is_configured' => $d['is_configured'] ?? 1
         ]);
 }
 }

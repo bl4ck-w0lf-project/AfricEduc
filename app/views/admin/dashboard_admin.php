@@ -1,7 +1,4 @@
 <?php
-session_start();
-
-$isConfigured = $data['isConfigured'] ?? 0;
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php");
@@ -112,6 +109,7 @@ if (!isset($_SESSION['user_id'])) {
     </header>
 
     <main class="px-4 py-6 sm:px-6 lg:px-8">
+      
 
     <?php if (!$isConfigured): ?>
         <div class="bg-red-100 border-[1px] rounded-2xl my-3 text-black p-8 text-sm flex justify-between items-center">
