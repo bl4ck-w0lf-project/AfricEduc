@@ -1,59 +1,89 @@
 <?php
+
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../models/UserModel.php';
 require_once __DIR__ . '/../models/SchoolModel.php';
 require_once __DIR__ . '/../services/UserService.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+class LoginController
+{
+    private $authService;
 
-$userModel = new UserModel($pdo);
-
-$authService = new AuthService($userModel);
-
-$errors = [];
-$old = [];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $remember = isset($_POST['remember_me']);
-
-    $old['email'] = $email;
-
-    // validation simple
-    if (empty($email)) $errors['email'] = "L'email est requis";
-    if (empty($password)) $errors['password'] = "Le mot de passe est requis";
-
-    if (empty($errors)) {
-        $result = $authService->login($email, $password, $remember);
-
-        if ($result['success']) {
-            // redirection selon le rôlee
-            switch ($result['role']) {
-                case 'super_admin':
-                    header("Location: /AfricEduc/public/index.php?url=dashboard_super_admin");
-                    break;
-                case 'admin':
-                     header("Location: /AfricEduc/public/index.php?url=dashboard_admin");
-                    break;
-                case 'agent':
-                    header("Location: /AfricEduc/public/index.php?url=dashboard_agent");
-                    break;
-                default:
-                    header("Location: /AfricEduc/index.php");
-            }
-            exit;
-        } else {
-            $errors = $result['errors'];
+    public function __construct($pdo)
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
+
+        $userModel = new UserModel($pdo);
+        $this->authService = new AuthService($userModel);
     }
 
-    // ❌ IMPORTANT : stocker erreurs et old et redirect
-    $_SESSION['errors'] = $errors;
-    $_SESSION['old'] = $old;
+    public function index()
+    {
+        $errors = [];
+        $old = [];
 
-    header("Location: ../views/auth/login.php");
-    exit;
+        $flash = $_SESSION['flash_success'] ?? null;
+        unset($_SESSION['flash_success']);
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            $email = trim($_POST['email'] ?? '');
+            $password = $_POST['password'] ?? '';
+            $remember = isset($_POST['remember_me']);
+
+            $old['email'] = $email;
+
+            // validation simple
+            if (empty($email)) {
+                $errors['email'] = "L'email est requis";
+            }
+
+            if (empty($password)) {
+                $errors['password'] = "Le mot de passe est requis";
+            }
+
+            if (empty($errors)) {
+
+                $result = $this->authService->login($email, $password, $remember);
+
+                if ($result['success']) {
+
+                    switch ($result['role']) {
+
+                        case 'super_admin':
+                            header("Location: /AfricEduc/public/index.php?url=dashboard_super_admin");
+                            break;
+
+                        case 'admin':
+                            header("Location: /AfricEduc/public/index.php?url=dashboard_admin");
+                            break;
+
+                        case 'agent':
+                            header("Location: /AfricEduc/public/index.php?url=dashboard_agent");
+                            break;
+
+                        default:
+                            header("Location: /AfricEduc/index.php");
+                    }
+
+                    exit;
+                }
+
+                $errors = $result['errors'];
+            }
+
+            $_SESSION['errors'] = $errors;
+            $_SESSION['old'] = $old;
+
+            header("Location: /AfricEduc/public/index.php?url=login");
+            exit;
+        }
+
+        $flash = $_SESSION['flash_success'] ?? null;
+        unset($_SESSION['flash_success']);
+
+        require __DIR__ . '/../views/auth/login.php';
+    }
 }

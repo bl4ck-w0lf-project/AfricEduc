@@ -3,7 +3,6 @@
 session_start();
 
 require_once __DIR__ . '/../app/config/database.php';
-require_once __DIR__ . '/../app/controllers/LoginController.php';
 
 $url = $_GET['url'] ?? 'dashboard';
 

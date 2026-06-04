@@ -1,12 +1,10 @@
 <?php
-session_start();
 
 $errors = $_SESSION['errors'] ?? [];
 $old = $_SESSION['old'] ?? [];
-
+$flash = $flash ?? null; 
 unset($_SESSION['errors'], $_SESSION['old']);
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -121,7 +119,7 @@ unset($_SESSION['errors'], $_SESSION['old']);
         </p>
       </div>
 
-      <form id="login-form" class="mt-8 space-y-5" method="POST" action="../../controllers/LoginController.php"  >
+      <form id="login-form" class="mt-8 space-y-5" method="POST" action="/AfricEduc/public/index.php?url=login"  >
         <input type="hidden" name="auth_action" value="login">
 
         <div>
@@ -197,6 +195,23 @@ unset($_SESSION['errors'], $_SESSION['old']);
       </p>
     </div>
   </div>
+
+  <?php if (!empty($flash)) : ?>
+  <div id="flash"
+       class="fixed top-5 left-5 z-50 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg">
+      <?= $flash ?>
+  </div>
+
+  <script>
+    setTimeout(() => {
+      const el = document.getElementById('flash');
+      if (el) {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 500);
+      }
+    }, 2500);
+  </script>
+<?php endif; ?>
 
   <script>
 (function () {

@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+$_SESSION['flash_success'] = "Déconnexion réussie 👋";
+
+
 // Supprimer toutes les variables de session
 $_SESSION = [];
 

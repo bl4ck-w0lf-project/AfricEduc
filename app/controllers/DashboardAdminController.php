@@ -26,6 +26,5 @@ class DashboardAdminController {
 
 
 }
-$controller = new DashboardAdminController($pdo);
-$controller->index();
+
 ?>

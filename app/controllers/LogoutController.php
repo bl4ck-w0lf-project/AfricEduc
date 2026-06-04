@@ -8,11 +8,15 @@ class LogoutController {
             session_start();
         }
 
+        $flash = "Déconnexion réussie !!!";
+
         // 🧹 vider session
         $_SESSION = [];
 
         // 🧨 détruire session
         session_destroy();
+
+        
 
         // 🍪 supprimer cookie session (propre)
         if (ini_get("session.use_cookies")) {
@@ -24,6 +28,9 @@ class LogoutController {
                 $params["httponly"]
             );
         }
+
+        session_start();
+        $_SESSION['flash_success'] = "Déconnexion réussie !!!";
 
         // 🔥 redirection finale
         header("Location: /AfricEduc/public/index.php?url=login");
