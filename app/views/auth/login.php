@@ -2,7 +2,8 @@
 
 $errors = $_SESSION['errors'] ?? [];
 $old = $_SESSION['old'] ?? [];
-$flash = $flash ?? null; 
+$flash = $_SESSION['flash_success'] ?? null;
+unset($_SESSION['flash_success']);
 unset($_SESSION['errors'], $_SESSION['old']);
 ?>
 <!DOCTYPE html>

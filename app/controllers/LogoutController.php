@@ -8,7 +8,7 @@ class LogoutController {
             session_start();
         }
 
-        $flash = "Déconnexion réussie !!!";
+        $flash = "Déconnexion réussie !!";
 
         // 🧹 vider session
         $_SESSION = [];
