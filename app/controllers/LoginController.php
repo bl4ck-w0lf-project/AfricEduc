@@ -21,11 +21,10 @@ class LoginController
 
     public function index()
     {
+        
         $errors = [];
         $old = [];
-
-        $flash = $_SESSION['flash_success'] ?? null;
-        unset($_SESSION['flash_success']);
+       
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -81,8 +80,8 @@ class LoginController
             exit;
         }
 
-        $flash = $_SESSION['flash_success'] ?? null;
-        unset($_SESSION['flash_success']);
+        
+
 
         require __DIR__ . '/../views/auth/login.php';
     }
