@@ -149,16 +149,17 @@
 </head>
 <body>
 <!-- HEADER CORRIGÉ - À PLACER APRÈS <body> -->
-<header class="app-header">
-  <div class="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:pl-64">
-    <!-- lg:pl-64 au lieu de ml-14 lg:ml-0 pour que le header commence APRÈS la sidebar -->
+<!-- HEADER CORRIGÉ - À METTRE APRÈS <body> -->
+<header class="app-header" style="position: fixed; top: 0; right: 0; left: 0; z-index: 40; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid #e2e8f0;">
+  <div class="flex h-16 items-center justify-between gap-4 px-4 sm:px-6" style="margin-left: 0;">
     
-    <div class="flex items-center gap-3">
+    <!-- Version desktop : padding-left pour éviter la sidebar -->
+    <div class="flex items-center gap-3 w-full lg:pl-[270px]">
       <div>
-        <p class="font-heading text-sm font-semibold text-primary sm:text-base" id="school-name-header">
+        <p class="font-heading text-sm font-semibold text-primary sm:text-base">
           <?= htmlspecialchars($_SESSION['school_name'] ?? 'École inconnue') ?>
         </p>
-        <p class="text-xs text-slate-500" id="school-location">
+        <p class="text-xs text-slate-500">
           <?= htmlspecialchars($_SESSION['school_address'] ?? '') ?>
         </p>
       </div>
@@ -195,6 +196,7 @@
     </div>
   </div>
 </header>
+
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
 
   
@@ -205,7 +207,7 @@
 
   
   <!-- En-tête -->
-  <div class="mb-8 animate-[slideUp_0.4s_ease-out]">
+  <div class="mb-8 animate-[slideUp_0.4s_ease-out] pt-[50px]">
     <div class="flex items-center gap-3 mb-2">
       <div class="w-1 h-8 bg-primary rounded-full"></div>
       <h1 class="font-heading text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
@@ -341,7 +343,7 @@
         <!-- Logo preview - hauteur automatique qui s'adapte -->
         <div id="logo-preview" class="mb-6 w-full rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden shadow-inner" style="aspect-ratio: 16/9;">
           <?php if (!empty($school['logo'])): ?>
-            <img src="<?= htmlspecialchars($school['logo']) ?>" class="w-full h-full object-cover" alt="Logo">
+            <img style="width:100%; height:100%;" src="/AfricEduc/public/<?= htmlspecialchars($school['logo']) ?>" class="w-full h-full object-cover" alt="Logo">
           <?php else: ?>
             <svg class="w-24 h-24 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
               <path d="M4 19.5V8.25L12 4l8 4.25V19.5"/>

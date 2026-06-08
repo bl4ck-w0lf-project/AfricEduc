@@ -21,33 +21,68 @@ class SchoolController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            $stmt = $this->pdo->prepare("
-                UPDATE schools
-                SET
-                    name = ?,
-                    subtype = ?,
-                    email = ?,
-                    phone = ?,
-                    address = ?,
-                    logo = ?,
-                    status = ?
-                WHERE id = ?
-            ");
+    // =========================
+    // 1. DELETE LOGO
+    // =========================
+        if (($_POST['action'] ?? '') === 'delete_logo') {
 
-            $stmt->execute([
-                $_POST['name'] ?? $school['name'],
-                $_POST['subtype'] ?? $school['subtype'],
-                $_POST['email'] ?? $school['email'],
-                $_POST['phone'] ?? $school['phone'],
-                $_POST['address'] ?? $school['address'],
-                $_POST['logo'] ?? $school['logo'],
-                $_POST['status'] ?? $school['status'],
-                $schoolId
-            ]);
+            $stmt = $this->pdo->prepare("UPDATE schools SET logo = NULL WHERE id = ?");
+            $stmt->execute([$schoolId]);
 
             header("Location: /AfricEduc/public/index.php?url=school_identity");
             exit;
         }
+
+        // =========================
+        // 2. UPLOAD LOGO
+        // =========================
+        if (isset($_FILES['logo']) && $_FILES['logo']['error'] === 0) {
+
+            $fileName = time() . '_' . $_FILES['logo']['name'];
+
+            $uploadDir = __DIR__ . '/../../public/uploads/logos/';
+            $filePath = 'uploads/logos/' . $fileName;
+
+            move_uploaded_file($_FILES['logo']['tmp_name'], $uploadDir . $fileName);
+
+            $stmt = $this->pdo->prepare("
+                UPDATE schools SET logo = ? WHERE id = ?
+            ");
+
+            $stmt->execute([$filePath, $schoolId]);
+
+            header("Location: /AfricEduc/public/index.php?url=school_identity");
+            exit;
+        }
+
+        // =========================
+        // 3. UPDATE INFOS ECOLE
+        // =========================
+        $stmt = $this->pdo->prepare("
+            UPDATE schools
+            SET
+                name = ?,
+                subtype = ?,
+                email = ?,
+                phone = ?,
+                address = ?,
+                status = ?
+            WHERE id = ?
+        ");
+
+        $stmt->execute([
+            $_POST['name'] ?? '',
+            $_POST['subtype'] ?? '',
+            $_POST['email'] ?? '',
+            $_POST['phone'] ?? '',
+            $_POST['address'] ?? '',
+            $_POST['status'] ?? 'active',
+            $schoolId
+        ]);
+
+        header("Location: /AfricEduc/public/index.php?url=school_identity");
+        exit;
+    }
 
         $stmt = $this->pdo->prepare("
             SELECT
