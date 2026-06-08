@@ -1,4 +1,3 @@
-
 <?php
 $role = $_SESSION['user_role'];
 $currentPage = $_GET['url'] ?? 'dashboard';
@@ -171,13 +170,15 @@ h1,h2,h3,h4 { font-family: "Quicksand", sans-serif; }
 
 <h4 class="mt-5 mb-2 px-3 text-xs text-white/60 uppercase">Mon école</h4>
 
-<a href="<?= $baseUrl ?>setup_school.php"
+<a href="<?= $baseUrl ?>setup_school"
    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg
-   <?= $currentPage === 'setup_school.php' ? 'active' : '' ?>">
+   <?= $currentPage === 'setup_school' ? 'active' : '' ?>">
     <i class="fa-solid fa-gear"></i> Configuration de mon école
 </a>
 
-<a href="../school_identity/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
+<a href="<?= $baseUrl ?>school_identity" 
+    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg
+    <?= $currentPage === 'school_identity' ? 'active' : '' ?>">
     <i class="fa-solid fa-id-card"></i> Identité & contact
 </a>
 

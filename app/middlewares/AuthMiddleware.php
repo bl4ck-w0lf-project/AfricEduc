@@ -23,4 +23,16 @@ class AuthMiddleware
             exit;
         }
     }
+
+    public static function requireRole($roles): void
+{
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    if (!isset($_SESSION['user_role']) || !in_array($_SESSION['user_role'], $roles)) {
+        header("Location: /AfricEduc/public/index.php?url=dashboard_" . ($_SESSION['user_role'] ?? 'login'));
+        exit;
+    }
+}
 }

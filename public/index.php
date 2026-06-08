@@ -32,6 +32,12 @@ switch ($url) {
         $controller->index();
         break;
 
+    case 'school_identity':
+        require_once __DIR__ . '/../app/controllers/SchoolController.php';
+        $controller = new SchoolController($pdo);
+        $controller->identity();
+        break;
+
     case 'manage_agents':
         require_once __DIR__ . '/../app/controllers/ManageAgentController.php';
         $controller = new ManageAgentController($pdo);

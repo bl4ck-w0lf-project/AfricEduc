@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php");
@@ -234,7 +234,7 @@ if (!isset($_SESSION['user_id'])) {
         <div class="mt-8 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xl shadow-violet-100/50 sm:p-10">
           <p id="step-banner" class="mb-6 text-center text-sm font-semibold text-primary">Étape 1/4 — Système pédagogique</p>
 
-          <form method="POST" id="setup-form" novalidate action="../../controllers/SetupSchoolController.php">
+          <form method="POST" id="setup-form" novalidate action="/AfricEduc/public/index.php?url=setup_school">
             <!-- Étape 1 : Pédagogie -->
             <div class="step-panel is-active" data-step="1">
               <h2 class="font-heading text-xl font-bold text-slate-900 sm:text-2xl">Comment fonctionne votre établissement ?</h2>

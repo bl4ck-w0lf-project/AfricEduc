@@ -103,19 +103,31 @@
       
 
     <?php if (!$isConfigured): ?>
-        <div class="bg-red-100 border-[1px] rounded-2xl my-3 text-black p-8 text-sm flex justify-between items-center">
-          
-          <div class="text-xl" >
-            <i class="fa-solid fa-triangle-exclamation text-4xl" style="color: rgb(255, 41, 0);"></i>
-             Votre école n’est pas encore configurée...
-          </div>
-          
+        <div class="relative bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-2xl my-4 p-6 flex flex-col md:flex-row justify-between items-center gap-5 shadow-lg shadow-red-200/50 backdrop-blur-sm">
+  
+  <!-- Icône et texte -->
+  <div class="flex items-center gap-4 w-full md:w-auto">
+    <div class="bg-white/80 backdrop-blur-sm p-3 rounded-2xl shadow-md shadow-red-200">
+      <i class="fa-solid fa-triangle-exclamation text-3xl md:text-4xl text-red-600"></i>
+    </div>
+    <div>
+      <h3 class="font-bold text-gray-800 text-lg md:text-xl">Configuration requise</h3>
+      <p class="text-gray-600 text-sm md:text-base">Votre école n’est pas encore configurée sur la plateforme.</p>
+    </div>
+  </div>
 
-          <a href="setup_school.php"
-            class="bg-red-500 text-white px-5 py-3 rounded-lg text-md font-semibold">
-            Configurer maintenant !!
-          </a>
-        </div>  
+  <!-- Bouton CTA -->
+  <a href="/AfricEduc/public/index.php?url=setup_school" 
+     class="group relative bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-xl text-md font-semibold flex items-center gap-2 shadow-md shadow-red-400/40 transition-all duration-300 transform hover:scale-[1.02] active:scale-95">
+    <i class="fa-solid fa-gear text-white group-hover:rotate-90 transition-transform duration-300"></i>
+    Configurer maintenant
+    <i class="fa-solid fa-arrow-right text-white text-xs group-hover:translate-x-1 transition-transform"></i>
+  </a>
+
+  <!-- Petit élément décoratif -->
+  <div class="absolute -top-2 -right-2 w-20 h-20 bg-red-200 rounded-full blur-2xl opacity-40 pointer-events-none"></div>
+  <div class="absolute -bottom-2 -left-2 w-16 h-16 bg-red-300 rounded-full blur-2xl opacity-30 pointer-events-none"></div>
+</div> 
     <?php endif; ?>
 
       <!-- Conteneur dynamique (les données viendront de PHP) -->

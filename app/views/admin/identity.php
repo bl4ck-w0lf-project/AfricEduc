@@ -1,3 +1,4 @@
+<!-- views/identite.php -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -9,480 +10,482 @@
     tailwind.config = {
       theme: {
         extend: {
-          colors: { primary: "#7300e9", primaryDark: "#5c00bd", accent: "#99fbe3", danger: "#ef4444", warning: "#f59e0b", success: "#10b981" },
-          fontFamily: { heading: ["Quicksand", "sans-serif"], body: ["Outfit", "sans-serif"] },
-          animation: { 'fade-in': 'fadeIn 0.3s ease-in-out' },
-          keyframes: { fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } } }
+          colors: {
+            primary: "#7300e9",
+            primaryDark: "#5c00bd",
+            accent: "#99fbe3",
+          },
+          fontFamily: {
+            heading: ["Quicksand", "sans-serif"],
+            body: ["Outfit", "sans-serif"]
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.3s ease-in-out',
+            'slide-up': 'slideUp 0.4s ease-out'
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            slideUp: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+          }
         }
       }
     };
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: "Outfit", sans-serif; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Outfit", sans-serif; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); min-height: 100vh; }
     h1, h2, h3, .font-heading { font-family: "Quicksand", sans-serif; }
-    .sidebar-link { transition: all 0.2s ease; }
-    .sidebar-link:hover { background-color: rgba(255,255,255,0.1); transform: translateX(4px); }
-    .sidebar-link.active { background-color: rgba(153,251,227,0.2); color: #99fbe3; border-left: 3px solid #99fbe3; }
-    .submenu { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
-    .submenu.open { max-height: 320px; }
-    #sidebar-overlay { pointer-events: none; opacity: 0; transition: opacity 0.2s ease; }
-    #sidebar-overlay.is-open { pointer-events: auto; opacity: 1; }
-    .kpi-card { transition: all 0.2s ease; }
-    .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -12px rgba(0,0,0,0.15); }
-    .action-button { transition: all 0.2s ease; }
-    .action-button:hover { transform: scale(1.05); }
-    .toast { position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 12px 20px; border-radius: 12px; font-size: 0.875rem; z-index: 10000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-    .toast.show { opacity: 1; }
-    /* Modale de confirmation */
-    .modal-overlay { pointer-events: none; opacity: 0; transition: opacity 0.2s ease; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
-    .modal-overlay.is-open { pointer-events: auto; opacity: 1; }
-    .modal-content { transform: scale(0.95); transition: transform 0.2s ease; max-width: 90%; width: 28rem; background: white; border-radius: 1rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-    .modal-overlay.is-open .modal-content { transform: scale(1); }
-    .confirm-modal .modal-content { max-width: 24rem; }
+    
+    .settings-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .settings-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+    }
+    
+    .input-focus-effect:focus {
+      box-shadow: 0 0 0 3px rgba(115, 0, 233, 0.1);
+      border-color: #7300e9;
+    }
+    
+    .action-btn {
+      transition: all 0.2s ease;
+    }
+    .action-btn:active {
+      transform: scale(0.98);
+    }
+    
+    /* Style pour les boutons radio personnalisés */
+    .radio-status {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #cbd5e1;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      position: relative;
+      cursor: pointer;
+    }
+    .radio-status:checked {
+      border-color: #7300e9;
+      background-color: #7300e9;
+      box-shadow: inset 0 0 0 3px white;
+    }
+    .radio-status:focus {
+      outline: none;
+      ring: 2px solid #7300e9;
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 16px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      z-index: 10000;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.2s ease;
+      pointer-events: none;
+      transform: translateY(10px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+    .modal-overlay.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 24px;
+      max-width: 90%;
+      width: 400px;
+      transform: scale(0.95);
+      transition: transform 0.2s ease;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    .modal-overlay.is-open .modal-content {
+      transform: scale(1);
+    }
+    
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e2e8f0;
+    }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 text-slate-800 antialiased">
-  <div id="sidebar-overlay" class="fixed inset-0 z-40 bg-slate-900/50 lg:hidden"></div>
-
-  <!-- Sidebar -->
-  <aside id="sidebar" class="fixed left-0 top-0 z-50 flex h-full w-[260px] -translate-x-full flex-col bg-gradient-to-b from-primary to-primaryDark text-white shadow-2xl transition-transform duration-300 lg:translate-x-0">
-    <div class="flex h-16 items-center gap-3 border-b border-white/20 px-4">
-      <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 shadow-lg">
-        <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6.75C4 5.78 4.78 5 5.75 5h4.5c.46 0 .9.18 1.22.51l.56.56c.33.33.77.51 1.24.51h5.98c.97 0 1.75.78 1.75 1.75v8.92c0 .97-.78 1.75-1.75 1.75H5.75A1.75 1.75 0 0 1 4 17.25V6.75Z"/><path d="M8 11.5h8M8 14.5h5"/></svg>
+<body>
+<!-- HEADER CORRIGÉ - À PLACER APRÈS <body> -->
+<header class="app-header">
+  <div class="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:pl-64">
+    <!-- lg:pl-64 au lieu de ml-14 lg:ml-0 pour que le header commence APRÈS la sidebar -->
+    
+    <div class="flex items-center gap-3">
+      <div>
+        <p class="font-heading text-sm font-semibold text-primary sm:text-base" id="school-name-header">
+          <?= htmlspecialchars($_SESSION['school_name'] ?? 'École inconnue') ?>
+        </p>
+        <p class="text-xs text-slate-500" id="school-location">
+          <?= htmlspecialchars($_SESSION['school_address'] ?? '') ?>
+        </p>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      <?php
+        $currentYear = date("Y");
+        $nextYear = $currentYear + 1;
+        $schoolYear = $currentYear . "–" . $nextYear;
+      ?>
+      <span class="hidden rounded-full border border-accent/50 bg-accent/20 px-3 py-1 text-xs font-medium text-slate-800 sm:inline-flex">
+        Année scolaire <?= $schoolYear ?>
       </span>
-      <span class="font-heading text-xl font-bold tracking-tight">EduManager</span>
-    </div>
-    <nav class="flex-1 overflow-y-auto px-3 py-6 text-sm">
-      <a href="index.html" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 mb-1">
-        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3.75 6A2.25 2.25 0 0 1 6 3.75h3A2.25 2.25 0 0 1 11.25 6v3A2.25 2.25 0 0 1 9 11.25H6A2.25 2.25 0 0 1 3.75 9V6ZM3.75 15A2.25 2.25 0 0 1 6 12.75h3A2.25 2.25 0 0 1 11.25 15v3A2.25 2.25 0 0 1 9 20.25H6A2.25 2.25 0 0 1 3.75 18v-3ZM13.5 6A2.25 2.25 0 0 1 15.75 3.75h3A2.25 2.25 0 0 1 21 6v3A2.25 2.25 0 0 1 18.75 11.25h-3A2.25 2.25 0 0 1 13.5 9V6ZM13.5 15A2.25 2.25 0 0 1 15.75 12.75h3A2.25 2.25 0 0 1 21 15v3A2.25 2.25 0 0 1 18.75 20.25h-3A2.25 2.25 0 0 1 13.5 18v-3Z"/></svg>
-        Dashboard
-      </a>
-      <div class="mt-2">
-        <button type="button" class="sidebar-toggle flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-left text-white/95 hover:bg-white/10" data-submenu="sub-ecole">
-          <span class="flex items-center gap-3"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5V8.25L12 4l8 4.25V19.5"/><path d="M9 19.5V12h6v7.5"/></svg>Mon école</span>
-          <svg class="chevron h-4 w-4 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-        <div id="sub-ecole" class="submenu open pl-2">
-          <a href="config-ecole.html" class="sidebar-link block rounded-lg py-2 pl-10 pr-3">Configuration</a>
-          <a href="identite.html" class="sidebar-link active mt-1 block rounded-lg py-2 pl-10 pr-3">Identité & contact</a>
-        </div>
-      </div>
-      <div class="mt-1">
-        <button type="button" class="sidebar-toggle flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-left text-white/95 hover:bg-white/10" data-submenu="sub-org">
-          <span class="flex items-center gap-3"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3.75 21h16.5M4.5 3h15A1.5 1.5 0 0 1 21 4.5v13.5A1.5 1.5 0 0 1 19.5 19.5h-15A1.5 1.5 0 0 1 4.5 18v-13.5A1.5 1.5 0 0 1 4.5 3zm4.5 4.5h3M9 12h3m-3 4.5h3M15 7.5h3M15 12h3m-3 4.5h3"/></svg>Organisation</span>
-          <svg class="chevron h-4 w-4 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-        <div id="sub-org" class="submenu open pl-2">
-          <a href="classes.html" class="sidebar-link block rounded-lg py-2 pl-10 pr-3">Classes / Groupes</a>
-          <a href="matieres.html" class="sidebar-link block rounded-lg py-2 pl-10 pr-3">Matières</a>
-        </div>
-      </div>
-      <a href="eleves.html" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 mt-1">
-        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 17a4 4 0 1 1 8 0"/><path d="M15 11a3 3 0 1 0-6 0 3 3 0 0 0 6 0Z"/></svg>
-        <span id="nav-eleves-label">Élèves</span>
-      </a>
-      <a href="notes.html" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5">Notes & Moyennes</a>
-      <a href="paiements.html" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5">Scolarité & Paiements</a>
-      <a href="agents.html" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5">Agents</a>
-      <a href="bulletins.html" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5">Bulletins & Documents</a>
-      <a href="statistiques.html" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5">Statistiques</a>
-      <div class="mt-8 border-t border-white/15 pt-4">
-        <a href="login.html" class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-red-200 hover:bg-red-500/20">Déconnexion</a>
-      </div>
-    </nav>
-  </aside>
-
-  <!-- Main content -->
-  <div class="min-h-screen lg:pl-[260px]">
-    <header class="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-slate-200 bg-white/95 px-4 backdrop-blur-md shadow-sm sm:px-6">
-      <div class="flex items-center gap-3">
-        <button id="btn-menu" class="inline-flex rounded-xl border border-slate-200 p-2 text-slate-700 hover:bg-slate-50 lg:hidden"><svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-        <div><p class="font-heading text-sm font-semibold text-primary sm:text-base" id="school-name-header">Collège Saint-Michel</p><p class="text-xs text-slate-500" id="school-location">Cotonou, Bénin</p></div>
-      </div>
-      <div class="flex items-center gap-3">
-        <div id="type-switch" class="hidden md:flex gap-1 bg-slate-100 p-1 rounded-lg">
-          <button id="switch-college" class="px-2 py-1 text-xs font-semibold rounded bg-primary text-white">Collège</button>
-          <button id="switch-universite" class="px-2 py-1 text-xs font-semibold rounded text-slate-600 hover:bg-slate-200">Université</button>
-        </div>
-        <span class="hidden rounded-full border border-accent/50 bg-accent/20 px-3 py-1 text-xs font-medium text-slate-800 sm:inline-flex" id="school-year">Année 2025–2026</span>
-        <button class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-1.5 pr-3 shadow-sm">
-          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md">AK</span>
-          <span class="hidden text-left text-sm sm:block"><span class="block font-medium text-slate-900">Aminata Kossi</span><span class="text-xs text-slate-500">Administratrice</span></span>
-        </button>
-      </div>
-    </header>
-
-    <main class="px-4 py-6 sm:px-6 lg:px-8">
-      <div id="dynamic-content">
-        <!-- Contenu injecté dynamiquement -->
-      </div>
-      <footer class="mt-12 pb-8 text-center text-xs text-slate-400">
-        EduManager — <span id="footer-school">Collège Saint-Michel</span> · Dernière mise à jour : <span id="last-update"></span>
-      </footer>
-    </main>
-  </div>
-
-  <!-- Modale de confirmation pour suppression -->
-  <div id="confirm-modal" class="modal-overlay">
-    <div class="modal-content bg-white rounded-2xl shadow-2xl p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="font-heading text-xl font-bold text-slate-900">Confirmation</h3>
-        <button id="close-confirm-modal" class="text-slate-400 hover:text-slate-600">
-          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-      <div id="confirm-body" class="text-slate-700">Êtes-vous sûr de vouloir supprimer le logo ?</div>
-      <div class="mt-6 flex gap-3 justify-end">
-        <button id="confirm-cancel" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">Annuler</button>
-        <button id="confirm-ok" class="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white">Supprimer</button>
-      </div>
+      
+      <button class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-1.5 pr-3 shadow-sm hover:shadow-md transition">
+        <?php
+          $userName = $_SESSION['user_name'] ?? 'User';
+          $words = explode(' ', trim($userName));
+          $initials = '';
+          foreach ($words as $w) {
+              $initials .= strtoupper($w[0] ?? '');
+          }
+          $initials = substr($initials, 0, 2);
+        ?>
+        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md">
+          <?= $initials ?>
+        </span>
+        <span class="hidden text-left text-sm sm:block">
+          <span class="block font-medium text-slate-900"><?= htmlspecialchars($_SESSION['user_name'] ?? 'Utilisateur') ?></span>
+          <span class="text-xs text-slate-500"><?= htmlspecialchars($_SESSION['user_role'] ?? 'Rôle') ?></span>
+        </span>
+      </button>
     </div>
   </div>
+</header>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
 
-  <div id="toast" class="toast"></div>
+  
+  
 
-  <script>
-    // ==================== DONNÉES DE BASE ====================
-    const collegeData = {
-      schoolName: "Collège Saint-Michel",
-      schoolLocation: "Cotonou, Bénin",
-      address: "12 Avenue Jean-Paul II",
-      city: "Cotonou",
-      country: "Bénin",
-      phone: "+229 21 30 00 00",
-      email: "contact@csm.edu",
-      logo: null
-    };
-    const universityData = {
-      schoolName: "Université d'Abomey-Calavi",
-      schoolLocation: "Abomey-Calavi, Bénin",
-      address: "Campus Universitaire",
-      city: "Abomey-Calavi",
-      country: "Bénin",
-      phone: "+229 21 30 20 20",
-      email: "contact@uac.bj",
-      logo: null
-    };
+ <?php include __DIR__ . '/../components/sidebar.php'; ?>
+ 
 
-    let typeEtablissement = "college";
-    let currentData = JSON.parse(JSON.stringify(collegeData));
+  
+  <!-- En-tête -->
+  <div class="mb-8 animate-[slideUp_0.4s_ease-out]">
+    <div class="flex items-center gap-3 mb-2">
+      <div class="w-1 h-8 bg-primary rounded-full"></div>
+      <h1 class="font-heading text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+        Identité & Contact
+      </h1>
+    </div>
+    <p class="text-slate-600 text-sm sm:text-base pl-4">Gérez les informations de votre établissement scolaire</p>
+  </div>
 
-    // Charger depuis localStorage si existant
-    const storedType = localStorage.getItem("typeEtablissement");
-    if (storedType === "college" || storedType === "universite") typeEtablissement = storedType;
-    else {
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlType = urlParams.get("type");
-      if (urlType === "college" || urlType === "universite") typeEtablissement = urlType;
-      localStorage.setItem("typeEtablissement", typeEtablissement);
-    }
-    if (typeEtablissement === "college") currentData = JSON.parse(JSON.stringify(collegeData));
-    else currentData = JSON.parse(JSON.stringify(universityData));
+  <!-- Messages PHP -->
+  <?php if (isset($_SESSION['toast_message'])): ?>
+    <div class="fixed bottom-6 right-6 z-50 animate-[fadeIn_0.3s_ease-out]" id="php-toast">
+      <div class="rounded-2xl px-5 py-3 shadow-lg flex items-center gap-2 <?= isset($_SESSION['toast_error']) && $_SESSION['toast_error'] ? 'bg-red-500' : 'bg-emerald-500' ?> text-white">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <?php if (isset($_SESSION['toast_error']) && $_SESSION['toast_error']): ?>
+            <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          <?php else: ?>
+            <path d="M20 6L9 17l-5-5"/>
+          <?php endif; ?>
+        </svg>
+        <span class="text-sm font-medium"><?= htmlspecialchars($_SESSION['toast_message']) ?></span>
+      </div>
+    </div>
+    <script>setTimeout(() => { const t = document.getElementById('php-toast'); if(t) t.remove(); }, 3000);</script>
+    <?php unset($_SESSION['toast_message'], $_SESSION['toast_error']); ?>
+  <?php endif; ?>
 
-    // Charger les données sauvegardées de l'identité
-    const savedAddress = localStorage.getItem("schoolAddress");
-    const savedCity = localStorage.getItem("schoolCity");
-    const savedCountry = localStorage.getItem("schoolCountry");
-    const savedPhone = localStorage.getItem("schoolPhone");
-    const savedEmailContact = localStorage.getItem("schoolEmailContact");
-    if (savedAddress) currentData.address = savedAddress;
-    if (savedCity) currentData.city = savedCity;
-    if (savedCountry) currentData.country = savedCountry;
-    if (savedPhone) currentData.phone = savedPhone;
-    if (savedEmailContact) currentData.email = savedEmailContact;
+  <!-- Grille principale -->
+  <div class="grid gap-6 lg:gap-8 lg:grid-cols-3 animate-[fadeIn_0.5s_ease-out]">
+    
+    <!-- Formulaire coordonnées -->
+    <div class="lg:col-span-2 settings-card bg-white rounded-2xl border border-slate-200/80 shadow-lg shadow-slate-200/50 p-6 sm:p-8">
+      <div class="flex items-center gap-2 mb-6">
+        <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3.75 21h16.5M4.5 3h15A1.5 1.5 0 0 1 21 4.5v13.5A1.5 1.5 0 0 1 19.5 19.5h-15A1.5 1.5 0 0 1 4.5 18v-13.5A1.5 1.5 0 0 1 4.5 3z"/>
+          <path d="M8 7.5h8M8 12h8M8 16.5h5"/>
+        </svg>
+        <h2 class="font-heading text-xl font-bold text-slate-900">Coordonnées</h2>
+      </div>
+      
+      <form method="POST" action="" enctype="multipart/form-data" class="space-y-5 flex-1">
+        <input type="hidden" name="action" value="update_infos">
+        
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">Nom de l'école</label>
+          <input type="text" name="name" value="<?= htmlspecialchars($school['name'] ?? '') ?>" 
+                 placeholder="Ex: Collège Saint-Michel" 
+                 class="input-focus-effect w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary transition-all">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">Adresse complète</label>
+          <input type="text" name="address" value="<?= htmlspecialchars($school['address'] ?? '') ?>" 
+                 placeholder="Ex: 12 Avenue Jean-Paul II" 
+                 class="input-focus-effect w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary transition-all">
+        </div>
+        
+        <!-- Ligne téléphone + email côte à côte -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Téléphone</label>
+            <input type="tel" name="phone" value="<?= htmlspecialchars($school['phone'] ?? '') ?>" 
+                   placeholder="Ex: +229 21 30 00 00" 
+                   class="input-focus-effect w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary transition-all">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Email de contact</label>
+            <input type="email" name="email" value="<?= htmlspecialchars($school['email'] ?? '') ?>" 
+                   placeholder="Ex: contact@ecole.edu" 
+                   class="input-focus-effect w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary transition-all">
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">Type d'établissement</label>
+          <select name="subtype" class="input-focus-effect w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-primary transition-all">
+            <option value="public" <?= (($school['subtype'] ?? '') == 'public') ? 'selected' : '' ?>>Public</option>
+            <option value="prive" <?= (($school['subtype'] ?? '') == 'prive') ? 'selected' : '' ?>>Privé</option>
+          </select>
+        </div>
+        
+        <!-- Statut du compte - Boutons radio stylisés -->
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-3">Statut du compte</label>
+          <div class="flex flex-wrap gap-6">
+            <label class="flex items-center gap-2 cursor-pointer group">
+              <input type="radio" name="status" value="active" 
+                     <?= (($school['status'] ?? 'active') == 'active') ? 'checked' : '' ?>
+                     class="radio-status">
+              <span class="flex items-center gap-1.5 text-sm font-medium text-slate-700 group-hover:text-primary transition-colors">
+                Actif
+              </span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer group">
+              <input type="radio" name="status" value="inactive" 
+                     <?= (($school['status'] ?? 'active') == 'inactive') ? 'checked' : '' ?>
+                     class="radio-status">
+              <span class="flex items-center gap-1.5 text-sm font-medium text-slate-700 group-hover:text-primary transition-colors">
+                Inactif
+              </span>
+            </label>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">Le statut détermine l'accès à la plateforme</p>
+        </div>
+        
+        <button type="submit" 
+                class="action-btn w-full sm:w-auto bg-gradient-to-r from-primary to-primaryDark hover:from-primaryDark hover:to-primaryDark text-white font-semibold px-6 py-3 rounded-xl shadow-md shadow-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/40 hover:scale-[1.02] active:scale-95">
+          <div class="flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            Enregistrer les modifications
+          </div>
+        </button>
+      </form>
+    </div>
 
-    // Mettre à jour l'affichage du header
-    function updateHeaderFooter() {
-      const isUniv = typeEtablissement === "universite";
-      document.getElementById("school-name-header").innerText = currentData.schoolName;
-      document.getElementById("school-location").innerText = currentData.schoolLocation;
-      document.getElementById("footer-school").innerText = currentData.schoolName;
-      document.getElementById("nav-eleves-label").innerText = isUniv ? "Étudiants" : "Élèves";
-    }
+    <!-- Logo & identité - MÊME HAUTEUR que coordonnées -->
+    <div class="w-[500px] settings-card bg-white rounded-2xl border border-slate-200/80 shadow-lg shadow-slate-200/50 p-6 sm:p-8">
+      <div class="flex items-center gap-2 mb-6">
+        <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M4 19.5V8.25L12 4l8 4.25V19.5"/>
+          <path d="M9 19.5V12h6v7.5"/>
+        </svg>
+        <h2 class="font-heading text-xl font-bold text-slate-900">Logo & identité</h2>
+      </div>
+      
+      <form method="POST" action="" enctype="multipart/form-data" class="flex flex-col flex-1">
+        <!-- Logo preview - hauteur automatique qui s'adapte -->
+        <div id="logo-preview" class="mb-6 w-full rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden shadow-inner" style="aspect-ratio: 16/9;">
+          <?php if (!empty($school['logo'])): ?>
+            <img src="<?= htmlspecialchars($school['logo']) ?>" class="w-full h-full object-cover" alt="Logo">
+          <?php else: ?>
+            <svg class="w-24 h-24 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M4 19.5V8.25L12 4l8 4.25V19.5"/>
+              <path d="M9 19.5V12h6v7.5"/>
+            </svg>
+          <?php endif; ?>
+        </div>
+        
+        <!-- Boutons sur la même ligne -->
+        <div class="flex flex-col sm:flex-row gap-3 justify-center w-full mt-4">
+          <label class="action-btn cursor-pointer bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 flex-1">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+            Changer le logo
+            <input type="file" name="logo" accept="image/png, image/jpeg, image/jpg" class="hidden" onchange="this.form.submit()">
+          </label>
+          
+          <!-- Bouton supprimer le logo -->
+          <button type="submit" name="action" value="delete_logo" 
+                  class="action-btn bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 hover:border-red-300 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 flex-1">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+            Supprimer le logo
+          </button>
+        </div>
+        
+        <p class="mt-4 text-xs text-slate-500 text-center">Formats acceptés : PNG, JPG (max 2 Mo)</p>
+        
+        <div class="mt-6 p-4 bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl">
+          <div class="flex gap-2">
+            <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-xs text-slate-600">Les informations de contact seront affichées sur les bulletins, certificats et documents officiels de l'école.</p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    function setType(type) {
-      typeEtablissement = type;
-      localStorage.setItem("typeEtablissement", type);
-      if (type === "college") currentData = JSON.parse(JSON.stringify(collegeData));
-      else currentData = JSON.parse(JSON.stringify(universityData));
-      // Recharger les valeurs sauvegardées
-      const savedAddress = localStorage.getItem("schoolAddress");
-      const savedCity = localStorage.getItem("schoolCity");
-      const savedCountry = localStorage.getItem("schoolCountry");
-      const savedPhone = localStorage.getItem("schoolPhone");
-      const savedEmailContact = localStorage.getItem("schoolEmailContact");
-      if (savedAddress) currentData.address = savedAddress;
-      if (savedCity) currentData.city = savedCity;
-      if (savedCountry) currentData.country = savedCountry;
-      if (savedPhone) currentData.phone = savedPhone;
-      if (savedEmailContact) currentData.email = savedEmailContact;
-      updateHeaderFooter();
-      renderIdentitePage();
-      updateSwitchButtons();
-    }
+  <!-- Cartes récapitulatives -->
+  <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-5 animate-[fadeIn_0.6s_ease-out]">
+    <div class="bg-white rounded-xl border-l-4 border-primary p-5 shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+          <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M3 9l9-6 9 6M5 9v9a2 2 0 002 2h10a2 2 0 002-2V9"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase text-slate-500 tracking-wide">Établissement</p>
+          <p class="text-sm font-medium text-slate-800 mt-0.5">
+            <?= htmlspecialchars($school['name'] ?? '—') ?>
+            <span class="text-xs text-slate-500 ml-2">(<?= htmlspecialchars($school['subtype'] ?? '—') ?>)</span>
+          </p>
+          <p class="text-xs text-slate-500 mt-1"><?= htmlspecialchars($school['address'] ?? '—') ?></p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-white rounded-xl border-l-4 border-accent p-5 shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-accent/20 rounded-xl flex items-center justify-center">
+          <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase text-slate-500 tracking-wide">Contact</p>
+          <p class="text-sm font-medium text-slate-800 mt-0.5">
+            <?= htmlspecialchars($school['phone'] ?? '—') ?>
+          </p>
+          <p class="text-xs text-slate-500 mt-1"><?= htmlspecialchars($school['email'] ?? '—') ?></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-    function updateSwitchButtons() {
-      const collegeBtn = document.getElementById("switch-college");
-      const univBtn = document.getElementById("switch-universite");
-      if (collegeBtn && univBtn) {
-        const isUniv = typeEtablissement === "universite";
-        collegeBtn.className = `px-2 py-1 text-xs font-semibold rounded ${!isUniv ? "bg-primary text-white" : "text-slate-600 hover:bg-slate-200"}`;
-        univBtn.className = `px-2 py-1 text-xs font-semibold rounded ${isUniv ? "bg-primary text-white" : "text-slate-600 hover:bg-slate-200"}`;
-      }
-    }
+<!-- Modale de confirmation pour suppression logo -->
+<div id="confirm-modal" class="modal-overlay">
+  <div class="modal-content p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-heading text-xl font-bold text-slate-900">Confirmation</h3>
+      <button id="close-confirm-modal" class="text-slate-400 hover:text-slate-600 transition-colors">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div id="confirm-body" class="text-slate-700">Êtes-vous sûr de vouloir supprimer le logo ?</div>
+    <div class="mt-6 flex gap-3 justify-end">
+      <button id="confirm-cancel" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 font-medium hover:bg-slate-50 transition-all">Annuler</button>
+      <button id="confirm-ok" class="px-4 py-2 rounded-xl bg-red-600 text-white font-medium hover:bg-red-700 transition-all">Supprimer</button>
+    </div>
+  </div>
+</div>
 
-    function showToast(message, type = "success") {
-      const toast = document.getElementById("toast");
-      toast.innerText = message;
-      toast.style.backgroundColor = type === "error" ? "#ef4444" : "#10b981";
-      toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 3000);
-    }
-
-    function escapeHtml(str) {
-      if (!str) return "";
-      return str.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
+<script>
+  // Gestion de la modale de confirmation
+  const modal = document.getElementById('confirm-modal');
+  const closeBtn = document.getElementById('close-confirm-modal');
+  const cancelBtn = document.getElementById('confirm-cancel');
+  const okBtn = document.getElementById('confirm-ok');
+  let pendingAction = null;
+  
+  function openModal(message, onConfirm) {
+    document.getElementById('confirm-body').innerHTML = message;
+    modal.classList.add('is-open');
+    pendingAction = onConfirm;
+  }
+  
+  function closeModal() {
+    modal.classList.remove('is-open');
+    pendingAction = null;
+  }
+  
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+  if (modal) modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+  if (okBtn) okBtn.addEventListener('click', () => {
+    if(pendingAction) pendingAction();
+    closeModal();
+  });
+  
+  // Capture du bouton supprimer logo pour ouvrir la modale
+  const deleteLogoBtn = document.querySelector('button[value="delete_logo"]');
+  if (deleteLogoBtn) {
+    deleteLogoBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal('Voulez-vous vraiment supprimer le logo ?', () => {
+        const form = deleteLogoBtn.closest('form');
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'action';
+        input.value = 'delete_logo';
+        form.appendChild(input);
+        form.submit();
       });
-    }
-
-    // Gestion de la modale de confirmation
-    const confirmModal = document.getElementById("confirm-modal");
-    const closeConfirmModalBtn = document.getElementById("close-confirm-modal");
-    const confirmCancelBtn = document.getElementById("confirm-cancel");
-    const confirmOkBtn = document.getElementById("confirm-ok");
-    let pendingDeleteCallback = null;
-
-    function openConfirmModal(message, onConfirm) {
-      document.getElementById("confirm-body").innerHTML = message;
-      confirmModal.classList.add("is-open");
-      document.body.style.overflow = "hidden";
-      pendingDeleteCallback = onConfirm;
-    }
-
-    function closeConfirmModal() {
-      confirmModal.classList.remove("is-open");
-      document.body.style.overflow = "";
-      pendingDeleteCallback = null;
-    }
-
-    closeConfirmModalBtn.addEventListener("click", closeConfirmModal);
-    confirmCancelBtn.addEventListener("click", closeConfirmModal);
-    confirmModal.addEventListener("click", (e) => { if (e.target === confirmModal) closeConfirmModal(); });
-    confirmOkBtn.addEventListener("click", () => {
-      if (pendingDeleteCallback) {
-        pendingDeleteCallback();
-        closeConfirmModal();
-      }
     });
-
-    // Rendu de la page Identité & Contact
-    function renderIdentitePage() {
-      const container = document.getElementById("dynamic-content");
-      if (!container) return;
-
-      const isUniv = typeEtablissement === "universite";
-      const currentSchoolName = currentData.schoolName;
-
-      container.innerHTML = `
-        <div class="mb-6">
-          <h1 class="font-heading text-2xl font-bold text-slate-900 sm:text-3xl">Identité & Contact</h1>
-          <p class="mt-1 text-sm text-slate-600">Informations de contact et localisation – ${isUniv ? "Université" : "Collège"}</p>
-        </div>
-
-        <div class="grid gap-6 lg:grid-cols-3">
-          <!-- Formulaire principal -->
-          <div class="lg:col-span-2 settings-card rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm sm:p-6">
-            <h2 class="font-heading text-lg font-bold text-slate-900">Coordonnées</h2>
-            <form id="identite-form" class="mt-4 space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-slate-700">Adresse</label>
-                <input type="text" id="school-address" value="${escapeHtml(currentData.address)}" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <label class="block text-sm font-medium text-slate-700">Ville</label>
-                  <input type="text" id="school-city" value="${escapeHtml(currentData.city)}" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-slate-700">Pays</label>
-                  <input type="text" id="school-country" value="${escapeHtml(currentData.country)}" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
-                </div>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-slate-700">Téléphone</label>
-                <input type="tel" id="school-phone" value="${escapeHtml(currentData.phone)}" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-slate-700">Email de contact</label>
-                <input type="email" id="school-email-contact" value="${escapeHtml(currentData.email)}" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
-              </div>
-              <button type="submit" class="action-button rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primaryDark">Enregistrer les modifications</button>
-            </form>
-          </div>
-
-          <!-- Carte d'information et logo -->
-          <div class="settings-card rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm sm:p-6">
-            <h2 class="font-heading text-lg font-bold text-slate-900">Logo & identité visuelle</h2>
-            <div class="mt-4 flex flex-col items-center">
-              <div id="logo-preview" class="mb-4 flex h-32 w-32 items-center justify-center rounded-xl bg-slate-100 border border-slate-200 overflow-hidden">
-                <svg class="h-16 w-16 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5V8.25L12 4l8 4.25V19.5"/><path d="M9 19.5V12h6v7.5"/></svg>
-              </div>
-              <div class="flex flex-wrap gap-3 justify-center">
-                <label class="action-button cursor-pointer rounded-xl bg-white border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all">
-                  Changer le logo
-                  <input type="file" id="logo-upload" accept="image/*" class="hidden">
-                </label>
-                <button id="btn-delete-logo" class="action-button rounded-xl bg-red-50 border border-red-200 px-4 py-2 text-sm font-semibold text-red-700 shadow-sm hover:bg-red-100 transition-all">
-                  Supprimer le logo
-                </button>
-              </div>
-              <p class="mt-3 text-xs text-slate-500">Format PNG, JPG (max 2Mo)</p>
-            </div>
-            <div class="mt-6 rounded-xl bg-slate-50 p-3 text-xs text-slate-500">
-              <svg class="inline-block h-4 w-4 mr-1 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              Les informations de contact seront affichées sur les bulletins et documents officiels.
-            </div>
-          </div>
-        </div>
-
-        <!-- Carte récapitulative des infos -->
-        <div class="mt-6 grid gap-4 sm:grid-cols-2">
-          <div class="kpi-card rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm" style="border-left-color: #7300e9;">
-            <p class="text-xs font-semibold uppercase text-slate-500">Adresse complète</p>
-            <p class="text-sm font-medium text-slate-800 mt-1">${escapeHtml(currentData.address)}, ${escapeHtml(currentData.city)}, ${escapeHtml(currentData.country)}</p>
-          </div>
-          <div class="kpi-card rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm" style="border-left-color: #99fbe3;">
-            <p class="text-xs font-semibold uppercase text-slate-500">Contact</p>
-            <p class="text-sm font-medium text-slate-800 mt-1">📞 ${escapeHtml(currentData.phone)} &nbsp;|&nbsp; ✉️ ${escapeHtml(currentData.email)}</p>
-          </div>
-        </div>
-      `;
-
-      // Gestion du formulaire
-      const form = document.getElementById("identite-form");
-      if (form) {
-        form.addEventListener("submit", (e) => {
-          e.preventDefault();
-          const address = document.getElementById("school-address").value.trim();
-          const city = document.getElementById("school-city").value.trim();
-          const country = document.getElementById("school-country").value.trim();
-          const phone = document.getElementById("school-phone").value.trim();
-          const emailContact = document.getElementById("school-email-contact").value.trim();
-
-          if (!address || !city || !country || !phone || !emailContact) {
-            showToast("Veuillez remplir tous les champs", "error");
-            return;
-          }
-
-          // Mise à jour des données
-          currentData.address = address;
-          currentData.city = city;
-          currentData.country = country;
-          currentData.phone = phone;
-          currentData.email = emailContact;
-          // Sauvegarde dans localStorage
-          localStorage.setItem("schoolAddress", address);
-          localStorage.setItem("schoolCity", city);
-          localStorage.setItem("schoolCountry", country);
-          localStorage.setItem("schoolPhone", phone);
-          localStorage.setItem("schoolEmailContact", emailContact);
-
-          // Mettre à jour le header si la localisation change
-          const fullLocation = `${city}, ${country}`;
-          document.getElementById("school-location").innerText = fullLocation;
-          currentData.schoolLocation = fullLocation;
-          localStorage.setItem("customSchoolLocation", fullLocation);
-
-          showToast("Informations enregistrées avec succès");
-          renderIdentitePage();
-        });
-      }
-
-      // Upload de logo
-      const logoInput = document.getElementById("logo-upload");
-      const logoPreview = document.getElementById("logo-preview");
-      if (logoInput) {
-        logoInput.addEventListener("change", (e) => {
-          const file = e.target.files[0];
-          if (file && file.type.startsWith("image/")) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-              const img = document.createElement("img");
-              img.src = ev.target.result;
-              img.className = "h-full w-full object-cover";
-              logoPreview.innerHTML = "";
-              logoPreview.appendChild(img);
-              localStorage.setItem("schoolLogo", ev.target.result);
-              showToast("Logo mis à jour");
-            };
-            reader.readAsDataURL(file);
-          } else {
-            showToast("Veuillez sélectionner une image valide", "error");
-          }
-        });
-      }
-
-      // Suppression du logo (avec modale, pas de confirm)
-      const deleteBtn = document.getElementById("btn-delete-logo");
-      if (deleteBtn) {
-        deleteBtn.addEventListener("click", () => {
-          openConfirmModal("Voulez-vous vraiment supprimer le logo ?", () => {
-            logoPreview.innerHTML = `<svg class="h-16 w-16 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5V8.25L12 4l8 4.25V19.5"/><path d="M9 19.5V12h6v7.5"/></svg>`;
-            localStorage.removeItem("schoolLogo");
-            showToast("Logo supprimé");
-          });
-        });
-      }
-
-      // Restaurer le logo s'il existe
-      const savedLogo = localStorage.getItem("schoolLogo");
-      if (savedLogo && logoPreview) {
-        const img = document.createElement("img");
-        img.src = savedLogo;
-        img.className = "h-full w-full object-cover";
-        logoPreview.innerHTML = "";
-        logoPreview.appendChild(img);
-      }
-    }
-
-    // ==================== INITIALISATION ====================
-    function init() {
-      updateHeaderFooter();
-      renderIdentitePage();
-      updateSwitchButtons();
-
-      // Boutons de switch
-      document.getElementById("switch-college")?.addEventListener("click", () => setType("college"));
-      document.getElementById("switch-universite")?.addEventListener("click", () => setType("universite"));
-
-      // Menu mobile
-      const sidebar = document.getElementById("sidebar");
-      const overlay = document.getElementById("sidebar-overlay");
-      const btnMenu = document.getElementById("btn-menu");
-      function openMenu() { sidebar.classList.remove("-translate-x-full"); overlay.classList.add("is-open"); document.body.style.overflow = "hidden"; }
-      function closeMenu() { sidebar.classList.add("-translate-x-full"); overlay.classList.remove("is-open"); document.body.style.overflow = ""; }
-      btnMenu?.addEventListener("click", openMenu);
-      overlay?.addEventListener("click", closeMenu);
-      window.addEventListener("resize", () => { if (window.innerWidth >= 1024) closeMenu(); });
-
-      // Sous-menus
-      document.querySelectorAll(".sidebar-toggle").forEach(btn => {
-        const id = btn.getAttribute("data-submenu");
-        const panel = document.getElementById(id);
-        const chev = btn.querySelector(".chevron");
-        if (panel) btn.addEventListener("click", () => { const open = panel.classList.toggle("open"); if (chev) chev.style.transform = open ? "rotate(180deg)" : ""; });
-      });
-
-      // Date de mise à jour
-      document.getElementById("last-update").innerText = new Date().toLocaleTimeString("fr-FR");
-    }
-
-    init();
-  </script>
+  }
+</script>
 </body>
 </html>
