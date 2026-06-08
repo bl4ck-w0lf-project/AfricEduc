@@ -2,8 +2,11 @@
 
 $errors = $_SESSION['errors'] ?? [];
 $old = $_SESSION['old'] ?? [];
-$flash = $_SESSION['flash_success'] ?? null;
-unset($_SESSION['flash_success']);
+$flash = $_GET['flash'] ?? null;
+
+if ($flash) {
+    $flash = "Déconnexion réussie ";
+}
 unset($_SESSION['errors'], $_SESSION['old']);
 ?>
 <!DOCTYPE html>
@@ -186,10 +189,11 @@ unset($_SESSION['errors'], $_SESSION['old']);
             <path fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4Z" class="opacity-90" />
           </svg>
         </button>
-      </form>
+      </form> 
+
 
       <p class="mt-8 text-center">
-        <a href="../../../index.php" class="inline-flex items-center gap-2 text-sm font-semibold text-primary transition hover:text-violet-800">
+        <a href="/AfricEduc/index.php" class="inline-flex items-center gap-2 text-sm font-semibold text-primary transition hover:text-violet-800">
           <span aria-hidden="true">←</span>
           Retournez à l'accueil
         </a>

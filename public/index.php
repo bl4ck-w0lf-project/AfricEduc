@@ -27,7 +27,7 @@ switch ($url) {
         break;
 
     case 'setup_school':
-        require_once __DIR__ . '/../app/controllers/SetupSchoolController.php.php';
+        require_once __DIR__ . '/../app/controllers/SetupSchoolController.php';
         $controller = new SetupSchoolController($pdo);
         $controller->index();
         break;

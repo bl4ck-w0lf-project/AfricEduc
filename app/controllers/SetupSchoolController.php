@@ -54,7 +54,7 @@ if ($data['conduite_max'] < 1) {
 $success = $model->saveConfig($data);
 
 if ($success) {
-    header("Location: ../views/admin/dashboard_admin.php");
+    header("Location: /AfricEduc/public/index.php?url=dashboard_admin");
     exit;
 }
 
