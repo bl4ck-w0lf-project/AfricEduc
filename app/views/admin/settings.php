@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Paramètres | EduManager</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script>
     tailwind.config = {
       theme: {
@@ -149,6 +151,18 @@
       backdrop-filter: blur(12px);
       border-bottom: 1px solid #e2e8f0;
     }
+    
+    /* Password strength meter */
+    .strength-meter {
+      height: 4px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+    .strength-bar {
+      height: 4px;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
   </style>
 </head>
 <body>
@@ -220,17 +234,11 @@
       <p class="text-slate-600 text-sm sm:text-base pl-4">Gérez votre profil et vos informations personnelles</p>
     </div>
 
-    <!-- Messages PHP -->
+    <!-- Messages PHP (Toast) -->
     <?php if (isset($_SESSION['toast_message'])): ?>
       <div class="fixed bottom-6 right-6 z-50 animate-[fadeIn_0.3s_ease-out]" id="php-toast">
         <div class="rounded-2xl px-5 py-3 shadow-lg flex items-center gap-2 <?= isset($_SESSION['toast_error']) && $_SESSION['toast_error'] ? 'bg-red-500' : 'bg-emerald-500' ?> text-white">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <?php if (isset($_SESSION['toast_error']) && $_SESSION['toast_error']): ?>
-              <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            <?php else: ?>
-              <path d="M20 6L9 17l-5-5"/>
-            <?php endif; ?>
-          </svg>
+          <i class="fa-solid <?= isset($_SESSION['toast_error']) && $_SESSION['toast_error'] ? 'fa-circle-exclamation' : 'fa-circle-check' ?>"></i>
           <span class="text-sm font-medium"><?= htmlspecialchars($_SESSION['toast_message']) ?></span>
         </div>
       </div>
@@ -244,9 +252,7 @@
       <!-- Photo de profil -->
       <div class="settings-card bg-white rounded-2xl border border-slate-200/80 shadow-lg shadow-slate-200/50 p-6 sm:p-8">
         <div class="flex items-center gap-2 mb-6">
-          <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
-          </svg>
+          <i class="fa-solid fa-camera text-primary text-xl"></i>
           <h2 class="font-heading text-xl font-bold text-slate-900">Photo de profil</h2>
         </div>
         
@@ -257,28 +263,20 @@
             <?php if (!empty($admin['avatar'])): ?>
               <img src="<?= htmlspecialchars($admin['avatar']) ?>" class="w-full h-full object-cover" alt="Avatar">
             <?php else: ?>
-              <span class="text-5xl font-bold text-primary">
-                <?= strtoupper(substr($admin['name'] ?? 'A', 0, 1)) ?>
-              </span>
+              <i class="fa-solid fa-user text-5xl text-primary"></i>
             <?php endif; ?>
           </div>
           
           <div class="flex flex-col sm:flex-row gap-3 justify-center w-full mt-2">
             <label class="action-btn cursor-pointer bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 flex-1">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                <circle cx="12" cy="13" r="4"/>
-              </svg>
+              <i class="fa-solid fa-upload"></i>
               Changer la photo
               <input type="file" name="avatar" accept="image/png, image/jpeg, image/jpg" class="hidden" onchange="this.form.submit()">
             </label>
             
-            <!-- Bouton supprimer - avec modale de confirmation -->
             <button type="button" id="delete-avatar-btn" 
                     class="action-btn bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 hover:border-red-300 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 flex-1">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-              </svg>
+              <i class="fa-solid fa-trash-can"></i>
               Supprimer
             </button>
           </div>
@@ -289,41 +287,64 @@
       <!-- Informations personnelles -->
       <div class="settings-card bg-white rounded-2xl border border-slate-200/80 shadow-lg shadow-slate-200/50 p-6 sm:p-8">
         <div class="flex items-center gap-2 mb-6">
-          <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M3.75 21h16.5M4.5 3h15A1.5 1.5 0 0 1 21 4.5v13.5A1.5 1.5 0 0 1 19.5 19.5h-15A1.5 1.5 0 0 1 4.5 18v-13.5A1.5 1.5 0 0 1 4.5 3z"/>
-            <path d="M8 7.5h8M8 12h8M8 16.5h5"/>
-          </svg>
+          <i class="fa-solid fa-user-gear text-primary text-xl"></i>
           <h2 class="font-heading text-xl font-bold text-slate-900">Mes informations</h2>
         </div>
         
         <form method="POST" action="" class="space-y-5 flex-1">
           <input type="hidden" name="action" value="update_profile">
           
+          <!-- Nom complet -->
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Nom complet</label>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">
+              <i class="fa-solid fa-user mr-2 text-primary"></i>Nom complet
+            </label>
             <input type="text" name="name" value="<?= htmlspecialchars($admin['name'] ?? '') ?>" 
                    placeholder="Ex: Jean Dupont" 
                    class="input-focus-effect w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary transition-all">
           </div>
           
+          <!-- Email -->
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Email</label>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">
+              <i class="fa-solid fa-envelope mr-2 text-primary"></i>Email
+            </label>
             <input type="email" name="email" value="<?= htmlspecialchars($admin['email'] ?? '') ?>" 
                    placeholder="Ex: contact@ecole.edu" 
                    class="input-focus-effect w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary transition-all">
           </div>
           
-          <!-- Mot de passe -->
+          <!-- Nouveau mot de passe -->
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Nouveau mot de passe</label>
-            <input type="password" name="password" placeholder="Laisser vide pour ne pas changer" 
+            <label class="block text-sm font-semibold text-slate-700 mb-2">
+              <i class="fa-solid fa-key mr-2 text-primary"></i>Nouveau mot de passe
+            </label>
+            <input type="password" id="password" name="password" placeholder="Laisser vide pour ne pas changer" 
                    class="input-focus-effect w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary transition-all">
-            <p class="text-xs text-slate-500 mt-1">Minimum 8 caractères</p>
+            
+            <!-- Jauge de force (UI uniquement) -->
+            <div class="mt-2">
+              <div class="strength-meter bg-slate-200 rounded-full overflow-hidden">
+                <div id="strength-bar" class="strength-bar w-0 bg-slate-300"></div>
+              </div>
+              <p id="strength-text" class="text-xs text-slate-500 mt-1"></p>
+            </div>
           </div>
           
-          <!-- Rôle - seulement admin et agent -->
+          <!-- Confirmation mot de passe -->
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Rôle</label>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">
+              <i class="fa-solid fa-check-double mr-2 text-primary"></i>Confirmer le mot de passe
+            </label>
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirmez votre nouveau mot de passe" 
+                   class="input-focus-effect w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary transition-all">
+          </div>
+          
+          <!-- Rôle -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">
+              <i class="fa-solid fa-badge mr-2 text-primary"></i>Rôle
+            </label>
             <select name="role" class="input-focus-effect w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-primary transition-all">
               <option value="admin" <?= (($admin['role'] ?? '') == 'admin') ? 'selected' : '' ?>>Administrateur</option>
               <option value="agent" <?= (($admin['role'] ?? '') == 'agent') ? 'selected' : '' ?>>Agent</option>
@@ -332,14 +353,16 @@
           
           <!-- Statut -->
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-3">Statut du compte</label>
+            <label class="block text-sm font-semibold text-slate-700 mb-3">
+              <i class="fa-solid fa-toggle-on mr-2 text-primary"></i>Statut du compte
+            </label>
             <div class="flex flex-wrap gap-6">
               <label class="flex items-center gap-2 cursor-pointer group">
                 <input type="radio" name="status" value="active" 
                        <?= (($admin['status'] ?? 'active') == 'active') ? 'checked' : '' ?>
                        class="radio-status">
                 <span class="flex items-center gap-1.5 text-sm font-medium text-slate-700 group-hover:text-primary transition-colors">
-                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <i class="fa-solid fa-circle-check text-emerald-500"></i>
                   Actif
                 </span>
               </label>
@@ -348,7 +371,7 @@
                        <?= (($admin['status'] ?? 'active') == 'inactive') ? 'checked' : '' ?>
                        class="radio-status">
                 <span class="flex items-center gap-1.5 text-sm font-medium text-slate-700 group-hover:text-primary transition-colors">
-                  <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                  <i class="fa-solid fa-circle-exclamation text-red-500"></i>
                   Inactif
                 </span>
               </label>
@@ -359,12 +382,7 @@
           <button type="submit" 
                   class="action-btn w-full bg-gradient-to-r from-primary to-primaryDark hover:from-primaryDark hover:to-primaryDark text-white font-semibold px-6 py-3 rounded-xl shadow-md shadow-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/40 hover:scale-[1.02] active:scale-95">
             <div class="flex items-center justify-center gap-2">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-              </svg>
+              <i class="fa-solid fa-floppy-disk"></i>
               Mettre à jour mon profil
             </div>
           </button>
@@ -378,9 +396,7 @@
       <div class="bg-white rounded-xl border-l-4 border-primary p-5 shadow-sm hover:shadow-md transition-shadow">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M12 8v4l3 3M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
-            </svg>
+            <i class="fa-solid fa-clock text-primary text-xl"></i>
           </div>
           <div>
             <p class="text-xs font-semibold uppercase text-slate-500 tracking-wide">Dernière connexion</p>
@@ -394,9 +410,7 @@
       <div class="bg-white rounded-xl border-l-4 border-accent p-5 shadow-sm hover:shadow-md transition-shadow">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 bg-accent/20 rounded-xl flex items-center justify-center">
-            <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
-            </svg>
+            <i class="fa-solid fa-envelope-circle-check text-primary text-xl"></i>
           </div>
           <div>
             <p class="text-xs font-semibold uppercase text-slate-500 tracking-wide">Email vérifié</p>
@@ -416,21 +430,82 @@
     <div class="flex items-center justify-between mb-4">
       <h3 class="font-heading text-xl font-bold text-slate-900">Confirmation</h3>
       <button id="close-confirm-modal" class="text-slate-400 hover:text-slate-600 transition-colors">
-        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M6 18L18 6M6 6l12 12"/>
-        </svg>
+        <i class="fa-solid fa-xmark text-xl"></i>
       </button>
     </div>
-    <div id="confirm-body" class="text-slate-700">Êtes-vous sûr de vouloir supprimer votre photo de profil ?</div>
+    <div id="confirm-body" class="text-slate-700 flex items-center gap-2">
+      <i class="fa-solid fa-triangle-exclamation text-warning text-xl"></i>
+      Êtes-vous sûr de vouloir supprimer votre photo de profil ?
+    </div>
     <div class="mt-6 flex gap-3 justify-end">
-      <button id="confirm-cancel" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 font-medium hover:bg-slate-50 transition-all">Annuler</button>
-      <button id="confirm-ok" class="px-4 py-2 rounded-xl bg-red-600 text-white font-medium hover:bg-red-700 transition-all">Supprimer</button>
+      <button id="confirm-cancel" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
+        <i class="fa-solid fa-ban"></i> Annuler
+      </button>
+      <button id="confirm-ok" class="px-4 py-2 rounded-xl bg-red-600 text-white font-medium hover:bg-red-700 transition-all flex items-center gap-2">
+        <i class="fa-solid fa-trash-can"></i> Supprimer
+      </button>
     </div>
   </div>
 </div>
 
+<!-- JS uniquement pour la jauge de force et la modale de confirmation -->
 <script>
-  // Gestion de la modale de confirmation
+  // ==================== JAUGE DE FORCE DU MOT DE PASSE (UI uniquement) ====================
+  const passwordInput = document.getElementById('password');
+  const confirmInput = document.getElementById('confirm_password');
+  const strengthBar = document.getElementById('strength-bar');
+  const strengthText = document.getElementById('strength-text');
+  
+  function checkPasswordStrength(password) {
+    let strength = 0;
+    let message = '';
+    let width = 0;
+    let color = '#cbd5e1';
+    
+    if (password.length === 0) {
+      strengthBar.style.width = '0%';
+      strengthBar.style.backgroundColor = '#cbd5e1';
+      strengthText.innerHTML = '';
+      return;
+    }
+    
+    // Critères
+    if (password.length >= 8) strength += 1;
+    if (password.length >= 12) strength += 1;
+    if (/[a-z]/.test(password)) strength += 1;
+    if (/[A-Z]/.test(password)) strength += 1;
+    if (/\d/.test(password)) strength += 1;
+    if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
+    
+    // Déterminer le niveau
+    if (strength <= 2) {
+      message = 'Très faible';
+      width = 25;
+      color = '#ef4444';
+    } else if (strength <= 3) {
+      message = 'Faible';
+      width = 50;
+      color = '#f59e0b';
+    } else if (strength <= 5) {
+      message = 'Moyen';
+      width = 75;
+      color = '#eab308';
+    } else {
+      message = 'Fort';
+      width = 100;
+      color = '#10b981';
+    }
+    
+    strengthBar.style.width = width + '%';
+    strengthBar.style.backgroundColor = color;
+    strengthText.innerHTML = `<span style="color: ${color}"> Force : ${message}</span>`;
+  }
+  
+  passwordInput.addEventListener('input', () => {
+    checkPasswordStrength(passwordInput.value);
+  });
+  
+  // ==================== MODALE DE CONFIRMATION ====================
   const modal = document.getElementById('confirm-modal');
   const closeBtn = document.getElementById('close-confirm-modal');
   const cancelBtn = document.getElementById('confirm-cancel');
@@ -456,12 +531,12 @@
     closeModal();
   });
   
-  // Capture du bouton supprimer avatar pour ouvrir la modale
+  // Capture du bouton supprimer avatar
   const deleteAvatarBtn = document.getElementById('delete-avatar-btn');
   if (deleteAvatarBtn) {
     deleteAvatarBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      openModal('Voulez-vous vraiment supprimer votre photo de profil ?', () => {
+      openModal('<i class="fa-solid fa-triangle-exclamation text-warning text-xl mr-2"></i> Voulez-vous vraiment supprimer votre photo de profil ?', () => {
         const form = document.getElementById('avatar-form');
         const input = document.createElement('input');
         input.type = 'hidden';
@@ -472,11 +547,6 @@
       });
     });
   }
-  
-  setTimeout(() => {
-    const toast = document.getElementById('php-toast');
-    if (toast) toast.remove();
-  }, 3000);
 </script>
 </body>
 </html>

@@ -19,6 +19,12 @@ switch ($url) {
         $controller = new DashboardAdminController($pdo);
         $controller->index();
         break;
+    
+    case 'admin_settings':
+        require_once __DIR__ . '/../app/controllers/DashboardAdminController.php';
+        $controller = new DashboardAdminController($pdo);
+        $controller->adminSettings();
+        break;
 
     case 'dashboard_agent':
         require_once __DIR__ . '/../app/controllers/DashboardAgentController.php';
@@ -37,6 +43,7 @@ switch ($url) {
         $controller = new SchoolController($pdo);
         $controller->identity();
         break;
+
 
     case 'manage_agents':
         require_once __DIR__ . '/../app/controllers/ManageAgentController.php';
