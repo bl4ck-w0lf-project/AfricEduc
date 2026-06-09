@@ -152,6 +152,18 @@ public function deleteResetTokensByEmail(string $email): void
     );
     $stmt->execute([$email]);
 }
+
+public function updateLastLogin(int $userId): bool
+{
+    $stmt = $this->pdo->prepare("
+        UPDATE users 
+        SET last_login = NOW()
+        WHERE id = ?
+    ");
+
+    return $stmt->execute([$userId]);
+}
+
 }
 
 ?>

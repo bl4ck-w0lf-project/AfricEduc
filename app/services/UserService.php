@@ -40,6 +40,9 @@ $_SESSION['school_email'] = $user['school_email'] ?? '';
 $_SESSION['school_logo'] = $user['school_logo'] ?? '';
 $_SESSION['school_slug'] = $user['school_slug'] ?? '';
 
+
+$this->userModel->updateLastLogin($user['id']);
+
     return [
         'success' => true,
         'role' => $user['role']
