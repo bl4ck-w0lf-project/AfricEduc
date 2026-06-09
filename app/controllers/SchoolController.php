@@ -1,18 +1,17 @@
 <?php
 
-    require_once __DIR__ . '/../middlewares/AuthMiddleware.php';
-
+require_once __DIR__ . '/../middlewares/AuthMiddleware.php';
+require_once __DIR__ . '/../models/SchoolModel.php';
 
 class SchoolController
 {
-    private $pdo;
+    private SchoolModel $schoolModel;
 
-    public function __construct($pdo)
+    public function __construct(PDO $pdo)
     {
-        $this->pdo = $pdo;
+        $this->schoolModel = new SchoolModel($pdo);
     }
 
-    // Mise à jour des données de l'école
     public function identity(): void
     {
         AuthMiddleware::requireRole(['admin', 'super_admin']);
@@ -21,86 +20,81 @@ class SchoolController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // =========================
-    // 1. DELETE LOGO
-    // =========================
-        if (($_POST['action'] ?? '') === 'delete_logo') {
+            // =========================
+            // DELETE LOGO
+            // =========================
+            if (($_POST['action'] ?? '') === 'delete_logo') {
 
-            $stmt = $this->pdo->prepare("UPDATE schools SET logo = NULL WHERE id = ?");
-            $stmt->execute([$schoolId]);
+                $this->schoolModel->deleteLogo($schoolId);
+
+                $_SESSION['toast_message'] = "Logo supprimé avec succès.";
+
+                header("Location: /AfricEduc/public/index.php?url=school_identity");
+                exit;
+            }
+
+            // =========================
+            // UPLOAD LOGO
+            // =========================
+            if (
+                isset($_FILES['logo']) &&
+                $_FILES['logo']['error'] === UPLOAD_ERR_OK
+            ) {
+
+                $fileName = time() . '_' . basename($_FILES['logo']['name']);
+
+                $uploadDir = __DIR__ . '/../../public/uploads/logos/';
+
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0775, true);
+                }
+
+                $filePath = 'uploads/logos/' . $fileName;
+
+                if (
+                    move_uploaded_file(
+                        $_FILES['logo']['tmp_name'],
+                        $uploadDir . $fileName
+                    )
+                ) {
+
+                    $this->schoolModel->updateLogo(
+                        $schoolId,
+                        $filePath
+                    );
+
+                    $_SESSION['toast_message'] = "Logo mis à jour avec succès.";
+                }
+
+                header("Location: /AfricEduc/public/index.php?url=school_identity");
+                exit;
+            }
+
+            // =========================
+            // UPDATE INFORMATIONS
+            // =========================
+            $this->schoolModel->updateInfo(
+                $schoolId,
+                [
+                    'name'     => $_POST['name'] ?? '',
+                    'subtype'  => $_POST['subtype'] ?? '',
+                    'email'    => $_POST['email'] ?? '',
+                    'phone'    => $_POST['phone'] ?? '',
+                    'address'  => $_POST['address'] ?? '',
+                    'status'   => $_POST['status'] ?? 'active'
+                ]
+            );
+
+            $_SESSION['toast_message'] = "Informations mises à jour avec succès.";
 
             header("Location: /AfricEduc/public/index.php?url=school_identity");
             exit;
         }
 
         // =========================
-        // 2. UPLOAD LOGO
+        // LOAD SCHOOL
         // =========================
-        if (isset($_FILES['logo']) && $_FILES['logo']['error'] === 0) {
-
-            $fileName = time() . '_' . $_FILES['logo']['name'];
-
-            $uploadDir = __DIR__ . '/../../public/uploads/logos/';
-            $filePath = 'uploads/logos/' . $fileName;
-
-            move_uploaded_file($_FILES['logo']['tmp_name'], $uploadDir . $fileName);
-
-            $stmt = $this->pdo->prepare("
-                UPDATE schools SET logo = ? WHERE id = ?
-            ");
-
-            $stmt->execute([$filePath, $schoolId]);
-
-            header("Location: /AfricEduc/public/index.php?url=school_identity");
-            exit;
-        }
-
-        // =========================
-        // 3. UPDATE INFOS ECOLE
-        // =========================
-        $stmt = $this->pdo->prepare("
-            UPDATE schools
-            SET
-                name = ?,
-                subtype = ?,
-                email = ?,
-                phone = ?,
-                address = ?,
-                status = ?
-            WHERE id = ?
-        ");
-
-        $stmt->execute([
-            $_POST['name'] ?? '',
-            $_POST['subtype'] ?? '',
-            $_POST['email'] ?? '',
-            $_POST['phone'] ?? '',
-            $_POST['address'] ?? '',
-            $_POST['status'] ?? 'active',
-            $schoolId
-        ]);
-
-        header("Location: /AfricEduc/public/index.php?url=school_identity");
-        exit;
-    }
-
-        $stmt = $this->pdo->prepare("
-            SELECT
-                name,
-                subtype,
-                email,
-                phone,
-                address,
-                logo,
-                status
-            FROM schools
-            WHERE id = ?
-            LIMIT 1
-        ");
-
-        $stmt->execute([$schoolId]);
-
-        $school = $stmt->fetch(PDO::FETCH_ASSOC);
+        $school = $this->schoolModel->findById($schoolId);
 
         require __DIR__ . '/../views/admin/identity.php';
     }

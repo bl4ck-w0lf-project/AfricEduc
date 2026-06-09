@@ -220,8 +220,10 @@ h1,h2,h3,h4 { font-family: "Quicksand", sans-serif; }
     <i class="fa-solid fa-chart-line"></i> Statistiques
 </a>
 
-<a href="../stats_admin/index.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg">
-    <i class="fa-solid fa-chart-line"></i> Mon compte administrateur 
+<a href="<?= $baseUrl ?>admin_settings" 
+    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg
+    <?= $currentPage === 'admin_settings' ? 'active' : '' ?>">
+     <i class="fa-solid fa-circle-user"></i>Mon compte administrateur 
 </a>
 
 <?php endif; ?>
