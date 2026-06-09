@@ -401,7 +401,23 @@
           <div>
             <p class="text-xs font-semibold uppercase text-slate-500 tracking-wide">Dernière connexion</p>
             <p class="text-sm font-medium text-slate-800 mt-0.5">
-              <?= !empty($admin['last_login']) ? date('d/m/Y à H:i:s', strtotime($admin['last_login'])) : 'Jamais connecté' ?>
+                    <?php if (!empty($admin['last_login'])): ?>
+            <?php
+                $dt = new DateTime($admin['last_login']);
+                $formatter = new IntlDateFormatter(
+                    'fr_FR',
+                    IntlDateFormatter::FULL,
+                    IntlDateFormatter::NONE
+                );
+
+                $date = mb_convert_case($formatter->format($dt), MB_CASE_TITLE, "UTF-8");
+            ?>
+
+            <?= $date . ' à ' . $dt->format('H:i:s') ?>
+
+        <?php else: ?>
+            Jamais connecté
+        <?php endif; ?>
             </p>
           </div>
         </div>
@@ -415,8 +431,18 @@
           <div>
             <p class="text-xs font-semibold uppercase text-slate-500 tracking-wide">Email vérifié</p>
             <p class="text-sm font-medium text-slate-800 mt-0.5">
-              <?= !empty($admin['email_verified_at']) ? 'Vérifié le ' . date('d/m/Y à H:i:s', strtotime($admin['email_verified_at'])) : 'Non vérifié' ?>
-            </p>
+                <?= !empty($admin['email_verified_at']) 
+                    ? 'Vérifié le ' . mb_convert_case(
+                        (new IntlDateFormatter(
+                            'fr_FR',
+                            IntlDateFormatter::FULL,
+                            IntlDateFormatter::NONE
+                        ))->format(new DateTime($admin['email_verified_at'])),
+                        MB_CASE_TITLE,
+                        "UTF-8"
+                      ) . ' à ' . (new DateTime($admin['email_verified_at']))->format('H:i:s')
+                    : 'Non vérifié'
+                ?>            </p>
           </div>
         </div>
       </div>
