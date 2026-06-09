@@ -36,7 +36,9 @@ class DashboardAdminModel
                 email,
                 role,
                 avatar,
-                status
+                status,
+                last_login,
+                email_verified_at
             FROM users
             WHERE id = ?
             LIMIT 1
