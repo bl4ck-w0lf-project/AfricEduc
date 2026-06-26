@@ -44,7 +44,7 @@ unset($_SESSION['old']);
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body { font-family: "Outfit", sans-serif; }
     h1, h2, h3 { font-family: "Quicksand", sans-serif; }
@@ -452,25 +452,65 @@ unset($_SESSION['old']);
       </main>
     </div>
 
-    <!-- Colonne droite -->
-    <aside class="aside-gradient relative hidden min-h-[280px] flex-col justify-between border-t border-violet-100 p-8 lg:flex lg:min-h-screen lg:border-l lg:border-t-0">
-      <div class="absolute inset-0 overflow-hidden" aria-hidden="true">
-        <svg class="absolute -right-16 top-20 h-96 w-96 text-primary/10" viewBox="0 0 200 200" fill="none">
-          <circle cx="100" cy="100" r="80" stroke="currentColor" stroke-width="0.5" />
-          <circle cx="100" cy="100" r="55" stroke="currentColor" stroke-width="0.5" />
-          <circle cx="100" cy="100" r="30" stroke="currentColor" stroke-width="0.5" />
-        </svg>
-      </div>
-      <div class="relative z-10 max-w-md">
-        <p class="text-2xl font-bold leading-snug text-slate-900">Une inscription simple, une gestion scolaire <span class="text-primary">plus sereine</span>.</p>
-        <p class="mt-4 text-slate-600 leading-relaxed">Multi-tenant, sécurisé et pensé pour les collèges du Bénin et d'Afrique de l'Ouest.</p>
-        <div class="mt-8 space-y-3">
-          <div class="flex items-center gap-3 text-sm text-slate-700"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7300e9"><polyline points="20 6 9 17 4 12"/></svg><span>Gestion complète des élèves et notes</span></div>
-          <div class="flex items-center gap-3 text-sm text-slate-700"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7300e9"><polyline points="20 6 9 17 4 12"/></svg><span>Paiements et suivi financier intégré</span></div>
-          <div class="flex items-center gap-3 text-sm text-slate-700"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7300e9"><polyline points="20 6 9 17 4 12"/></svg><span>Génération automatique de bulletins PDF</span></div>
+<aside class="relative hidden min-h-[280px] flex-col justify-between overflow-hidden p-8 lg:flex lg:min-h-screen lg:p-12 xl:p-16" style="background-image: linear-gradient(135deg, rgba(248,244,255,0.85) 0%, rgba(237,230,255,0.85) 30%, rgba(224,212,255,0.85) 60%, rgba(208,191,255,0.85) 100%), url('https://imgs.search.brave.com/Nqg2-9urYxRDc5JOSMXFuRcr93j90CeXTQC48vlUYCw/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvOTQ3/Mjk1MDM0L2ZyL3Bo/b3RvL3VuLWdyb3Vw/ZS1kZS1kaXBsJUMz/JUI0bSVDMyVBOXMt/amV0YW50LWRlcy1j/YXNxdWV0dGVzLWRl/LWdyYWR1YXRpb24t/ZGFucy1sYWlyLmpw/Zz9zPTYxMng2MTIm/dz0wJms9MjAmYz13/ODJYbjZnNG1Rd05f/RG5GYzcxMFAtUHpR/WGMyLTRiZndwQVoy/aUtUbzZVPQ'); background-size: cover; background-position: center; background-blend-mode: overlay;">  
+  <!-- Overlay noir -->
+  <div class="absolute inset-0 bg-black/70"></div>
+  
+  
+
+  <!-- Contenu principal -->
+  <div class="relative z-10 flex flex-col justify-center min-h-full text-white">
+    <!-- Badge -->
+    <div class="mb-6 inline-flex items-center gap-2 self-start px-4 py-1.5 text-4xl font-semibold">
+      Bienvenue sur <span class="text-primary">AfricEduc</span>
+    </div>
+
+    <!-- Titre principal -->
+    <h2 class="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl text-white">
+      La plateforme éducative<br>
+      <span class="text-primary">qui connecte</span> votre école
+    </h2>
+
+    <!-- Description -->
+    <p class="mt-4 max-w-sm text-base text-white/80 leading-relaxed">
+      Gérez vos collèges et lycées en toute simplicité. Une solution tout-en-un pensée pour l'éducation au Bénin.
+    </p>
+
+    <!-- Avantages avec icônes Font Awesome -->
+    <div class="mt-8 space-y-4">
+      <div class="flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-white/5">
+        <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary backdrop-blur-md border border-white/10">
+          <i class="fas fa-building text-lg"></i>
+        </span>
+        <div>
+          <p class="font-semibold text-white">Établissements vérifiés</p>
+          <p class="text-sm text-white/70">Profils authentifiés et sécurisés</p>
         </div>
       </div>
-    </aside>
+
+      <div class="flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-white/5">
+        <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary backdrop-blur-md border border-white/10">
+          <i class="fas fa-chart-line text-lg"></i>
+        </span>
+        <div>
+          <p class="font-semibold text-white">Gestion simplifiée</p>
+          <p class="text-sm text-white/70">Élèves, notes, bulletins en quelques clics</p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-white/5">
+        <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary backdrop-blur-md border border-white/10">
+          <i class="fas fa-lock text-lg"></i>
+        </span>
+        <div>
+          <p class="font-semibold text-white">Paiements sécurisés</p>
+          <p class="text-sm text-white/70">Transactions garanties et suivi intégré</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</aside>
   </div>
 
   <script>

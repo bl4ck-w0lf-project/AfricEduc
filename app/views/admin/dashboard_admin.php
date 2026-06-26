@@ -118,7 +118,7 @@
 
   <!-- Bouton CTA -->
   <a href="/AfricEduc/public/index.php?url=setup_school" 
-     class="group relative bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-xl text-md font-semibold flex items-center gap-2 shadow-md shadow-red-400/40 transition-all duration-300 transform hover:scale-[1.02] active:scale-95">
+  class="group relative bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-xl text-md font-semibold flex items-center gap-2 shadow-md shadow-red-400/40 transition-all duration-300 transform hover:scale-[1.02] active:scale-95">
     <i class="fa-solid fa-gear text-white group-hover:rotate-90 transition-transform duration-300"></i>
     Configurer maintenant
     <i class="fa-solid fa-arrow-right text-white text-xs group-hover:translate-x-1 transition-transform"></i>
@@ -146,7 +146,7 @@
                       }
               ?>
             <div><h1 class="font-heading text-xl font-bold text-slate-900 sm:text-2xl"><?= $salutation ?>  <?= htmlspecialchars($_SESSION['user_name']) ?>
-        (<?= htmlspecialchars($_SESSION['user_role']) ?>)    —  <span class="text-primary"><?= htmlspecialchars($_SESSION['school_name'] ?? 'Aucune école') ?></span></h1>
+                (<?= htmlspecialchars($_SESSION['user_role']) ?>)    —  <span class="text-primary"><?= htmlspecialchars($_SESSION['school_name'] ?? 'Aucune école') ?></span></h1>
               <div class="mt-4 inline-flex flex-col gap-1 rounded-2xl bg-white/70 px-4 py-3 shadow-sm backdrop-blur border border-slate-200">
     
                     <div class="flex items-center gap-2 text-primary font-semibold text-sm">
