@@ -1,22 +1,12 @@
 SUPER ADMIN 
 email : superadmin@gmail.com
-password : superadmin123
+password : password
 
 ADMIN 
-email : admin@gmail.com
-password : admin123
+email : hounmenouangelo@gmail.com
+password : password
 
 AGENT MARIE 
 email : agentmarie@gmail.com
-password : agentmarie123
+password : password
 
-
-
-
-$phpmailer = new PHPMailer();
-$phpmailer->isSMTP();
-$phpmailer->Host = 'sandbox.smtp.mailtrap.io';
-$phpmailer->SMTPAuth = true;
-$phpmailer->Port = 2525;
-$phpmailer->Username = 'd3d33bc8fc8087';
-$phpmailer->Password = 'eea1fa0904aae9';
