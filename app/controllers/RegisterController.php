@@ -18,19 +18,21 @@ class RegisterController
         require_once BASE_PATH . '/services/SchoolInitializationService.php';
         require_once BASE_PATH . '/helpers/mailer.php';
 
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) { 
+          session_start(); 
+        }
 
         $this->pdo = require BASE_PATH . '/config/database.php';
         $this->schoolModel = new SchoolModel($this->pdo);
         $this->userModel = new UserModel($this->pdo);
-        $this->schoolService = new SchoolService($this->schoolModel, $this->userModel, $this->pdo);
+        $this->schoolService = new SchoolService($this->userModel, $this->schoolModel, $this->pdo);
         $this->initService = new SchoolInitializationService($this->pdo);
-    }
+      }
 
     public function register()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: ../views/auth/register.php");
+            header("Location: ../app/views/auth/register.php");
             exit;
         }
 
@@ -171,7 +173,7 @@ class RegisterController
         // ─── RESPONSE ───
         $_SESSION['success'] = "Compte créé avec succès. Vérifiez votre email pour activer votre compte.";
 
-        header("Location: ../views/auth/registration_success.php");
+        header("Location: /AfricEduc/app/views/auth/registration_success.php");
         exit;
     }
 }

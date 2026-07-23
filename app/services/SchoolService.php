@@ -4,6 +4,7 @@ final class SchoolService
     public function __construct(
       
         private UserModel $userModel,
+        private SchoolModel $schoolModel,
         private PDO $pdo
     ) {}
 
@@ -49,7 +50,8 @@ final class SchoolService
 
         return [
             'success' => true,
-            'user_id' => $userId
+            'user_id' => $userId,
+            'school_id' => $schoolId 
         ];
 
     } catch (Exception $e) {

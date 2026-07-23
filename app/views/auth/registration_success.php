@@ -80,7 +80,7 @@ unset($_SESSION['success'], $_SESSION['mail_error'], $_SESSION['registered_email
           echo "Erreur: {$mailError}";
         } else {
           echo "Un email de confirmation a été envoyé à <strong>{$registeredEmail}</strong>.<br>";
-          echo "Vérifiez votre boîte mail pour activer votre compte avant de vous connecter.";
+          echo "Veuillez contacter le service pour activer votre compte avant de vous connecter.";
         }
       ?>
     </p>

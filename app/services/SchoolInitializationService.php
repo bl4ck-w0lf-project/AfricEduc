@@ -23,14 +23,20 @@ class SchoolInitializationService
         try {
             $this->pdo->beginTransaction();
             
-            // 1. Créer les matières par défaut pour l'école
+            // 1. Créer les niveaux
+            $levels = $this->createLevels($schoolId);
+            
+            // 2. Créer les séries
+            $series = $this->createSeries($schoolId);
+            
+            // 3. Créer les matières par défaut pour l'école
             $this->createDefaultSubjects($schoolId);
             
-            // 2. Créer les curricula (programmes) avec leurs matières
-            $this->createCurricula($schoolId);
+            // 4. Créer les curricula (programmes) avec leurs matières
+            $this->createCurricula($schoolId, $levels, $series);
             
-            // 3. Créer les classes par défaut
-            $this->createDefaultClasses($schoolId, $academicYear);
+            // 5. Créer les classes par défaut
+            $this->createDefaultClasses($schoolId, $levels, $series, $academicYear);
             
             $this->pdo->commit();
             return ['success' => true, 'message' => 'École initialisée avec succès'];
@@ -42,35 +48,62 @@ class SchoolInitializationService
     }
     
     /**
+     * Crée les niveaux scolaires
+     */
+    private function createLevels($schoolId)
+    {
+        $levelsData = [
+            ['name' => '6ème', 'cycle' => 'college', 'order' => 1],
+            ['name' => '5ème', 'cycle' => 'college', 'order' => 2],
+            ['name' => '4ème', 'cycle' => 'college', 'order' => 3],
+            ['name' => '3ème', 'cycle' => 'college', 'order' => 4],
+            ['name' => 'Seconde', 'cycle' => 'lycee', 'order' => 5],
+            ['name' => 'Première', 'cycle' => 'lycee', 'order' => 6],
+            ['name' => 'Terminale', 'cycle' => 'lycee', 'order' => 7]
+        ];
+        
+        $createdLevels = [];
+        $stmt = $this->pdo->prepare("
+            INSERT IGNORE INTO levels (school_id, name, cycle, `order`)
+            VALUES (?, ?, ?, ?)
+        ");
+        
+        foreach ($levelsData as $level) {
+            $stmt->execute([$schoolId, $level['name'], $level['cycle'], $level['order']]);
+            $createdLevels[$level['name']] = $this->pdo->lastInsertId();
+        }
+        
+        return $createdLevels;
+    }
+    
+    /**
+     * Crée les séries pour le lycée
+     */
+    private function createSeries($schoolId)
+    {
+        $seriesData = ['A', 'B', 'C', 'D'];
+        $createdSeries = [];
+        $stmt = $this->pdo->prepare("INSERT IGNORE INTO series (school_id, name) VALUES (?, ?)");
+        
+        foreach ($seriesData as $serie) {
+            $stmt->execute([$schoolId, $serie]);
+            $createdSeries[$serie] = $this->pdo->lastInsertId();
+        }
+        
+        return $createdSeries;
+    }
+    
+    /**
      * Crée les matières par défaut pour l'école
      */
     private function createDefaultSubjects($schoolId)
     {
-        // Matières par défaut (toutes les matières possibles)
         $defaultSubjects = [
-            'Français',
-            'Mathématiques',
-            'Anglais',
-            'Histoire-Géographie',
-            'SVT',
-            'Physique-Chimie',
-            'EPS',
-            'Philosophie',
-            'Espagnol',
-            'Allemand',
-            'Latin',
-            'Économie',
-            'Sciences Sociales',
-            'Comptabilité',
-            'Mathématiques Spé',
-            'Informatique',
-            'SVT Spécialité',
-            'Agriculture',
-            'PCT',
-            'Lecture',
-            'Communication écrite',
-            'Géographie',
-            'Education Civique'
+            'Français', 'Mathématiques', 'Anglais', 'Histoire-Géographie',
+            'SVT', 'Physique-Chimie', 'EPS', 'Philosophie', 'Espagnol',
+            'Allemand', 'Latin', 'Économie', 'Sciences Sociales', 'Comptabilité',
+            'Mathématiques Spé', 'Informatique', 'SVT Spécialité', 'Agriculture',
+            'PCT', 'Lecture', 'Communication écrite', 'Géographie', 'Education Civique'
         ];
         
         $stmt = $this->pdo->prepare("INSERT IGNORE INTO subjects (school_id, name) VALUES (?, ?)");
@@ -82,8 +115,9 @@ class SchoolInitializationService
     
     /**
      * Crée les curricula (programmes) avec leurs matières
+     * Utilise les ID des levels et series
      */
-    private function createCurricula($schoolId)
+    private function createCurricula($schoolId, $levels, $series)
     {
         // Récupérer toutes les matières de l'école
         $stmt = $this->pdo->prepare("SELECT id, name FROM subjects WHERE school_id = ?");
@@ -94,29 +128,29 @@ class SchoolInitializationService
             $subjectsMap[$s['name']] = $s['id'];
         }
         
-        // Liste des curricula à créer (niveau + série)
+        // Liste des curricula à créer (avec les noms des niveaux/séries)
         $curriculaList = [
-            // Collège
-            ['level_id' => '6ème', 'serie_id' => null, 'cycle' => 'premier'],
-            ['level_id' => '5ème', 'serie_id' => null, 'cycle' => 'premier'],
-            ['level_id' => '4ème', 'serie_id' => null, 'cycle' => 'premier'],
-            ['level_id' => '3ème', 'serie_id' => null, 'cycle' => 'premier'],
+            // Collège - level_id = ID du niveau, serie_id = NULL
+            ['level_name' => '6ème', 'serie_name' => null, 'cycle' => 'premier'],
+            ['level_name' => '5ème', 'serie_name' => null, 'cycle' => 'premier'],
+            ['level_name' => '4ème', 'serie_name' => null, 'cycle' => 'premier'],
+            ['level_name' => '3ème', 'serie_name' => null, 'cycle' => 'premier'],
             
-            // Lycée
-            ['level_id' => 'Seconde', 'serie_id' => 'A', 'cycle' => 'second'],
-            ['level_id' => 'Seconde', 'serie_id' => 'B', 'cycle' => 'second'],
-            ['level_id' => 'Seconde', 'serie_id' => 'C', 'cycle' => 'second'],
-            ['level_id' => 'Seconde', 'serie_id' => 'D', 'cycle' => 'second'],
+            // Lycée - level_id = ID du niveau, serie_id = ID de la série
+            ['level_name' => 'Seconde', 'serie_name' => 'A', 'cycle' => 'second'],
+            ['level_name' => 'Seconde', 'serie_name' => 'B', 'cycle' => 'second'],
+            ['level_name' => 'Seconde', 'serie_name' => 'C', 'cycle' => 'second'],
+            ['level_name' => 'Seconde', 'serie_name' => 'D', 'cycle' => 'second'],
             
-            ['level_id' => 'Première', 'serie_id' => 'A', 'cycle' => 'second'],
-            ['level_id' => 'Première', 'serie_id' => 'B', 'cycle' => 'second'],
-            ['level_id' => 'Première', 'serie_id' => 'C', 'cycle' => 'second'],
-            ['level_id' => 'Première', 'serie_id' => 'D', 'cycle' => 'second'],
+            ['level_name' => 'Première', 'serie_name' => 'A', 'cycle' => 'second'],
+            ['level_name' => 'Première', 'serie_name' => 'B', 'cycle' => 'second'],
+            ['level_name' => 'Première', 'serie_name' => 'C', 'cycle' => 'second'],
+            ['level_name' => 'Première', 'serie_name' => 'D', 'cycle' => 'second'],
             
-            ['level_id' => 'Terminale', 'serie_id' => 'A', 'cycle' => 'second'],
-            ['level_id' => 'Terminale', 'serie_id' => 'B', 'cycle' => 'second'],
-            ['level_id' => 'Terminale', 'serie_id' => 'C', 'cycle' => 'second'],
-            ['level_id' => 'Terminale', 'serie_id' => 'D', 'cycle' => 'second'],
+            ['level_name' => 'Terminale', 'serie_name' => 'A', 'cycle' => 'second'],
+            ['level_name' => 'Terminale', 'serie_name' => 'B', 'cycle' => 'second'],
+            ['level_name' => 'Terminale', 'serie_name' => 'C', 'cycle' => 'second'],
+            ['level_name' => 'Terminale', 'serie_name' => 'D', 'cycle' => 'second'],
         ];
         
         $stmtCurriculum = $this->pdo->prepare("
@@ -130,19 +164,20 @@ class SchoolInitializationService
         ");
         
         foreach ($curriculaList as $curriculumData) {
-            $levelId = $curriculumData['level_id'];
-            $serieId = $curriculumData['serie_id'];
+            $levelId = $levels[$curriculumData['level_name']];
+            $serieId = $curriculumData['serie_name'] ? $series[$curriculumData['serie_name']] : null;
             $cycle = $curriculumData['cycle'];
             
-            // Nom du curriculum
-            $name = $serieId ? "Programme " . $levelId . " " . $serieId : "Programme " . $levelId;
+            $name = $serieId 
+                ? "Programme " . $curriculumData['level_name'] . " " . $curriculumData['serie_name'] 
+                : "Programme " . $curriculumData['level_name'];
             
             // Insérer le curriculum
             $stmtCurriculum->execute([$schoolId, $levelId, $serieId, $name]);
             $curriculumId = $this->pdo->lastInsertId();
             
             // Récupérer les matières pour ce curriculum
-            $subjects = DefaultSubjects::getSubjectsByCycle($cycle, $serieId);
+            $subjects = DefaultSubjects::getSubjectsByCycle($cycle, $curriculumData['serie_name']);
             
             foreach ($subjects as $subject) {
                 if (isset($subjectsMap[$subject['name']])) {
@@ -158,10 +193,16 @@ class SchoolInitializationService
     
     /**
      * Crée les classes par défaut
+     * Utilise les ID des levels et series
      */
-    private function createDefaultClasses($schoolId, $academicYear)
+    private function createDefaultClasses($schoolId, $levels, $series, $academicYear)
     {
-        // Classes du collège (4 niveaux × 4 groupes)
+        // ============================================
+        // PREMIER CYCLE (Collège)
+        // level_id = ID du niveau (6ème, 5ème, 4ème, 3ème)
+        // serie_id = NULL
+        // group_name = A, B, C, D
+        // ============================================
         $collegeLevels = ['6ème', '5ème', '4ème', '3ème'];
         $groups = ['A', 'B', 'C', 'D'];
         
@@ -170,24 +211,32 @@ class SchoolInitializationService
             VALUES (?, ?, NULL, ?, 50, ?)
         ");
         
-        foreach ($collegeLevels as $level) {
+        foreach ($collegeLevels as $levelName) {
+            $levelId = $levels[$levelName];
             foreach ($groups as $group) {
-                $stmt->execute([$schoolId, $level, $group, $academicYear]);
+                $stmt->execute([$schoolId, $levelId, $group, $academicYear]);
             }
         }
         
-        // Classes du lycée (3 niveaux × 4 séries)
+        // ============================================
+        // SECOND CYCLE (Lycée)
+        // level_id = ID du niveau (Seconde, Première, Terminale)
+        // serie_id = ID de la série (A, B, C, D)
+        // group_name = NULL
+        // ============================================
         $lyceeLevels = ['Seconde', 'Première', 'Terminale'];
-        $series = ['A', 'B', 'C', 'D'];
+        $seriesNames = ['A', 'B', 'C', 'D'];
         
         $stmt = $this->pdo->prepare("
             INSERT IGNORE INTO classes (school_id, level_id, serie_id, group_name, max_students, academic_year)
             VALUES (?, ?, ?, NULL, 50, ?)
         ");
         
-        foreach ($lyceeLevels as $level) {
-            foreach ($series as $serie) {
-                $stmt->execute([$schoolId, $level, $serie, $academicYear]);
+        foreach ($lyceeLevels as $levelName) {
+            $levelId = $levels[$levelName];
+            foreach ($seriesNames as $serieName) {
+                $serieId = $series[$serieName];
+                $stmt->execute([$schoolId, $levelId, $serieId, $academicYear]);
             }
         }
     }
