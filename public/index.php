@@ -5,6 +5,7 @@ session_start();
 require_once __DIR__ . '/../app/config/database.php';
 
 $url = $_GET['url'] ?? 'dashboard';
+$action = $_GET['action'] ?? ''; 
 
 switch ($url) {
 
@@ -63,11 +64,35 @@ switch ($url) {
     //Supprimer un étudiant
     //Afficher les détails d'un étudiant
     
+    case 'register':
+        require_once __DIR__ . '/../app/controllers/RegisterController.php';
+        $controller = new RegisterController();
+        $controller->register();
+        break;
 
     case 'login':
         require_once __DIR__ . '/../app/controllers/LoginController.php';
         $controller = new LoginController($pdo);
         $controller->index();
+        break;
+
+    case 'password':
+        require_once __DIR__ . '/../app/controllers/PasswordController.php';
+        $controller = new PasswordController($pdo);
+        
+        if ($action === 'forgot') {
+            // Si c'est une requête GET, on affiche le formulaire
+            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+                $controller->showForgotForm();
+            } else {
+                $controller->handleForgot();
+            }
+        } elseif ($action === 'reset') {
+            $controller->handleReset();
+        } else {
+            header("Location: /AfricEduc/app/views/auth/forgot_password.php");
+            exit;
+        }
         break;
     
     case 'logout':

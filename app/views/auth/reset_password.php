@@ -132,7 +132,7 @@ if (!$success && $token === '') {
 
       <!-- ── Formulaire ──────────────────────────────────────────────── -->
       <form method="POST"
-            action="/AfricEduc/app/controllers/PasswordController.php?action=reset"
+            action="/AfricEduc/public/index.php?url=password&action=reset"
             class="mt-8 space-y-5"
             novalidate>
 

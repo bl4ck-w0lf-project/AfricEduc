@@ -140,7 +140,7 @@ unset($_SESSION['old']);
           </div>
         </div>
 
-        <form id="register-form" method="POST" action="../../controllers/RegisterController.php">
+        <form id="register-form" method="POST" action="/AfricEduc/public/index.php?url=register">
           <input type="hidden" name="school_type" id="school_type" value="college">
 
           <!-- STEP 1 -->

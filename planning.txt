@@ -1,0 +1,1214 @@
+voila bro on va taffer selon ceci bro 
+---
+
+# AfricEduc — Logique de gestion des écoles, classes et programmes pédagogiques
+
+# 1. Objectif général
+
+AfricEduc est une plateforme SaaS de gestion scolaire multi-écoles.
+
+Lorsqu'une école est créée dans le système, AfricEduc doit automatiquement initialiser une structure scolaire de base afin d'aider l'administrateur dans sa configuration.
+
+Cette initialisation comprend :
+
+* les niveaux scolaires ;
+* les séries ;
+* les programmes pédagogiques (`curricula`) ;
+* les matières avec leurs coefficients ;
+* les classes par défaut.
+
+L'objectif est d'éviter que l'administrateur parte d'une configuration vide.
+
+Après la création d'une école, l'administrateur doit avoir une base prête à personnaliser :
+
+```
+École créée
+      |
+      |
+      +── Niveaux scolaires
+      |
+      +── Séries
+      |
+      +── Curricula
+      |
+      +── Matières + coefficients
+      |
+      +── Classes par défaut
+```
+
+---
+
+# 2. Gestion des cycles scolaires
+
+AfricEduc distingue deux cycles :
+
+* Premier cycle (collège)
+* Second cycle (lycée)
+
+Chaque cycle possède une logique différente dans la gestion des classes.
+
+---
+
+# 3. Premier cycle
+
+Le premier cycle correspond aux niveaux :
+
+* 6ème
+* 5ème
+* 4ème
+* 3ème
+
+Dans ce cycle :
+
+* `level_id` est utilisé pour identifier le niveau.
+* `serie_id` reste NULL.
+* `group_name` représente le nom de la classe.
+
+Exemple :
+
+```
+6ème A
+6ème B
+6ème C
+6ème D
+```
+
+Stockage :
+
+```
+level_id = 6ème
+serie_id = NULL
+group_name = A
+```
+
+Signification :
+
+```
+level_id → Niveau scolaire
+group_name → Nom de la classe
+```
+
+---
+
+## Création automatique des classes premier cycle
+
+Lors de la création d'une école, AfricEduc crée automatiquement :
+
+### 6ème
+
+```
+6ème A
+6ème B
+6ème C
+6ème D
+```
+
+### 5ème
+
+```
+5ème A
+5ème B
+5ème C
+5ème D
+```
+
+### 4ème
+
+```
+4ème A
+4ème B
+4ème C
+4ème D
+```
+
+### 3ème
+
+```
+3ème A
+3ème B
+3ème C
+3ème D
+```
+
+Total :
+
+```
+4 niveaux × 4 classes = 16 classes
+```
+
+---
+
+# 4. Second cycle
+
+Le second cycle correspond aux niveaux :
+
+* Seconde
+* Première
+* Terminale
+
+Dans ce cycle :
+
+* `level_id` n'est pas utilisé.
+* `serie_id` représente la série.
+* `group_name` représente le niveau scolaire.
+
+Les séries disponibles sont :
+
+```
+A
+B
+C
+D
+```
+
+---
+
+Exemple :
+
+Classe :
+
+```
+Terminale D
+```
+
+Stockage :
+
+```
+level_id = NULL
+serie_id = D
+group_name = Terminale
+```
+
+Signification :
+
+```
+serie_id → Série
+group_name → Niveau scolaire
+```
+
+---
+
+## Création automatique des classes second cycle
+
+AfricEduc crée :
+
+### Seconde
+
+```
+Seconde A
+Seconde B
+Seconde C
+Seconde D
+```
+
+### Première
+
+```
+Première A
+Première B
+Première C
+Première D
+```
+
+### Terminale
+
+```
+Terminale A
+Terminale B
+Terminale C
+Terminale D
+```
+
+Total :
+
+```
+3 niveaux × 4 séries = 12 classes
+```
+
+---
+
+# 5. Total des classes créées automatiquement
+
+Lorsqu'une école est créée :
+
+Premier cycle :
+
+```
+16 classes
+```
+
+Second cycle :
+
+```
+12 classes
+```
+
+Total :
+
+```
+28 classes par défaut
+```
+
+Ces classes peuvent ensuite être modifiées ou supprimées par l'administrateur.
+
+---
+
+# 6. Structure de la table classes
+
+Table :
+
+```sql
+classes
+```
+
+Structure :
+
+```
+id
+school_id
+level_id
+serie_id
+group_name
+max_students
+academic_year
+created_at
+```
+
+---
+
+## Description des champs
+
+### school_id
+
+Identifie l'école propriétaire de la classe.
+
+---
+
+### level_id
+
+Utilisé uniquement pour le premier cycle.
+
+Exemple :
+
+```
+6ème
+5ème
+4ème
+3ème
+```
+
+---
+
+### serie_id
+
+Utilisé uniquement pour le second cycle.
+
+Valeurs :
+
+```
+A
+B
+C
+D
+```
+
+---
+
+### group_name
+
+Représente le nom de la classe.
+
+Premier cycle :
+
+```
+A
+B
+C
+D
+```
+
+Exemple :
+
+```
+6ème + A = 6ème A
+```
+
+Second cycle :
+
+```
+Seconde
+Première
+Terminale
+```
+
+Exemple :
+
+```
+Terminale + D = Terminale D
+```
+
+---
+
+### max_students
+
+Représente la capacité maximale de la classe.
+
+Exemple :
+
+```
+6ème A
+max_students = 50
+```
+
+Le nombre réel d'élèves n'est pas stocké.
+
+Il est calculé depuis les inscriptions.
+
+---
+
+# 7. Gestion des programmes pédagogiques (Curricula)
+
+Le curriculum représente le programme scolaire.
+
+Il définit :
+
+* les matières enseignées ;
+* les coefficients ;
+* les règles utilisées pour les calculs de notes.
+
+Une classe ne possède pas directement ses matières.
+
+Elle récupère automatiquement son curriculum.
+
+---
+
+# 8. Table curricula
+
+Structure :
+
+```
+curricula
+
+id
+school_id
+level_id
+serie_id
+name
+created_at
+updated_at
+```
+
+---
+
+# Curriculum premier cycle
+
+Exemple :
+
+Programme 6ème :
+
+```
+school_id = 19
+level_id = 6ème
+serie_id = NULL
+name = Programme 6ème
+```
+
+Programme 3ème :
+
+```
+school_id = 19
+level_id = 3ème
+serie_id = NULL
+name = Programme 3ème
+```
+
+---
+
+# Curriculum second cycle
+
+Le programme dépend de la série.
+
+Exemple :
+
+Programme Terminale D :
+
+```
+school_id = 19
+level_id = NULL
+serie_id = D
+name = Programme Terminale D
+```
+
+---
+
+# 9. Association des matières et coefficients
+
+Table :
+
+```
+curriculum_subjects
+```
+
+Structure :
+
+```
+id
+curriculum_id
+subject_id
+coefficient
+created_at
+```
+
+---
+
+Exemple Programme 6ème :
+
+| Matière             | Coefficient |
+| ------------------- | ----------: |
+| Français            |           2 |
+| Mathématiques       |           2 |
+| Anglais             |           1 |
+| Histoire-Géographie |           1 |
+| SVT                 |           1 |
+| Physique-Chimie     |           1 |
+| EPS                 |           1 |
+
+---
+
+Exemple Terminale D :
+
+| Matière         | Coefficient |
+| --------------- | ----------: |
+| Mathématiques   |           5 |
+| Physique-Chimie |           4 |
+| SVT             |           4 |
+| Français        |           2 |
+| Anglais         |           2 |
+| Philosophie     |           2 |
+
+---
+
+# 10. Vue de création d'une classe
+
+La création d'une classe doit être dynamique selon le cycle.
+
+---
+
+## Étape 1 : Choisir le cycle
+
+Champ :
+
+```
+Cycle *
+
+[ Premier cycle ]
+[ Second cycle ]
+```
+
+---
+
+# Premier cycle
+
+Champs affichés :
+
+## Niveau
+
+```
+Niveau *
+
+[6ème]
+[5ème]
+[4ème]
+[3ème]
+```
+
+Stockage :
+
+```
+level_id
+```
+
+---
+
+## Nom de classe
+
+```
+Classe *
+
+[A]
+[B]
+[C]
+[D]
+```
+
+Stockage :
+
+```
+group_name
+```
+
+---
+
+## Capacité maximale
+
+```
+Nombre maximum d'élèves
+
+[50]
+```
+
+Stockage :
+
+```
+max_students
+```
+
+---
+
+## Année scolaire
+
+```
+2026
+```
+
+Stockage :
+
+```
+academic_year
+```
+
+---
+
+Exemple :
+
+```
+Premier cycle
+
+Niveau :
+6ème
+
+Classe :
+A
+
+Capacité :
+50
+
+Année :
+2026
+```
+
+Résultat :
+
+```
+6ème A
+```
+
+---
+
+# Second cycle
+
+Champs affichés :
+
+## Niveau scolaire
+
+```
+Classe *
+
+[Seconde]
+[Première]
+[Terminale]
+```
+
+Stockage :
+
+```
+group_name
+```
+
+---
+
+## Série
+
+```
+Série *
+
+[A]
+[B]
+[C]
+[D]
+```
+
+Stockage :
+
+```
+serie_id
+```
+
+---
+
+## Capacité maximale
+
+```
+50
+```
+
+---
+
+## Année scolaire
+
+```
+2026
+```
+
+---
+
+Exemple :
+
+```
+Second cycle
+
+Classe :
+Terminale
+
+Série :
+D
+
+Capacité :
+45
+
+Année :
+2026
+```
+
+Résultat :
+
+```
+Terminale D
+```
+
+---
+
+# 11. Vue modification d'une classe
+
+La modification reprend les mêmes champs avec les valeurs existantes.
+
+Premier cycle :
+
+```
+Modifier classe
+
+Niveau :
+6ème
+
+Classe :
+A
+
+Capacité :
+50
+
+Année :
+2026
+```
+
+---
+
+Second cycle :
+
+```
+Modifier classe
+
+Classe :
+Terminale
+
+Série :
+D
+
+Capacité :
+45
+
+Année :
+2026
+```
+
+---
+
+# 12. Vue détail d'une classe
+
+La page détail d'une classe doit afficher :
+
+---
+
+## Informations générales
+
+Exemple :
+
+```
+Terminale D
+
+École :
+Collège X
+
+Année scolaire :
+2026
+
+Cycle :
+Second cycle
+
+Série :
+D
+
+Capacité :
+45 élèves
+
+Effectif actuel :
+38 élèves
+```
+
+---
+
+# 13. Liste des élèves de la classe
+
+Section :
+
+```
+Élèves inscrits
+```
+
+Afficher :
+
+* nom ;
+* prénom ;
+* matricule ;
+* sexe.
+
+L'effectif actuel est calculé :
+
+```
+COUNT(students)
+```
+
+---
+
+# 14. Matières de la classe
+
+Très important.
+
+Dans le détail de la classe, AfricEduc doit afficher les matières enseignées.
+
+Exemple :
+
+Classe :
+
+```
+Terminale D
+```
+
+Le système recherche automatiquement :
+
+```
+curricula
+WHERE serie_id = D
+```
+
+Puis récupère :
+
+```
+curriculum_subjects
+```
+
+---
+
+Affichage :
+
+## Matières enseignées
+
+| Matière         | Coefficient |
+| --------------- | ----------: |
+| Mathématiques   |           5 |
+| Physique-Chimie |           4 |
+| SVT             |           4 |
+| Français        |           2 |
+| Anglais         |           2 |
+
+---
+
+# 15. Relations finales
+
+Architecture :
+
+```
+SCHOOLS
+   |
+   |
+   +----------------+
+   |                |
+   |                |
+CLASSES          CURRICULA
+   |                |
+   |                |
+STUDENTS     CURRICULUM_SUBJECTS
+                    |
+                    |
+                SUBJECTS
+```
+
+---
+
+# 16. Fonctionnement global
+
+Création d'une école :
+
+```
+Création école
+       |
+       |
+       +--> Création niveaux
+       |
+       +--> Création séries
+       |
+       +--> Création curricula
+       |
+       +--> Association matières + coefficients
+       |
+       +--> Création classes par défaut
+```
+
+Ensuite :
+
+```
+Classe créée
+      |
+      |
+      +--> Recherche curriculum correspondant
+      |
+      +--> Récupération des matières
+      |
+      +--> Application des coefficients
+      |
+      +--> Gestion des notes et bulletins
+```
+
+---
+
+# Résumé métier final
+
+Dans AfricEduc :
+
+* `classes` représente les groupes d'élèves.
+* `curricula` représente les programmes pédagogiques.
+* `curriculum_subjects` représente les matières et coefficients.
+* Une classe récupère automatiquement son programme.
+* L'administrateur n'a pas besoin de configurer les matières classe par classe.
+* La création d'une école génère automatiquement une structure scolaire complète.
+
+Cette conception permet à AfricEduc d'être un SaaS multi-écoles flexible, configurable et adapté au système scolaire béninois.
+
+
+On va commencer bro docn il faut reprend re depuis la creation dune ecole cest a dire lisncrition dune ecole bro tu compend nn ? 
+
+
+Voilà dc on y va voici mon abo bl4ck-w0lf@bl4ck-w0lf:/opt/lampp/htdocs/AfricEduc$ tree
+.
+├── app
+│   ├── config
+│   │   └── database.php
+│   ├── controllers
+│   │   ├── DashboardAdminController.php
+│   │   ├── DashboardAgentController.php
+│   │   ├── DashboardSuperAdminController.php
+│   │   ├── LoginController.php
+│   │   ├── LogoutController.php
+│   │   ├── ManageAgentController.php
+│   │   ├── PasswordController.php
+│   │   ├── RegisterController.php
+│   │   ├── SchoolController.php
+│   │   ├── SetupSchoolController.php
+│   │   └── StudentsController.php
+│   ├── database
+│   │   └── auth_tables.sql
+│   ├── helpers
+│   │   ├── default_subjects.php
+│   │   ├── mailer.php
+│   │   └── PasswordResetMailer.php
+│   ├── middlewares
+│   │   └── AuthMiddleware.php
+│   ├── models
+│   │   ├── DashboardAdminModel.php
+│   │   ├── DashboardAgentModel.php
+│   │   ├── DashboardSuperAdminModel.php
+│   │   ├── SchoolModel.php
+│   │   ├── SetupSchoolModel.php
+│   │   ├── StudentsModel.php
+│   │   └── UserModel.php
+│   ├── services
+│   │   ├── SchoolService.php
+│   │   ├── StudentsService.php
+│   │   └── UserService.php
+│   ├── test.php
+│   └── views
+│       ├── admin
+│       │   ├── bulletins.php
+│       │   ├── classes.php
+│       │   ├── dashboard_admin.php
+│       │   ├── identity.php
+│       │   ├── manage_agents.php
+│       │   ├── matieres.php
+│       │   ├── notes.php
+│       │   ├── schoolfees.php
+│       │   ├── settings.php
+│       │   ├── setup_school.php
+│       │   ├── stats.php
+│       │   └── students.php
+│       ├── agents
+│       │   ├── bulletins.php
+│       │   ├── dashboard_agent.php
+│       │   ├── eleves.php
+│       │   ├── notes.php
+│       │   ├── paiments.php
+│       │   └── stats.php
+│       ├── auth
+│       │   ├── forgot_password.php
+│       │   ├── login.php
+│       │   ├── logout.php
+│       │   ├── register.php
+│       │   ├── registration_success.php
+│       │   ├── reset_password.php
+│       │   └── verify.php
+│       ├── components
+│       │   ├── footer.php
+│       │   ├── navbar.php
+│       │   └── sidebar.php
+│       ├── students
+│       │   ├── create.php
+│       │   ├── edit.php
+│       │   ├── index.php
+│       │   └── show.php
+│       └── superadmin
+│           ├── classes.php
+│           ├── dashboard_superadmin.php
+│           ├── etablissements.php
+│           ├── notes.php
+│           ├── profil.php
+│           ├── settings.php
+│           ├── stats.php
+│           ├── students.php
+│           └── users.php
+├── composer.json
+├── composer.lock
+├── index.php
+├── keys.txt
+├── plan.txt
+├── public
+│   ├── index.php
+│   └── uploads
+│       ├── avatars
+│       │   ├── 1781016026_020.jpg
+│       │   └── 1782490522_Gemini_Generated_Image_lvto01lvto01lvto-clean.png
+│       └── logos
+│           ├── 1780961229_020.jpg
+│           ├── 1780961255_020.jpg
+│           └── 1780992087_020.jpg
+└── vendor
+    ├── autoload.php
+    ├── bin
+    ├── composer
+    │   ├── autoload_classmap.php
+    │   ├── autoload_files.php
+    │   ├── autoload_namespaces.php
+    │   ├── autoload_psr4.php
+    │   ├── autoload_real.php
+    │   ├── autoload_static.php
+    │   ├── ClassLoader.php
+    │   ├── installed.json
+    │   ├── installed.php
+    │   ├── InstalledVersions.php
+    │   ├── LICENSE
+    │   └── platform_check.php
+    ├── graham-campbell
+    │   └── result-type
+    │       ├── composer.json
+    │       ├── LICENSE
+    │       └── src
+    │           ├── Error.php
+    │           ├── Result.php
+    │           └── Success.php
+    ├── phpmailer
+    │   └── phpmailer
+    │       ├── COMMITMENT
+    │       ├── composer.json
+    │       ├── get_oauth_token.php
+    │       ├── language
+    │       │   ├── phpmailer.lang-af.php
+    │       │   ├── phpmailer.lang-ar.php
+    │       │   ├── phpmailer.lang-as.php
+    │       │   ├── phpmailer.lang-az.php
+    │       │   ├── phpmailer.lang-ba.php
+    │       │   ├── phpmailer.lang-be.php
+    │       │   ├── phpmailer.lang-bg.php
+    │       │   ├── phpmailer.lang-bn.php
+    │       │   ├── phpmailer.lang-ca.php
+    │       │   ├── phpmailer.lang-cs.php
+    │       │   ├── phpmailer.lang-da.php
+    │       │   ├── phpmailer.lang-de.php
+    │       │   ├── phpmailer.lang-el.php
+    │       │   ├── phpmailer.lang-eo.php
+    │       │   ├── phpmailer.lang-es.php
+    │       │   ├── phpmailer.lang-et.php
+    │       │   ├── phpmailer.lang-fa.php
+    │       │   ├── phpmailer.lang-fi.php
+    │       │   ├── phpmailer.lang-fo.php
+    │       │   ├── phpmailer.lang-fr.php
+    │       │   ├── phpmailer.lang-gl.php
+    │       │   ├── phpmailer.lang-he.php
+    │       │   ├── phpmailer.lang-hi.php
+    │       │   ├── phpmailer.lang-hr.php
+    │       │   ├── phpmailer.lang-hu.php
+    │       │   ├── phpmailer.lang-hy.php
+    │       │   ├── phpmailer.lang-id.php
+    │       │   ├── phpmailer.lang-it.php
+    │       │   ├── phpmailer.lang-ja.php
+    │       │   ├── phpmailer.lang-ka.php
+    │       │   ├── phpmailer.lang-ko.php
+    │       │   ├── phpmailer.lang-ku.php
+    │       │   ├── phpmailer.lang-lt.php
+    │       │   ├── phpmailer.lang-lv.php
+    │       │   ├── phpmailer.lang-mg.php
+    │       │   ├── phpmailer.lang-mn.php
+    │       │   ├── phpmailer.lang-ms.php
+    │       │   ├── phpmailer.lang-nb.php
+    │       │   ├── phpmailer.lang-nl.php
+    │       │   ├── phpmailer.lang-pl.php
+    │       │   ├── phpmailer.lang-pt_br.php
+    │       │   ├── phpmailer.lang-pt.php
+    │       │   ├── phpmailer.lang-ro.php
+    │       │   ├── phpmailer.lang-ru.php
+    │       │   ├── phpmailer.lang-si.php
+    │       │   ├── phpmailer.lang-sk.php
+    │       │   ├── phpmailer.lang-sl.php
+    │       │   ├── phpmailer.lang-sr_latn.php
+    │       │   ├── phpmailer.lang-sr.php
+    │       │   ├── phpmailer.lang-sv.php
+    │       │   ├── phpmailer.lang-tl.php
+    │       │   ├── phpmailer.lang-tr.php
+    │       │   ├── phpmailer.lang-uk.php
+    │       │   ├── phpmailer.lang-ur.php
+    │       │   ├── phpmailer.lang-vi.php
+    │       │   ├── phpmailer.lang-zh_cn.php
+    │       │   └── phpmailer.lang-zh.php
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── SECURITY.md
+    │       ├── SMTPUTF8.md
+    │       ├── src
+    │       │   ├── DSNConfigurator.php
+    │       │   ├── Exception.php
+    │       │   ├── OAuth.php
+    │       │   ├── OAuthTokenProvider.php
+    │       │   ├── PHPMailer.php
+    │       │   ├── POP3.php
+    │       │   └── SMTP.php
+    │       └── VERSION
+    ├── phpoption
+    │   └── phpoption
+    │       ├── composer.json
+    │       ├── LICENSE
+    │       └── src
+    │           └── PhpOption
+    │               ├── LazyOption.php
+    │               ├── None.php
+    │               ├── Option.php
+    │               └── Some.php
+    ├── symfony
+    │   ├── polyfill-ctype
+    │   │   ├── bootstrap80.php
+    │   │   ├── bootstrap.php
+    │   │   ├── composer.json
+    │   │   ├── Ctype.php
+    │   │   ├── LICENSE
+    │   │   └── README.md
+    │   ├── polyfill-mbstring
+    │   │   ├── bootstrap72.php
+    │   │   ├── bootstrap80.php
+    │   │   ├── bootstrap.php
+    │   │   ├── composer.json
+    │   │   ├── LICENSE
+    │   │   ├── Mbstring.php
+    │   │   ├── README.md
+    │   │   └── Resources
+    │   │       └── unidata
+    │   │           ├── caseFolding.php
+    │   │           ├── lowerCase.php
+    │   │           ├── titleCaseRegexp.php
+    │   │           └── upperCase.php
+    │   └── polyfill-php80
+    │       ├── bootstrap.php
+    │       ├── composer.json
+    │       ├── LICENSE
+    │       ├── Php80.php
+    │       ├── PhpToken.php
+    │       ├── README.md
+    │       └── Resources
+    │           └── stubs
+    │               ├── Attribute.php
+    │               ├── PhpToken.php
+    │               ├── Stringable.php
+    │               ├── UnhandledMatchError.php
+    │               └── ValueError.php
+    └── vlucas
+        └── phpdotenv
+            ├── composer.json
+            ├── LICENSE
+            └── src
+                ├── Dotenv.php
+                ├── Exception
+                │   ├── ExceptionInterface.php
+                │   ├── InvalidEncodingException.php
+                │   ├── InvalidFileException.php
+                │   ├── InvalidPathException.php
+                │   └── ValidationException.php
+                ├── Loader
+                │   ├── LoaderInterface.php
+                │   ├── Loader.php
+                │   └── Resolver.php
+                ├── Parser
+                │   ├── EntryParser.php
+                │   ├── Entry.php
+                │   ├── Lexer.php
+                │   ├── Lines.php
+                │   ├── ParserInterface.php
+                │   ├── Parser.php
+                │   └── Value.php
+                ├── Repository
+                │   ├── Adapter
+                │   │   ├── AdapterInterface.php
+                │   │   ├── ApacheAdapter.php
+                │   │   ├── ArrayAdapter.php
+                │   │   ├── EnvConstAdapter.php
+                │   │   ├── GuardedWriter.php
+                │   │   ├── ImmutableWriter.php
+                │   │   ├── MultiReader.php
+                │   │   ├── MultiWriter.php
+                │   │   ├── PutenvAdapter.php
+                │   │   ├── ReaderInterface.php
+                │   │   ├── ReplacingWriter.php
+                │   │   ├── ServerConstAdapter.php
+                │   │   └── WriterInterface.php
+                │   ├── AdapterRepository.php
+                │   ├── RepositoryBuilder.php
+                │   └── RepositoryInterface.php
+                ├── Store
+                │   ├── File
+                │   │   ├── Paths.php
+                │   │   └── Reader.php
+                │   ├── FileStore.php
+                │   ├── StoreBuilder.php
+                │   ├── StoreInterface.php
+                │   └── StringStore.php
+                ├── Util
+                │   ├── Regex.php
+                │   └── Str.php
+                └── Validator.php
+
+53 directories, 247 files
+bl4ck-w0lf@bl4ck-w0lf:/opt/lampp/htdocs/AfricEduc$ 
+

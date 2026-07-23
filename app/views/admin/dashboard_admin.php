@@ -135,14 +135,17 @@
         <section class="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-primary/5 p-6 shadow-lg sm:p-8 animate-fade-in">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                <?php
-                      $heure = date("H");
+                      $heure = (int)date('H');
 
-                      if ($heure < 12) {
-                          $salutation = "Bonjour";
-                      } elseif ($heure < 18) {
-                          $salutation = "Bon après-midi";
+                      // Message de bienvenue personnalisé selon l'heure
+                      if ($heure >= 5 && $heure < 12) {
+                          $salutation = 'Bonjour ';
+                      } elseif ($heure >= 12 && $heure < 18) {
+                          $salutation = 'Bonsoir';
+                      } elseif ($heure >= 18 && $heure < 22) {
+                          $salutation = 'Bonsoir ';
                       } else {
-                          $salutation = "Bonsoir";
+                          $salutation = 'Bonsoir ';
                       }
               ?>
             <div><h1 class="font-heading text-xl font-bold text-slate-900 sm:text-2xl"><?= $salutation ?>  <?= htmlspecialchars($_SESSION['user_name']) ?>

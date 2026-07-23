@@ -125,7 +125,7 @@ unset(
 
       <!-- ── Formulaire ──────────────────────────────────────────────── -->
       <form method="POST"
-            action="../../controllers/PasswordController.php?action=forgot"
+            action="/AfricEduc/public/index.php?url=password&action=forgot"
             class="mt-8 space-y-5"
             novalidate>
 
