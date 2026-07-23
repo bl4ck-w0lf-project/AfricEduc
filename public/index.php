@@ -51,11 +51,18 @@ switch ($url) {
         $controller->index();
         break;
         
+    //API actions sur les étudiants
+    //Afficher la vue l'index.php    
     case 'students':
         require_once __DIR__ . '/../app/controllers/StudentsController.php';
         $controller = new StudentsController($pdo);
         $controller->index();
         break;
+    //Créer un étudiants
+    //Modifier un étudiant
+    //Supprimer un étudiant
+    //Afficher les détails d'un étudiant
+    
 
     case 'login':
         require_once __DIR__ . '/../app/controllers/LoginController.php';

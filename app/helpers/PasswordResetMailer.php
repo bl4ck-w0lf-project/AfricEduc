@@ -4,26 +4,44 @@ declare(strict_types=1);
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+// Chargement des variables d'environnement
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
+$dotenv->load();
+
 class PasswordResetMailer
 {
     private PHPMailer $mail;
 
     public function __construct()
     {
-        require_once __DIR__ . '/../../vendor/autoload.php';
-
         $this->mail = new PHPMailer(true);
         $m = $this->mail;
 
+        // === CONFIGURATION SMTP depuis .env ===
         $m->isSMTP();
-        $m->Host       = 'sandbox.smtp.mailtrap.io';
-        $m->SMTPAuth   = true;
-        $m->Username   = 'd3d33bc8fc8087';
-        $m->Password   = 'eea1fa0904aae9';
-        $m->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $m->Port       = 2525;
-        $m->CharSet    = 'UTF-8';
-        $m->setFrom( 'no-reply@africeduc.com', 'AfricEduc' );
+        $m->Host = $_ENV['SMTP_HOST'] ?? 'sandbox.smtp.mailtrap.io';
+        $m->SMTPAuth = true;
+        $m->Username = $_ENV['SMTP_USERNAME'] ?? 'd3d33bc8fc8087';
+        $m->Password = $_ENV['SMTP_PASSWORD'] ?? 'eea1fa0904aae9';
+        
+        // Gestion du secure (tls ou ssl)
+        $secure = $_ENV['SMTP_SECURE'] ?? 'tls';
+        if ($secure === 'tls') {
+            $m->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        } elseif ($secure === 'ssl') {
+            $m->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        }
+        
+        $m->Port = (int)($_ENV['SMTP_PORT'] ?? 2525);
+        $m->CharSet = 'UTF-8';
+        
+        // === EXPÉDITEUR ===
+        $m->setFrom(
+            $_ENV['MAIL_FROM'] ?? 'no-reply@africeduc.com',
+            $_ENV['MAIL_FROM_NAME'] ?? 'AfricEduc'
+        );
     }
 
     public function sendResetLink(string $toEmail, string $resetUrl): bool
