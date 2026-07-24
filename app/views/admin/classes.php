@@ -274,29 +274,29 @@
 
   <!-- MODAL : DÉTAIL CLASSE -->
   <div id="detailModal" class="modal-overlay">
-    <div class="modal-content bg-white rounded-2xl shadow-2xl p-6 max-w-3xl">
-      <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
-        <div>
-          <h3 class="font-heading text-xl font-bold text-slate-900">
-            <i class="fas fa-info-circle text-primary mr-2"></i>Détails de la classe
-          </h3>
-          <p class="text-xs text-gray-400">Informations complètes de la classe</p>
-        </div>
-        <button id="close-detail-modal" class="text-slate-400 hover:text-slate-600 w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center">
-          <i class="fas fa-times"></i>
-        </button>
+      <div class="modal-content bg-white rounded-2xl shadow-2xl p-6 max-w-4xl">
+          <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
+              <div>
+                  <h3 class="font-heading text-xl font-bold text-slate-900">
+                      <i class="fas fa-info-circle text-primary mr-2"></i>Détails de la classe
+                  </h3>
+                  <p class="text-xs text-gray-400">Informations complètes de la classe</p>
+              </div>
+              <button id="close-detail-modal" class="text-slate-400 hover:text-slate-600 w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center">
+                  <i class="fas fa-times"></i>
+              </button>
+          </div>
+          <div id="detail-body" class="space-y-6">
+              <!-- Contenu chargé via AJAX -->
+              <div class="text-center py-8 text-gray-400">
+                  <i class="fas fa-spinner fa-spin text-2xl"></i>
+                  <p class="mt-2">Chargement...</p>
+              </div>
+          </div>
+          <div class="mt-6 flex justify-end border-t border-gray-100 pt-4">
+              <button id="detail-close-btn" class="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">Fermer</button>
+          </div>
       </div>
-      <div id="detail-body" class="space-y-4">
-        <!-- Contenu chargé via AJAX -->
-        <div class="text-center py-8 text-gray-400">
-          <i class="fas fa-spinner fa-spin text-2xl"></i>
-          <p class="mt-2">Chargement...</p>
-        </div>
-      </div>
-      <div class="mt-6 flex justify-end border-t border-gray-100 pt-4">
-        <button id="detail-close-btn" class="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">Fermer</button>
-      </div>
-    </div>
   </div>
 
   <!-- MODAL : CONFIRMATION SUPPRESSION -->
@@ -365,162 +365,191 @@
       let isEditMode = false;
 
       function openFormModal(editMode = false, data = null) {
-        isEditMode = editMode;
-        formTitle.innerHTML = editMode 
-          ? '<i class="fas fa-edit text-primary mr-2"></i>Modifier la classe' 
-          : '<i class="fas fa-plus-circle text-primary mr-2"></i>Nouvelle classe';
-        
-        document.getElementById('class-id').value = data?.id || '';
-        document.getElementById('level-id').value = data?.level_id || '';
-        document.getElementById('serie-id').value = data?.serie_id || '';
-        document.getElementById('group-name').value = data?.group_name || '';
-        document.getElementById('max-students').value = data?.max_students || 50;
-        document.getElementById('academic-year').value = data?.academic_year || new Date().getFullYear();
+              isEditMode = editMode;
+              formTitle.innerHTML = editMode 
+                ? '<i class="fas fa-edit text-primary mr-2"></i>Modifier la classe' 
+                : '<i class="fas fa-plus-circle text-primary mr-2"></i>Nouvelle classe';
+              
+              document.getElementById('class-id').value = data?.id || '';
+              document.getElementById('level-id').value = data?.level_id || '';
+              document.getElementById('serie-id').value = data?.serie_id || '';
+              document.getElementById('group-name').value = data?.group_name || '';
+              document.getElementById('max-students').value = data?.max_students || 50;
+              document.getElementById('academic-year').value = data?.academic_year || new Date().getFullYear();
 
-        formModal.classList.add('is-open');
-        document.body.style.overflow = 'hidden';
-      }
+              formModal.classList.add('is-open');
+              document.body.style.overflow = 'hidden';
+            }
 
-      function closeFormModal() {
-        formModal.classList.remove('is-open');
-        document.body.style.overflow = '';
-        form.reset();
-        isEditMode = false;
-      }
+            function closeFormModal() {
+              formModal.classList.remove('is-open');
+              document.body.style.overflow = '';
+              form.reset();
+              isEditMode = false;
+            }
 
-      closeFormBtn.addEventListener('click', closeFormModal);
-      formCancel.addEventListener('click', closeFormModal);
-      formModal.addEventListener('click', (e) => { if (e.target === formModal) closeFormModal(); });
+            closeFormBtn.addEventListener('click', closeFormModal);
+            formCancel.addEventListener('click', closeFormModal);
+            formModal.addEventListener('click', (e) => { if (e.target === formModal) closeFormModal(); });
 
-      // ─── Soumission du formulaire ───
-      form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const id = document.getElementById('class-id').value;
-        const formData = new FormData();
-        formData.append('level_id', document.getElementById('level-id').value);
-        formData.append('serie_id', document.getElementById('serie-id').value || '');
-        formData.append('group_name', document.getElementById('group-name').value);
-        formData.append('max_students', document.getElementById('max-students').value);
-        formData.append('academic_year', document.getElementById('academic-year').value);
-        
-        if (id) {
-          formData.append('id', id);
-        }
+            // ─── Soumission du formulaire ───
+            form.addEventListener('submit', async function(e) {
+              e.preventDefault();
+              
+              const id = document.getElementById('class-id').value;
+              const formData = new FormData();
+              formData.append('level_id', document.getElementById('level-id').value);
+              formData.append('serie_id', document.getElementById('serie-id').value || '');
+              formData.append('group_name', document.getElementById('group-name').value);
+              formData.append('max_students', document.getElementById('max-students').value);
+              formData.append('academic_year', document.getElementById('academic-year').value);
+              
+              if (id) {
+                formData.append('id', id);
+              }
 
-        const action = id ? 'update' : 'store';
-        const url = baseUrl + '&action=' + action;
+              const action = id ? 'update' : 'store';
+              const url = baseUrl + '&action=' + action;
 
-        try {
-          const response = await fetch(url, {
-            method: 'POST',
-            body: formData
-          });
-          const result = await response.json();
+              try {
+                const response = await fetch(url, {
+                  method: 'POST',
+                  body: formData
+                });
+                const result = await response.json();
 
-          if (result.success) {
-            showToast(result.message);
-            closeFormModal();
-            setTimeout(() => location.reload(), 1000);
-          } else {
-            showToast(result.error || 'Erreur', 'error');
-          }
-        } catch (error) {
-          showToast('Erreur de connexion', 'error');
-        }
-      });
+                if (result.success) {
+                  showToast(result.message);
+                  closeFormModal();
+                  setTimeout(() => location.reload(), 1000);
+                } else {
+                  showToast(result.error || 'Erreur', 'error');
+                }
+              } catch (error) {
+                showToast('Erreur de connexion', 'error');
+              }
+            });
 
-      // ─── Détail ───
-      const detailModal = document.getElementById('detailModal');
-      const closeDetailBtn = document.getElementById('close-detail-modal');
-      const detailCloseBtn = document.getElementById('detail-close-btn');
-      const detailBody = document.getElementById('detail-body');
+            // ─── Détail ───
+            const detailModal = document.getElementById('detailModal');
+            const closeDetailBtn = document.getElementById('close-detail-modal');
+            const detailCloseBtn = document.getElementById('detail-close-btn');
+            const detailBody = document.getElementById('detail-body');
 
-      async function openDetailModal(id) {
-        detailBody.innerHTML = `
-          <div class="text-center py-8 text-gray-400">
+              async function openDetailModal(id) {
+    detailBody.innerHTML = `
+        <div class="text-center py-8 text-gray-400">
             <i class="fas fa-spinner fa-spin text-2xl"></i>
             <p class="mt-2">Chargement...</p>
-          </div>
-        `;
-        detailModal.classList.add('is-open');
-        document.body.style.overflow = 'hidden';
+        </div>
+    `;
+    detailModal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
 
-        try {
-          const response = await fetch(baseUrl + '&action=get_class&id=' + id);
-          const data = await response.json();
+    try {
+        const response = await fetch(baseUrl + '&action=get_class&id=' + id);
+        const data = await response.json();
 
-          if (data.error) {
+        if (data.error) {
             detailBody.innerHTML = `<p class="text-red-500">${data.error}</p>`;
             return;
-          }
+        }
 
-          const c = data.class;
-          const subjects = data.subjects || [];
-          const classDisplay = c.serie_name 
+        const c = data.class;
+        const subjects = data.subjects || [];
+        const classDisplay = c.serie_name 
             ? c.level_name + ' ' + c.serie_name
             : c.level_name + ' ' + c.group_name;
 
-          let subjectsHtml = '';
-          if (subjects.length > 0) {
+        // Construction du HTML des matières (liste simple)
+        let subjectsHtml = '';
+        if (subjects.length > 0) {
             subjectsHtml = `
-              <div class="mt-4">
-                <h4 class="text-sm font-semibold text-slate-700 mb-2">📚 Matières enseignées</h4>
-                <div class="bg-slate-50 rounded-xl p-4">
-                  <table class="w-full text-sm">
-                    <thead>
-                      <tr class="text-left text-xs text-gray-500">
-                        <th class="pb-2">Matière</th>
-                        <th class="pb-2 text-right">Coefficient</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      ${subjects.map(s => `
-                        <tr class="border-t border-gray-100">
-                          <td class="py-2">${s.subject_name}</td>
-                          <td class="py-2 text-right font-semibold">${s.coefficient}</td>
-                        </tr>
-                      `).join('')}
-                    </tbody>
-                  </table>
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                    <p class="text-xs font-semibold uppercase text-slate-500 flex items-center gap-2 mb-3">
+                        <i class="fas fa-book-open text-primary"></i> Matières enseignées
+                        <span class="ml-auto text-[10px] text-gray-400">${subjects.length} matières</span>
+                    </p>
+                    <ul class="space-y-2">
+                        ${subjects.map(s => `
+                            <li class="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-slate-100">
+                                <span class="text-sm text-slate-700">${s.subject_name}</span>
+                                <span class="text-sm font-semibold text-primary">Coef. ${s.coefficient}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
                 </div>
-              </div>
             `;
-          }
-
-          detailBody.innerHTML = `
-            <div class="grid grid-cols-2 gap-4">
-              <div class="bg-slate-50 rounded-xl p-4">
-                <p class="text-xs font-semibold uppercase text-slate-500">Classe</p>
-                <p class="text-slate-800 font-medium text-lg">${classDisplay || '---'}</p>
-              </div>
-              <div class="bg-slate-50 rounded-xl p-4">
-                <p class="text-xs font-semibold uppercase text-slate-500">Niveau</p>
-                <p class="text-slate-800 font-medium text-lg">${c.level_name || '---'}</p>
-              </div>
-              <div class="bg-slate-50 rounded-xl p-4">
-                <p class="text-xs font-semibold uppercase text-slate-500">Série</p>
-                <p class="text-slate-800 font-medium text-lg">${c.serie_name || 'Aucune'}</p>
-              </div>
-              <div class="bg-slate-50 rounded-xl p-4">
-                <p class="text-xs font-semibold uppercase text-slate-500">Élèves</p>
-                <p class="text-slate-800 font-medium text-lg">${c.students_count || 0}</p>
-              </div>
-              <div class="bg-slate-50 rounded-xl p-4">
-                <p class="text-xs font-semibold uppercase text-slate-500">Capacité</p>
-                <p class="text-slate-800 font-medium text-lg">${c.max_students || 50}</p>
-              </div>
-              <div class="bg-slate-50 rounded-xl p-4">
-                <p class="text-xs font-semibold uppercase text-slate-500">Année scolaire</p>
-                <p class="text-slate-800 font-medium text-lg">${c.academic_year || '---'}</p>
-              </div>
-            </div>
-            ${subjectsHtml}
-          `;
-        } catch (error) {
-          detailBody.innerHTML = `<p class="text-red-500">Erreur de chargement</p>`;
+        } else {
+            subjectsHtml = `
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 text-center text-gray-400">
+                    <i class="fas fa-book-open text-2xl block mb-2 text-gray-300"></i>
+                    <p class="text-sm">Aucune matière associée</p>
+                </div>
+            `;
         }
-      }
+
+        detailBody.innerHTML = `
+            <!-- En-tête avec le nom de la classe -->
+            <div class="bg-gradient-to-r from-primary/5 via-primary/10 to-accent/20 rounded-xl p-4 border border-primary/20">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase text-slate-500">Classe</p>
+                        <h4 class="text-2xl font-bold text-slate-900">${classDisplay || '---'}</h4>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-full">
+                            <i class="fas fa-users mr-1"></i> ${c.students_count || 0} élèves
+                        </span>
+                        <span class="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full">
+                            <i class="fas fa-user-plus mr-1"></i> ${c.max_students || 50} places
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GRILLE 2 COLONNES BENTO -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Colonne gauche : Infos générales -->
+                <div class="space-y-4">
+                    <div class="bg-white rounded-xl p-4 border border-slate-200">
+                        <p class="text-xs font-semibold uppercase text-slate-500 flex items-center gap-2">
+                            <i class="fas fa-layer-group text-primary"></i> Niveau
+                        </p>
+                        <p class="text-slate-800 font-medium text-lg mt-1">${c.level_name || '---'}</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 border border-slate-200">
+                        <p class="text-xs font-semibold uppercase text-slate-500 flex items-center gap-2">
+                            <i class="fas fa-tag text-primary"></i> Série
+                        </p>
+                        <p class="text-slate-800 font-medium text-lg mt-1">${c.serie_name || 'Aucune'}</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 border border-slate-200">
+                        <p class="text-xs font-semibold uppercase text-slate-500 flex items-center gap-2">
+                            <i class="fas fa-calendar-alt text-primary"></i> Année scolaire
+                        </p>
+                        <p class="text-slate-800 font-medium text-lg mt-1">${c.academic_year || '---'}</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 border border-slate-200">
+                        <p class="text-xs font-semibold uppercase text-slate-500 flex items-center gap-2">
+                            <i class="fas fa-flag text-primary"></i> Cycle
+                        </p>
+                        <p class="text-slate-800 font-medium text-lg mt-1">
+                            ${c.serie_name ? 'Second cycle (Lycée)' : 'Premier cycle (Collège)'}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Colonne droite : Matières enseignées -->
+                <div>
+                    ${subjectsHtml}
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        detailBody.innerHTML = `<p class="text-red-500">Erreur de chargement</p>`;
+    }
+}
 
       function closeDetailModal() {
         detailModal.classList.remove('is-open');
