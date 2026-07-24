@@ -35,7 +35,7 @@
     .action-button:hover { transform: scale(1.05); }
     .modal-overlay { pointer-events: none; opacity: 0; transition: opacity 0.2s ease; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
     .modal-overlay.is-open { pointer-events: auto; opacity: 1; }
-    .modal-content { transform: scale(0.95); transition: transform 0.2s ease; max-width: 90%; width: 28rem; background: white; border-radius: 1rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    .modal-content { transform: scale(0.95); transition: transform 0.2s ease; max-width: 90%; width: 32rem; background: white; border-radius: 1rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
     .modal-overlay.is-open .modal-content { transform: scale(1); }
     .toast { position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 12px 20px; border-radius: 12px; font-size: 0.875rem; z-index: 10000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
     .toast.show { opacity: 1; }
@@ -51,26 +51,36 @@
 
   <!-- Main content -->
   <div class="min-h-screen lg:pl-[260px]">
-    <!-- HEADER comme NDIGITMARKET -->
-    <header class="flex items-center justify-between mb-6 bg-white/80 backdrop-blur-sm sticky top-0 z-30 py-4 px-4 md:px-6 rounded-2xl shadow-sm border border-gray-100/50">
-      <div class="flex items-center gap-4">
-        <button id="btn-menu" class="lg:hidden w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center text-gray-700">
-          <i class="fas fa-bars text-xl"></i>
-        </button>
-        <div>
-          <h2 class="text-xl md:text-2xl font-bold text-[#0F172A]">Gestion des Classes</h2>
-          <p class="text-xs text-gray-400 hidden sm:block">Organiser, créer et gérer les classes du collège</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-3">
-        <span class="hidden md:flex items-center gap-2 bg-accent/30 border border-accent/50 rounded-full px-3 py-1.5 text-xs font-medium text-slate-700">
-          <i class="fas fa-calendar-alt text-primary"></i> Année 2025–2026
-        </span>
-        <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold text-sm shadow-md">
-          AK
-        </div>
-      </div>
-    </header>
+      <header class="flex items-center justify-between mb-6 bg-white/80 backdrop-blur-sm sticky top-0 z-30 py-4 px-4 md:px-6 rounded-2xl shadow-sm border border-gray-100/50">
+          <div class="flex items-center gap-4">
+              <button id="btn-menu" class="lg:hidden w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center text-gray-700">
+                  <i class="fas fa-bars text-xl"></i>
+              </button>
+              <div>
+                  <h2 class="text-xl md:text-2xl font-bold text-[#0F172A]">Gestion des Classes</h2>
+                  <p class="text-xs text-gray-400 hidden sm:block">Organiser, créer et gérer les classes du collège</p>
+              </div>
+          </div>
+          <div class="flex items-center gap-4">
+              <!-- Bloc école + adresse + année -->
+              <div class="hidden md:flex flex-col items-end">
+                  <div class="flex items-center gap-3">
+                      <span class="flex items-center gap-2 bg-accent/30 border border-accent/50 rounded-full px-3 py-1.5 text-xs font-medium text-slate-700">
+                          <i class="fas fa-calendar-alt text-primary"></i> Année <?= date('Y') ?>
+                      </span>
+                      
+                  </div>
+                  <p class="text-[15px] text-gray-400 mt-1 flex items-center gap-1">
+                      <i class="fas fa-map-pin text-gray-300"></i>
+                      <?= $_SESSION['school_address'] ?? 'Cotonou, Bénin' ?>
+                  </p>
+              </div>
+              <!-- Avatar -->
+              <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold text-sm shadow-md">
+                  <?= isset($_SESSION['user_name']) ? substr($_SESSION['user_name'], 0, 2) : 'AK' ?>
+              </div>
+          </div>
+      </header>
 
     <main class="px-4 py-6 sm:px-6 lg:px-8">
       <!-- STATISTIQUES -->
@@ -89,7 +99,7 @@
               </div>
               <span class="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full">TOTAL</span>
             </div>
-            <p class="text-2xl font-bold text-[#0F172A]">0</p>
+            <p class="text-2xl font-bold text-[#0F172A]" id="total-classes"><?= $stats['total_classes'] ?? 0 ?></p>
             <p class="text-xs text-gray-400 mt-1">Classes totales</p>
           </div>
           <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
@@ -99,7 +109,7 @@
               </div>
               <span class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">ÉLÈVES</span>
             </div>
-            <p class="text-2xl font-bold text-[#0F172A]">0</p>
+            <p class="text-2xl font-bold text-[#0F172A]" id="total-students"><?= $stats['total_students'] ?? 0 ?></p>
             <p class="text-xs text-gray-400 mt-1">Total élèves</p>
           </div>
           <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
@@ -107,20 +117,20 @@
               <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
                 <i class="fas fa-chart-line"></i>
               </div>
-              <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-full">MOYENNE</span>
+              <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-full">CAPACITÉ</span>
             </div>
-            <p class="text-2xl font-bold text-[#0F172A]">0 <span class="text-sm font-normal text-gray-400">/20</span></p>
-            <p class="text-xs text-gray-400 mt-1">Moyenne générale</p>
+            <p class="text-2xl font-bold text-[#0F172A]" id="total-capacity"><?= $stats['total_capacity'] ?? 0 ?></p>
+            <p class="text-xs text-gray-400 mt-1">Capacité totale</p>
           </div>
           <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
             <div class="flex items-center justify-between mb-2">
               <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600">
                 <i class="fas fa-clock"></i>
               </div>
-              <span class="text-[10px] font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-full">PRÉSENCE</span>
+              <span class="text-[10px] font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-full">ANNÉE</span>
             </div>
-            <p class="text-2xl font-bold text-[#0F172A]">0%</p>
-            <p class="text-xs text-gray-400 mt-1">Taux de présence</p>
+            <p class="text-2xl font-bold text-[#0F172A]"><?= date('Y') ?></p>
+            <p class="text-xs text-gray-400 mt-1">Année scolaire</p>
           </div>
         </div>
       </section>
@@ -142,23 +152,50 @@
               <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>
                   <th class="px-5 py-3 sm:px-6">Classe</th>
-                  <th class="px-3 py-3">Nb élèves</th>
-                  <th class="px-3 py-3">Moy. générale</th>
-                  <th class="px-3 py-3">Taux réussite</th>
-                  <th class="px-3 py-3">Présence</th>
-                  <th class="px-3 py-3">Paiements OK</th>
+                  <th class="px-3 py-3">Niveau</th>
+                  <th class="px-3 py-3">Série</th>
+                  <th class="px-3 py-3">Élèves</th>
+                  <th class="px-3 py-3">Capacité</th>
                   <th class="px-5 py-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100">
-                <!-- Aucune donnée pour le moment -->
-                <tr>
-                  <td colspan="7" class="px-5 py-8 text-center text-gray-400">
-                    <i class="fas fa-inbox text-3xl block mb-2 text-gray-300"></i>
-                    <p class="text-sm">Aucune classe n'a été créée pour le moment.</p>
-                    <p class="text-xs mt-1">Cliquez sur <strong>"Nouvelle classe"</strong> pour commencer.</p>
-                  </td>
-                </tr>
+              <tbody id="classes-table-body" class="divide-y divide-slate-100">
+                <?php if (empty($classes)): ?>
+                  <tr>
+                    <td colspan="6" class="px-5 py-8 text-center text-gray-400">
+                      <i class="fas fa-inbox text-3xl block mb-2 text-gray-300"></i>
+                      <p class="text-sm">Aucune classe n'a été créée pour le moment.</p>
+                      <p class="text-xs mt-1">Cliquez sur <strong>"Nouvelle classe"</strong> pour commencer.</p>
+                    </td>
+                  </tr>
+                <?php else: ?>
+                  <?php foreach ($classes as $class): 
+                    $classDisplay = $class['serie_name'] 
+                      ? $class['level_name'] . ' ' . $class['serie_name']
+                      : $class['level_name'] . ' ' . $class['group_name'];
+                  ?>
+                    <tr class="hover:bg-slate-50/80" data-id="<?= $class['id'] ?>">
+                      <td class="px-5 py-4 font-medium text-slate-900 sm:px-6"><?= htmlspecialchars($classDisplay) ?></td>
+                      <td class="px-3 py-4"><?= htmlspecialchars($class['level_name'] ?? '-') ?></td>
+                      <td class="px-3 py-4"><?= htmlspecialchars($class['serie_name'] ?? '-') ?></td>
+                      <td class="px-3 py-4"><?= $class['students_count'] ?? 0 ?></td>
+                      <td class="px-3 py-4"><?= $class['max_students'] ?? 50 ?></td>
+                      <td class="px-5 py-4 text-right">
+                        <div class="table-actions flex justify-end gap-1.5">
+                          <button class="view-class-btn btn-icon bg-blue-50 text-blue-600 hover:bg-blue-100" data-id="<?= $class['id'] ?>" title="Voir détails">
+                            <i class="fas fa-eye text-xs"></i>
+                          </button>
+                          <button class="edit-class-btn btn-icon bg-amber-50 text-amber-600 hover:bg-amber-100" data-id="<?= $class['id'] ?>" title="Modifier">
+                            <i class="fas fa-edit text-xs"></i>
+                          </button>
+                          <button class="delete-class-btn btn-icon bg-red-50 text-red-600 hover:bg-red-100" data-id="<?= $class['id'] ?>" title="Supprimer">
+                            <i class="fas fa-trash text-xs"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  <?php endforeach; ?>
+                <?php endif; ?>
               </tbody>
             </table>
           </div>
@@ -166,7 +203,7 @@
       </section>
 
       <footer class="mt-12 pb-8 text-center text-xs text-slate-400">
-        AfricEduc — <span id="footer-school">Collège Saint-Michel</span> · Dernière mise à jour : <span id="last-update"></span>
+        AfricEduc — <span id="footer-school"><?= $_SESSION['school_name'] ?? 'Mon École' ?></span> · Dernière mise à jour : <span id="last-update"></span>
       </footer>
     </main>
   </div>
@@ -187,30 +224,42 @@
       </div>
       <form id="classForm" class="space-y-4">
         <input type="hidden" id="class-id" value="">
+        
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Nom de la classe <span class="text-red-500">*</span></label>
-          <input type="text" id="class-name" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-gray-50 focus:outline-none focus:border-primary focus:bg-white" placeholder="Ex: 6ème A">
+          <label class="block text-sm font-medium text-slate-700 mb-1">Niveau <span class="text-red-500">*</span></label>
+          <select id="level-id" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-gray-50 focus:outline-none focus:border-primary focus:bg-white">
+            <option value="">Sélectionner un niveau</option>
+            <?php foreach ($levels as $level): ?>
+              <option value="<?= $level['id'] ?>"><?= htmlspecialchars($level['name']) ?></option>
+            <?php endforeach; ?>
+          </select>
         </div>
+        
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Nombre d'élèves <span class="text-red-500">*</span></label>
-          <input type="number" id="class-students" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-gray-50 focus:outline-none focus:border-primary focus:bg-white" placeholder="0" min="0">
+          <label class="block text-sm font-medium text-slate-700 mb-1">Série (optionnel)</label>
+          <select id="serie-id" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-gray-50 focus:outline-none focus:border-primary focus:bg-white">
+            <option value="">Aucune série</option>
+            <?php foreach ($series as $serie): ?>
+              <option value="<?= $serie['id'] ?>">Série <?= htmlspecialchars($serie['name']) ?></option>
+            <?php endforeach; ?>
+          </select>
         </div>
+        
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Moyenne générale (/20) <span class="text-red-500">*</span></label>
-          <input type="number" step="0.1" id="class-avg" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-gray-50 focus:outline-none focus:border-primary focus:bg-white" placeholder="0" min="0" max="20">
+          <label class="block text-sm font-medium text-slate-700 mb-1">Groupe (pour collège)</label>
+          <input type="text" id="group-name" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-gray-50 focus:outline-none focus:border-primary focus:bg-white" placeholder="Ex: A, B, C, D">
         </div>
+        
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Taux de réussite (%) <span class="text-red-500">*</span></label>
-          <input type="number" id="class-success" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-gray-50 focus:outline-none focus:border-primary focus:bg-white" placeholder="0" min="0" max="100">
+          <label class="block text-sm font-medium text-slate-700 mb-1">Capacité maximale <span class="text-red-500">*</span></label>
+          <input type="number" id="max-students" value="50" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-gray-50 focus:outline-none focus:border-primary focus:bg-white" min="1">
         </div>
+        
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Taux de présence (%) <span class="text-red-500">*</span></label>
-          <input type="number" id="class-presence" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-gray-50 focus:outline-none focus:border-primary focus:bg-white" placeholder="0" min="0" max="100">
+          <label class="block text-sm font-medium text-slate-700 mb-1">Année scolaire <span class="text-red-500">*</span></label>
+          <input type="number" id="academic-year" value="<?= date('Y') ?>" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-gray-50 focus:outline-none focus:border-primary focus:bg-white">
         </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Paiements OK</label>
-          <input type="text" id="class-payments" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 bg-gray-50 focus:outline-none focus:border-primary focus:bg-white" placeholder="ex: 12/14">
-        </div>
+        
         <div class="flex gap-3 pt-4 border-t border-gray-100">
           <button type="submit" class="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primaryDark transition">
             <i class="fas fa-save mr-2"></i>Enregistrer
@@ -225,7 +274,7 @@
 
   <!-- MODAL : DÉTAIL CLASSE -->
   <div id="detailModal" class="modal-overlay">
-    <div class="modal-content bg-white rounded-2xl shadow-2xl p-6 max-w-2xl">
+    <div class="modal-content bg-white rounded-2xl shadow-2xl p-6 max-w-3xl">
       <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
         <div>
           <h3 class="font-heading text-xl font-bold text-slate-900">
@@ -238,31 +287,10 @@
         </button>
       </div>
       <div id="detail-body" class="space-y-4">
-        <div class="grid grid-cols-2 gap-4">
-          <div class="bg-slate-50 rounded-xl p-4">
-            <p class="text-xs font-semibold uppercase text-slate-500">Classe</p>
-            <p class="text-slate-800 font-medium text-lg" id="detail-name">---</p>
-          </div>
-          <div class="bg-slate-50 rounded-xl p-4">
-            <p class="text-xs font-semibold uppercase text-slate-500">Nb élèves</p>
-            <p class="text-slate-800 font-medium text-lg" id="detail-students">---</p>
-          </div>
-          <div class="bg-slate-50 rounded-xl p-4">
-            <p class="text-xs font-semibold uppercase text-slate-500">Moyenne générale</p>
-            <p class="text-slate-800 font-medium text-lg" id="detail-avg">---</p>
-          </div>
-          <div class="bg-slate-50 rounded-xl p-4">
-            <p class="text-xs font-semibold uppercase text-slate-500">Taux de réussite</p>
-            <p class="text-slate-800 font-medium text-lg" id="detail-success">---</p>
-          </div>
-          <div class="bg-slate-50 rounded-xl p-4">
-            <p class="text-xs font-semibold uppercase text-slate-500">Présence</p>
-            <p class="text-slate-800 font-medium text-lg" id="detail-presence">---</p>
-          </div>
-          <div class="bg-slate-50 rounded-xl p-4">
-            <p class="text-xs font-semibold uppercase text-slate-500">Paiements OK</p>
-            <p class="text-slate-800 font-medium text-lg" id="detail-payments">---</p>
-          </div>
+        <!-- Contenu chargé via AJAX -->
+        <div class="text-center py-8 text-gray-400">
+          <i class="fas fa-spinner fa-spin text-2xl"></i>
+          <p class="mt-2">Chargement...</p>
         </div>
       </div>
       <div class="mt-6 flex justify-end border-t border-gray-100 pt-4">
@@ -313,28 +341,41 @@
   <div id="toast" class="toast"></div>
 
   <script>
-    // ==================== GESTION DES MODALES ====================
+    // ============================================================
+    // GESTION DES MODALES AVEC FETCH
+    // ============================================================
     (function() {
-      // Formulaire (Ajout/Modification)
+      const baseUrl = '/AfricEduc/public/index.php?url=classes';
+      
+      // ─── Toast ───
+      function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.backgroundColor = type === 'error' ? '#ef4444' : '#10b981';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      }
+
+      // ─── Formulaire ───
       const formModal = document.getElementById('classFormModal');
       const formTitle = document.getElementById('formModalTitle');
       const closeFormBtn = document.getElementById('close-form-modal');
       const formCancel = document.getElementById('form-cancel');
       const form = document.getElementById('classForm');
-      const submitBtn = form.querySelector('button[type="submit"]');
+      let isEditMode = false;
 
       function openFormModal(editMode = false, data = null) {
+        isEditMode = editMode;
         formTitle.innerHTML = editMode 
           ? '<i class="fas fa-edit text-primary mr-2"></i>Modifier la classe' 
           : '<i class="fas fa-plus-circle text-primary mr-2"></i>Nouvelle classe';
         
         document.getElementById('class-id').value = data?.id || '';
-        document.getElementById('class-name').value = data?.name || '';
-        document.getElementById('class-students').value = data?.students || '';
-        document.getElementById('class-avg').value = data?.avgGrade || '';
-        document.getElementById('class-success').value = data?.successRate || '';
-        document.getElementById('class-presence').value = data?.presence || '';
-        document.getElementById('class-payments').value = data?.payments || '';
+        document.getElementById('level-id').value = data?.level_id || '';
+        document.getElementById('serie-id').value = data?.serie_id || '';
+        document.getElementById('group-name').value = data?.group_name || '';
+        document.getElementById('max-students').value = data?.max_students || 50;
+        document.getElementById('academic-year').value = data?.academic_year || new Date().getFullYear();
 
         formModal.classList.add('is-open');
         document.body.style.overflow = 'hidden';
@@ -344,27 +385,141 @@
         formModal.classList.remove('is-open');
         document.body.style.overflow = '';
         form.reset();
+        isEditMode = false;
       }
 
       closeFormBtn.addEventListener('click', closeFormModal);
       formCancel.addEventListener('click', closeFormModal);
       formModal.addEventListener('click', (e) => { if (e.target === formModal) closeFormModal(); });
 
-      // Détail
+      // ─── Soumission du formulaire ───
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const id = document.getElementById('class-id').value;
+        const formData = new FormData();
+        formData.append('level_id', document.getElementById('level-id').value);
+        formData.append('serie_id', document.getElementById('serie-id').value || '');
+        formData.append('group_name', document.getElementById('group-name').value);
+        formData.append('max_students', document.getElementById('max-students').value);
+        formData.append('academic_year', document.getElementById('academic-year').value);
+        
+        if (id) {
+          formData.append('id', id);
+        }
+
+        const action = id ? 'update' : 'store';
+        const url = baseUrl + '&action=' + action;
+
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            body: formData
+          });
+          const result = await response.json();
+
+          if (result.success) {
+            showToast(result.message);
+            closeFormModal();
+            setTimeout(() => location.reload(), 1000);
+          } else {
+            showToast(result.error || 'Erreur', 'error');
+          }
+        } catch (error) {
+          showToast('Erreur de connexion', 'error');
+        }
+      });
+
+      // ─── Détail ───
       const detailModal = document.getElementById('detailModal');
       const closeDetailBtn = document.getElementById('close-detail-modal');
       const detailCloseBtn = document.getElementById('detail-close-btn');
+      const detailBody = document.getElementById('detail-body');
 
-      function openDetailModal(data) {
-        document.getElementById('detail-name').textContent = data?.name || '---';
-        document.getElementById('detail-students').textContent = data?.students || '---';
-        document.getElementById('detail-avg').textContent = data?.avgGrade ? data.avgGrade + ' /20' : '---';
-        document.getElementById('detail-success').textContent = data?.successRate ? data.successRate + '%' : '---';
-        document.getElementById('detail-presence').textContent = data?.presence ? data.presence + '%' : '---';
-        document.getElementById('detail-payments').textContent = data?.payments || '---';
-
+      async function openDetailModal(id) {
+        detailBody.innerHTML = `
+          <div class="text-center py-8 text-gray-400">
+            <i class="fas fa-spinner fa-spin text-2xl"></i>
+            <p class="mt-2">Chargement...</p>
+          </div>
+        `;
         detailModal.classList.add('is-open');
         document.body.style.overflow = 'hidden';
+
+        try {
+          const response = await fetch(baseUrl + '&action=get_class&id=' + id);
+          const data = await response.json();
+
+          if (data.error) {
+            detailBody.innerHTML = `<p class="text-red-500">${data.error}</p>`;
+            return;
+          }
+
+          const c = data.class;
+          const subjects = data.subjects || [];
+          const classDisplay = c.serie_name 
+            ? c.level_name + ' ' + c.serie_name
+            : c.level_name + ' ' + c.group_name;
+
+          let subjectsHtml = '';
+          if (subjects.length > 0) {
+            subjectsHtml = `
+              <div class="mt-4">
+                <h4 class="text-sm font-semibold text-slate-700 mb-2">📚 Matières enseignées</h4>
+                <div class="bg-slate-50 rounded-xl p-4">
+                  <table class="w-full text-sm">
+                    <thead>
+                      <tr class="text-left text-xs text-gray-500">
+                        <th class="pb-2">Matière</th>
+                        <th class="pb-2 text-right">Coefficient</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${subjects.map(s => `
+                        <tr class="border-t border-gray-100">
+                          <td class="py-2">${s.subject_name}</td>
+                          <td class="py-2 text-right font-semibold">${s.coefficient}</td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            `;
+          }
+
+          detailBody.innerHTML = `
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-xs font-semibold uppercase text-slate-500">Classe</p>
+                <p class="text-slate-800 font-medium text-lg">${classDisplay || '---'}</p>
+              </div>
+              <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-xs font-semibold uppercase text-slate-500">Niveau</p>
+                <p class="text-slate-800 font-medium text-lg">${c.level_name || '---'}</p>
+              </div>
+              <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-xs font-semibold uppercase text-slate-500">Série</p>
+                <p class="text-slate-800 font-medium text-lg">${c.serie_name || 'Aucune'}</p>
+              </div>
+              <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-xs font-semibold uppercase text-slate-500">Élèves</p>
+                <p class="text-slate-800 font-medium text-lg">${c.students_count || 0}</p>
+              </div>
+              <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-xs font-semibold uppercase text-slate-500">Capacité</p>
+                <p class="text-slate-800 font-medium text-lg">${c.max_students || 50}</p>
+              </div>
+              <div class="bg-slate-50 rounded-xl p-4">
+                <p class="text-xs font-semibold uppercase text-slate-500">Année scolaire</p>
+                <p class="text-slate-800 font-medium text-lg">${c.academic_year || '---'}</p>
+              </div>
+            </div>
+            ${subjectsHtml}
+          `;
+        } catch (error) {
+          detailBody.innerHTML = `<p class="text-red-500">Erreur de chargement</p>`;
+        }
       }
 
       function closeDetailModal() {
@@ -376,7 +531,7 @@
       detailCloseBtn.addEventListener('click', closeDetailModal);
       detailModal.addEventListener('click', (e) => { if (e.target === detailModal) closeDetailModal(); });
 
-      // Suppression
+      // ─── Suppression ───
       const deleteModal = document.getElementById('deleteModal');
       const closeDeleteBtn = document.getElementById('close-delete-modal');
       const deleteCancel = document.getElementById('delete-cancel');
@@ -411,12 +566,28 @@
         }
       });
 
-      deleteConfirm.addEventListener('click', function() {
+      deleteConfirm.addEventListener('click', async function() {
         if (!this.disabled && pendingDeleteId) {
-          showToast('Classe supprimée avec succès');
-          closeDeleteModal();
-          // Ici tu peux ajouter l'appel API ou la suppression côté serveur
-          // Exemple: window.location.reload();
+          try {
+            const formData = new FormData();
+            formData.append('id', pendingDeleteId);
+            
+            const response = await fetch(baseUrl + '&action=delete', {
+              method: 'POST',
+              body: formData
+            });
+            const result = await response.json();
+
+            if (result.success) {
+              showToast(result.message);
+              closeDeleteModal();
+              setTimeout(() => location.reload(), 1000);
+            } else {
+              showToast(result.error || 'Erreur', 'error');
+            }
+          } catch (error) {
+            showToast('Erreur de connexion', 'error');
+          }
         }
       });
 
@@ -424,108 +595,41 @@
       deleteCancel.addEventListener('click', closeDeleteModal);
       deleteModal.addEventListener('click', (e) => { if (e.target === deleteModal) closeDeleteModal(); });
 
-      // ==================== BOUTONS D'ACTION ====================
-      // Nouvelle classe
+      // ─── Événements des boutons ───
       document.getElementById('btn-add-class').addEventListener('click', () => openFormModal());
 
-      // Simuler des données pour la démo (boutons Voir, Modifier, Supprimer)
-      // Dans la vraie vie, ces données viendront du backend
-      const demoClasses = [
-        { id: 1, name: '6ème A', students: 14, avgGrade: 12.4, successRate: 86, presence: 94, payments: '12/14' },
-        { id: 2, name: '5ème B', students: 12, avgGrade: 11.8, successRate: 79, presence: 87, payments: '11/12' },
-        { id: 3, name: '4ème A', students: 13, avgGrade: 12.1, successRate: 81, presence: 91, payments: '12/13' },
-        { id: 4, name: 'Tle D', students: 11, avgGrade: 13.2, successRate: 91, presence: 96, payments: '9/11' }
-      ];
-
-      // Fonction pour peupler le tableau avec les données
-      function populateTable() {
-        const tbody = document.querySelector('#classes-table-body');
-        if (!tbody) return;
-        
-        if (demoClasses.length === 0) {
-          tbody.innerHTML = `
-            <tr>
-              <td colspan="7" class="px-5 py-8 text-center text-gray-400">
-                <i class="fas fa-inbox text-3xl block mb-2 text-gray-300"></i>
-                <p class="text-sm">Aucune classe n'a été créée pour le moment.</p>
-                <p class="text-xs mt-1">Cliquez sur <strong>"Nouvelle classe"</strong> pour commencer.</p>
-              </td>
-            </tr>
-          `;
-          return;
-        }
-
-        tbody.innerHTML = demoClasses.map(c => `
-          <tr class="hover:bg-slate-50/80">
-            <td class="px-5 py-4 font-medium text-slate-900 sm:px-6">${c.name}</td>
-            <td class="px-3 py-4">${c.students}</td>
-            <td class="px-3 py-4">${c.avgGrade} /20</td>
-            <td class="px-3 py-4"><span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-800">${c.successRate}% ↑</span></td>
-            <td class="px-3 py-4"><span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-800">${c.presence}%</span></td>
-            <td class="px-3 py-4">${c.payments}</td>
-            <td class="px-5 py-4 text-right">
-              <div class="table-actions flex justify-end gap-1.5">
-                <button class="view-class-btn btn-icon bg-blue-50 text-blue-600 hover:bg-blue-100" data-id="${c.id}" title="Voir détails">
-                  <i class="fas fa-eye text-xs"></i>
-                </button>
-                <button class="edit-class-btn btn-icon bg-amber-50 text-amber-600 hover:bg-amber-100" data-id="${c.id}" title="Modifier">
-                  <i class="fas fa-edit text-xs"></i>
-                </button>
-                <button class="delete-class-btn btn-icon bg-red-50 text-red-600 hover:bg-red-100" data-id="${c.id}" title="Supprimer">
-                  <i class="fas fa-trash text-xs"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        `).join('');
-
-        // Attacher les événements
-        document.querySelectorAll('.view-class-btn').forEach(btn => {
-          btn.addEventListener('click', function() {
-            const id = parseInt(this.dataset.id);
-            const data = demoClasses.find(c => c.id === id);
-            if (data) openDetailModal(data);
-          });
+      document.querySelectorAll('.view-class-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          openDetailModal(this.dataset.id);
         });
+      });
 
-        document.querySelectorAll('.edit-class-btn').forEach(btn => {
-          btn.addEventListener('click', function() {
-            const id = parseInt(this.dataset.id);
-            const data = demoClasses.find(c => c.id === id);
-            if (data) openFormModal(true, data);
-          });
+      document.querySelectorAll('.edit-class-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          const id = this.dataset.id;
+          try {
+            const response = await fetch(baseUrl + '&action=get_class&id=' + id);
+            const data = await response.json();
+            if (data.class) {
+              openFormModal(true, data.class);
+            }
+          } catch (error) {
+            showToast('Erreur de chargement', 'error');
+          }
         });
+      });
 
-        document.querySelectorAll('.delete-class-btn').forEach(btn => {
-          btn.addEventListener('click', function() {
-            const id = parseInt(this.dataset.id);
-            const data = demoClasses.find(c => c.id === id);
-            if (data) openDeleteModal(id, data.name);
-          });
+      document.querySelectorAll('.delete-class-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const row = this.closest('tr');
+          const name = row.querySelector('td:first-child')?.textContent || 'Classe';
+          openDeleteModal(this.dataset.id, name);
         });
-      }
+      });
 
-      // Toast
-      function showToast(msg, type = "success") {
-        const toast = document.getElementById("toast");
-        toast.innerText = msg;
-        toast.style.backgroundColor = type === "error" ? "#ef4444" : "#10b981";
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), 3000);
-      }
+      // ─── Mise à jour de l'horodatage ───
+      document.getElementById('last-update').textContent = new Date().toLocaleTimeString('fr-FR');
 
-      // Initialisation
-      document.getElementById("last-update").innerText = new Date().toLocaleTimeString("fr-FR");
-      populateTable();
-
-      // Exposer la fonction pour une utilisation ultérieure (ex: après ajout)
-      window.showToast = showToast;
-      window.openFormModal = openFormModal;
-      window.openDetailModal = openDetailModal;
-      window.openDeleteModal = openDeleteModal;
-      window.closeFormModal = closeFormModal;
-      window.closeDetailModal = closeDetailModal;
-      window.closeDeleteModal = closeDeleteModal;
     })();
   </script>
 </body>

@@ -77,6 +77,12 @@ switch ($url) {
             case 'delete':
                 $controller->delete();
                 break;
+            case 'get_form_data':
+                $controller->getFormData();
+                break;
+            case 'get_class':
+                $controller->getClass();
+                break;
             default:
                 $controller->index();
                 break;

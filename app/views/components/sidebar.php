@@ -259,7 +259,8 @@ h1,h2,h3,h4 { font-family: "Quicksand", sans-serif; }
 
         <div class="sidebar-section-title">Organisation</div>
 
-        <a href="../classes/index.php" class="sidebar-link">
+        <a href="<?= $baseUrl ?>classes" 
+            class="sidebar-link <?= $currentPage === 'classes' ? 'active' : '' ?>">
             <i class="fa-solid fa-layer-group"></i> Classes / Groupes
         </a>
 
