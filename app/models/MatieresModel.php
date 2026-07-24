@@ -186,17 +186,69 @@ class MatieresModel
         }
     }
 
-    /**
-     * Retire une matière d'une classe
+   /**
+     * ✅ CORRIGÉ : Retire une matière d'une classe UNIQUEMENT
+     * Supprime le lien dans curriculum_subjects, PAS la matière de subjects
      */
     public function removeMatiereFromClasse($curriculumSubjectId)
     {
         try {
+            // Vérifier d'abord que le lien existe
+            $stmt = $this->pdo->prepare("
+                SELECT cs.id, s.name as matiere_nom, 
+                       CONCAT(
+                           CASE 
+                               WHEN c.level_id IS NOT NULL AND c.serie_id IS NULL THEN CONCAT(c.level_id, ' ', c.group_name)
+                               WHEN c.level_id IS NULL AND c.serie_id IS NOT NULL THEN CONCAT(c.group_name, ' ', c.serie_id)
+                               ELSE c.group_name
+                           END
+                       ) as classe_nom
+                FROM curriculum_subjects cs
+                JOIN curricula cu ON cs.curriculum_id = cu.id
+                JOIN classes c ON c.school_id = cu.school_id 
+                    AND c.level_id = cu.level_id 
+                    AND (c.serie_id = cu.serie_id OR (c.serie_id IS NULL AND cu.serie_id IS NULL))
+                JOIN subjects s ON cs.subject_id = s.id
+                WHERE cs.id = ?
+            ");
+            $stmt->execute([$curriculumSubjectId]);
+            $info = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$info) {
+                return ['error' => 'Lien matière-classe non trouvé'];
+            }
+
+            // ✅ Supprimer UNIQUEMENT le lien (pas la matière)
             $stmt = $this->pdo->prepare("DELETE FROM curriculum_subjects WHERE id = ?");
             $stmt->execute([$curriculumSubjectId]);
-            return ['success' => true];
+
+            return [
+                'success' => true, 
+                'message' => "Matière '{$info['matiere_nom']}' retirée de la classe '{$info['classe_nom']}'",
+                'info' => $info
+            ];
         } catch (PDOException $e) {
             return ['error' => $e->getMessage()];
         }
+    }
+
+        /**
+     * Récupère toutes les matières uniques associées à des classes via curricula
+     * Utilisé pour le filtre par matière
+     */
+    public function getUniqueMatieresBySchool($schoolId)
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT DISTINCT 
+                s.id,
+                s.name
+            FROM subjects s
+            JOIN curriculum_subjects cs ON s.id = cs.subject_id
+            JOIN curricula cu ON cs.curriculum_id = cu.id
+            WHERE cu.school_id = ?
+            ORDER BY s.name
+        ");
+        $stmt->execute([$schoolId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

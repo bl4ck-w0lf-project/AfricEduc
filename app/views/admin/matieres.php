@@ -1,6 +1,4 @@
-<?php
-// app/views/admin/matieres.php
-?>
+<
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -45,6 +43,12 @@
         .table-actions .btn-icon { width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s; }
         .table-actions .btn-icon:hover { transform: scale(1.08); }
         .toggle-btn.active { background-color: #7300e9; color: white; }
+        .classe-block {
+            transition: all 0.2s ease;
+        }
+        .classe-block:hover {
+            box-shadow: 0 4px 16px rgba(115,0,233,0.08);
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 text-slate-800 antialiased">
@@ -138,7 +142,43 @@
                 </div>
             </section>
 
-            <!-- LISTE DES CLASSES AVEC LEURS MATIÈRES -->
+            <!-- FILTRES ET RECHERCHE -->
+            <section class="mb-4">
+                <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <!-- Recherche -->
+                        <div class="flex-1 min-w-[180px] relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="text" id="searchMatiereInput" placeholder="Rechercher une matière..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition">
+                        </div>
+                        <!-- Filtre par Classe -->
+                        <div class="min-w-[160px]">
+                            <select id="filterClasseSelect" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm text-gray-600 focus:outline-none focus:border-primary focus:bg-white transition">
+                                <option value="">Toutes les classes</option>
+                                <?php if (!empty($classes)): ?>
+                                    <?php foreach ($classes as $classe): ?>
+                                        <option value="<?= htmlspecialchars($classe['nom']) ?>"><?= htmlspecialchars($classe['nom']) ?></option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                        </div>
+                        <!-- Filtre par Matière -->
+                        <div class="min-w-[160px]">
+                            <select id="filterMatiereSelect" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm text-gray-600 focus:outline-none focus:border-primary focus:bg-white transition">
+                                <option value="">Toutes les matières</option>
+                                <?php foreach ($uniqueMatieres as $matiere): ?>
+                                    <option value="<?= htmlspecialchars($matiere['name']) ?>"><?= htmlspecialchars($matiere['name']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>                        
+                        <button id="resetFiltersBtn" class="px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium transition flex items-center gap-2">
+                            <i class="fas fa-undo"></i> Réinitialiser
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LISTE DES CLASSES AVEC LEURS MATIÈRES - GRID 3 COLONNES -->
             <section>
                 <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
                     <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
@@ -146,64 +186,66 @@
                     </h3>
                 </div>
 
-                <?php if (empty($classes)): ?>
-                    <div class="text-center py-12 bg-white rounded-2xl border border-slate-200/80 shadow-sm">
-                        <i class="fas fa-inbox text-4xl text-gray-300 mb-3"></i>
-                        <p class="text-gray-400">Aucune classe disponible</p>
-                    </div>
-                <?php else: ?>
-                    <?php foreach ($classes as $classe): ?>
-                        <div class="mb-6 bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                            <!-- En-tête de la classe -->
-                            <div class="flex items-center justify-between px-5 py-3 bg-slate-50 border-b border-slate-200">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                                        <i class="fas fa-chalkboard text-sm"></i>
-                                    </div>
-                                    <h4 class="font-heading font-bold text-slate-900"><?= htmlspecialchars($classe['nom']) ?></h4>
-                                    <span class="text-xs text-gray-400">(<?= $classe['nb_matieres'] ?? 0 ?> matières)</span>
-                                </div>
-                                <button class="add-matiere-to-classe-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primaryDark transition" data-classe-id="<?= $classe['id'] ?>" data-classe-nom="<?= htmlspecialchars($classe['nom']) ?>">
-                                    <i class="fas fa-plus"></i> Ajouter
-                                </button>
-                            </div>
-
-                            <!-- Liste des matières de la classe -->
-                            <div class="p-4">
-                                <?php if (empty($classe['matieres'])): ?>
-                                    <p class="text-center text-sm text-gray-400 py-4">
-                                        <i class="fas fa-book-open text-gray-300 mr-2"></i>
-                                        Aucune matière associée à cette classe
-                                    </p>
-                                <?php else: ?>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                                        <?php foreach ($classe['matieres'] as $matiere): ?>
-                                            <div class="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 border border-gray-100 hover:border-primary/30 transition group">
-                                                <div class="flex items-center gap-2">
-                                                    <span class="text-sm font-medium text-slate-700"><?= htmlspecialchars($matiere['name']) ?></span>
-                                                    <span class="text-xs text-gray-400">coeff <?= $matiere['coefficient'] ?></span>
-                                                </div>
-                                                <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
-                                                    <button class="edit-coeff-btn w-7 h-7 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 flex items-center justify-center" 
-                                                            data-id="<?= $matiere['curriculum_subject_id'] ?>"
-                                                            data-matiere="<?= htmlspecialchars($matiere['name']) ?>"
-                                                            data-coeff="<?= $matiere['coefficient'] ?>">
-                                                        <i class="fas fa-edit text-xs"></i>
-                                                    </button>
-                                                    <button class="remove-matiere-btn w-7 h-7 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 flex items-center justify-center" 
-                                                            data-id="<?= $matiere['curriculum_subject_id'] ?>"
-                                                            data-matiere="<?= htmlspecialchars($matiere['name']) ?>">
-                                                        <i class="fas fa-times text-xs"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
+                <div id="classesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <?php if (empty($classes)): ?>
+                        <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-slate-200/80 shadow-sm">
+                            <i class="fas fa-inbox text-4xl text-gray-300 mb-3"></i>
+                            <p class="text-gray-400">Aucune classe disponible</p>
                         </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                    <?php else: ?>
+                        <?php foreach ($classes as $classe): ?>
+                            <div class="classe-block bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden" data-classe-nom="<?= htmlspecialchars($classe['nom']) ?>">
+                                <!-- En-tête de la classe -->
+                                <div class="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-200">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <div class="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                                            <i class="fas fa-chalkboard text-xs"></i>
+                                        </div>
+                                        <h4 class="font-heading font-bold text-slate-900 text-sm truncate"><?= htmlspecialchars($classe['nom']) ?></h4>
+                                        <span class="text-xs text-gray-400 flex-shrink-0">(<?= $classe['nb_matieres'] ?? 0 ?>)</span>
+                                    </div>
+                                    <button class="add-matiere-to-classe-btn inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primaryDark transition flex-shrink-0" data-classe-id="<?= $classe['id'] ?>" data-classe-nom="<?= htmlspecialchars($classe['nom']) ?>">
+                                        <i class="fas fa-plus text-[10px]"></i> Ajouter
+                                    </button>
+                                </div>
+
+                                <!-- Liste des matières de la classe - GRID 2 COLONNES -->
+                                <div class="p-3">
+                                    <?php if (empty($classe['matieres'])): ?>
+                                        <p class="text-center text-xs text-gray-400 py-3">
+                                            <i class="fas fa-book-open text-gray-300 mr-1"></i>
+                                            Aucune matière
+                                        </p>
+                                    <?php else: ?>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 matieres-grid">
+                                            <?php foreach ($classe['matieres'] as $matiere): ?>
+                                                <div class="matiere-item flex items-center justify-between bg-gray-50 rounded-lg px-2.5 py-1.5 border border-gray-100 hover:border-primary/30 transition group" data-matiere-nom="<?= strtolower(htmlspecialchars($matiere['name'])) ?>">
+                                                    <div class="flex items-center gap-1.5 min-w-0">
+                                                        <span class="text-xs font-medium text-slate-700 truncate"><?= htmlspecialchars($matiere['name']) ?></span>
+                                                        <span class="text-[10px] text-gray-400 flex-shrink-0">coeff <?= $matiere['coefficient'] ?></span>
+                                                    </div>
+                                                    <div class="actions flex items-center gap-0.5 flex-shrink-0 ml-1 opacity-0 group-hover:opacity-100 transition">
+                                                        <button class="edit-coeff-btn w-6 h-6 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 flex items-center justify-center transition" 
+                                                                data-id="<?= $matiere['curriculum_subject_id'] ?>"
+                                                                data-matiere="<?= htmlspecialchars($matiere['name']) ?>"
+                                                                data-coeff="<?= $matiere['coefficient'] ?>">
+                                                            <i class="fas fa-edit text-[10px]"></i>
+                                                        </button>
+                                                        <button class="remove-matiere-btn w-6 h-6 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 flex items-center justify-center transition" 
+                                                                data-id="<?= $matiere['curriculum_subject_id'] ?>"
+                                                                data-matiere="<?= htmlspecialchars($matiere['name']) ?>">
+                                                            <i class="fas fa-times text-[10px]"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
             </section>
 
             <footer class="mt-12 pb-8 text-center text-xs text-slate-400">
@@ -340,6 +382,83 @@
                 toast.classList.add('show');
                 setTimeout(() => toast.classList.remove('show'), 3000);
             }
+
+            // ─── FILTRES ET RECHERCHE ───
+            const searchInput = document.getElementById('searchMatiereInput');
+            const filterClasse = document.getElementById('filterClasseSelect');
+            const filterMatiere = document.getElementById('filterMatiereSelect');
+            const resetBtn = document.getElementById('resetFiltersBtn');
+            const classesBlocks = document.querySelectorAll('.classe-block');
+
+            function applyFilters() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                const classeFilter = filterClasse.value.toLowerCase().trim();
+                const matiereFilter = filterMatiere.value.toLowerCase().trim();
+
+                classesBlocks.forEach(block => {
+                    const classeNom = block.dataset.classeNom?.toLowerCase() || '';
+                    const matieres = block.querySelectorAll('.matiere-item');
+                    const matieresGrid = block.querySelector('.matieres-grid');
+                    const emptyMessage = block.querySelector('.no-matiere-message');
+                    
+                    // Filtrer par classe
+                    let showClasse = true;
+                    if (classeFilter && classeNom !== classeFilter) {
+                        showClasse = false;
+                    }
+
+                    if (showClasse) {
+                        // Toujours afficher le bloc classe
+                        block.style.display = 'block';
+                        
+                        // Nettoyer les anciens messages
+                        const oldMsg = block.querySelector('.filter-no-result');
+                        if (oldMsg) oldMsg.remove();
+                        
+                        if (matieresGrid) {
+                            let hasVisibleMatiere = false;
+                            
+                            // Filtrer les matières
+                            matieres.forEach(item => {
+                                const matiereNom = item.dataset.matiereNom || '';
+                                let match = true;
+                                
+                                if (searchTerm && !matiereNom.includes(searchTerm)) {
+                                    match = false;
+                                }
+                                if (matiereFilter && !matiereNom.includes(matiereFilter)) {
+                                    match = false;
+                                }
+                                
+                                item.style.display = match ? 'flex' : 'none';
+                                if (match) hasVisibleMatiere = true;
+                            });
+                            
+                            // Si la classe a des matières mais aucune ne correspond aux filtres
+                            if (matieres.length > 0 && !hasVisibleMatiere) {
+                                const msg = document.createElement('p');
+                                msg.className = 'filter-no-result text-center text-xs text-gray-400 py-2';
+                                msg.textContent = 'Aucune matière ne correspond aux filtres';
+                                matieresGrid.parentNode.appendChild(msg);
+                            }
+                        }
+                    } else {
+                        block.style.display = 'none';
+                    }
+                });
+            }
+
+            searchInput.addEventListener('input', applyFilters);
+            filterClasse.addEventListener('change', applyFilters);
+            filterMatiere.addEventListener('change', applyFilters);
+
+            resetBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                filterClasse.value = '';
+                filterMatiere.value = '';
+                applyFilters();
+                showToast('Filtres réinitialisés', 'info');
+            });
 
             // ─── AJOUTER UNE MATIÈRE À UNE CLASSE ───
             const addModal = document.getElementById('addMatiereModal');
@@ -535,6 +654,9 @@
             deleteModal.addEventListener('click', (e) => { if (e.target === deleteModal) closeDeleteModal(); });
 
             document.getElementById('last-update').textContent = new Date().toLocaleTimeString('fr-FR');
+
+            // Appliquer les filtres au chargement
+            applyFilters();
         })();
     </script>
 </body>

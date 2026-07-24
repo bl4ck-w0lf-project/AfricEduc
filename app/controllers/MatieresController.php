@@ -37,6 +37,7 @@ class MatieresController
         $classes = $this->model->getClassesWithMatieres($schoolId);
         $stats = $this->model->getStats($schoolId);
         $allMatieres = $this->model->getAllMatieres($schoolId);
+        $uniqueMatieres = $this->model->getUniqueMatieresBySchool($schoolId);
 
         require_once __DIR__ . '/../views/admin/matieres.php';
     }
