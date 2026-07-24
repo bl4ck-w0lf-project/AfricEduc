@@ -88,7 +88,33 @@ switch ($url) {
                 break;
         }
         break;
-    
+
+    case 'matieres':
+        require_once __DIR__ . '/../app/controllers/MatieresController.php';
+        $controller = new MatieresController($pdo);
+
+        $action = $_GET['action'] ?? 'index';
+
+        switch ($action) {
+            case 'index':
+                $controller->index();
+                break;
+            case 'add_matiere_to_classe':
+                $controller->addMatiereToClasse();
+                break;
+            case 'update_coeff':
+                $controller->updateCoeff();
+                break;
+            case 'remove_matiere_from_classe':
+                $controller->removeMatiereFromClasse();
+                break;
+            default:
+                $controller->index();
+                break;
+        }
+        break;
+
+        
     //API actions sur les étudiants
     //Afficher la vue l'index.php    
     case 'students':

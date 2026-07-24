@@ -264,7 +264,8 @@ h1,h2,h3,h4 { font-family: "Quicksand", sans-serif; }
             <i class="fa-solid fa-layer-group"></i> Classes / Groupes
         </a>
 
-        <a href="../matieres/index.php" class="sidebar-link">
+        <a href="<?= $baseUrl ?>matieres" 
+            class="sidebar-link <?= $currentPage === 'matieres' ? 'active' : '' ?>">
             <i class="fa-solid fa-book-open"></i> Matières
         </a>
 
