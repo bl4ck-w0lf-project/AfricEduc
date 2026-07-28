@@ -157,8 +157,8 @@ class ClassesModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Récupère les matières d'une classe via son curriculum
+        /**
+     * Récupère les matières d'une classe via curriculum_subjects avec classe_id
      */
     public function getSubjectsByClass($classId)
     {
@@ -166,13 +166,9 @@ class ClassesModel
             SELECT 
                 s.name as subject_name,
                 cs.coefficient
-            FROM classes c
-            JOIN curricula cu ON c.school_id = cu.school_id 
-                AND c.level_id = cu.level_id 
-                AND (c.serie_id = cu.serie_id OR (c.serie_id IS NULL AND cu.serie_id IS NULL))
-            JOIN curriculum_subjects cs ON cu.id = cs.curriculum_id
+            FROM curriculum_subjects cs
             JOIN subjects s ON cs.subject_id = s.id
-            WHERE c.id = ?
+            WHERE cs.classe_id = ?
             ORDER BY cs.coefficient DESC
         ");
         $stmt->execute([$classId]);

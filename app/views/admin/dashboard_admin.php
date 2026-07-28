@@ -1,4 +1,12 @@
+<?php 
 
+  $roleLabels = [
+    'super_admin' => 'Super Admin',
+    'admin' => 'Administrateur',
+    'agent' => 'Secrétaire'
+];
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -78,7 +86,7 @@
         <span class="hidden rounded-full border border-accent/50 bg-accent/20 px-3 py-1 text-xs font-medium text-slate-800 sm:inline-flex" id="school-year">
           Année scolaire <?= $schoolYear ?>
         </span>
-        <button class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-1.5 pr-3 shadow-sm">
+        <button class="flex items-center gap-2 rounded-2xl ">
             <?php
                 $userName = $_SESSION['user_name'] ?? 'User';
 
@@ -93,8 +101,7 @@
                 // limite à 2 caractères max
                 $initials = substr($initials, 0, 2);
             ?>
-          <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md"> <?= $initials ?></span>
-          <span class="hidden text-left text-sm sm:block"><span class="block font-medium text-slate-900"><?= htmlspecialchars($_SESSION['user_name']) ?></span><span class="text-xs text-slate-500"><?= htmlspecialchars($_SESSION['user_role']) ?></span></span>
+            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md"> <?= $initials ?></span>
         </button>
       </div>
     </header>
@@ -149,7 +156,7 @@
                       }
               ?>
             <div><h1 class="font-heading text-xl font-bold text-slate-900 sm:text-2xl"><?= $salutation ?>  <?= htmlspecialchars($_SESSION['user_name']) ?>
-                (<?= htmlspecialchars($_SESSION['user_role']) ?>)    —  <span class="text-primary"><?= htmlspecialchars($_SESSION['school_name'] ?? 'Aucune école') ?></span></h1>
+                (<?= $roleLabels[htmlspecialchars($_SESSION['user_role'])]  ?>)    —  <span class="text-primary"><?= htmlspecialchars($_SESSION['school_name'] ?? 'Aucune école') ?></span></h1>
               <div class="mt-4 inline-flex flex-col gap-1 rounded-2xl bg-white/70 px-4 py-3 shadow-sm backdrop-blur border border-slate-200">
     
                     <div class="flex items-center gap-2 text-primary font-semibold text-sm">

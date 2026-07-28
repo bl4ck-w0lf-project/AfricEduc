@@ -356,6 +356,7 @@
         setTimeout(() => toast.classList.remove('show'), 3000);
       }
 
+      
       // ─── Formulaire ───
       const formModal = document.getElementById('classFormModal');
       const formTitle = document.getElementById('formModalTitle');
