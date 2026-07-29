@@ -85,8 +85,8 @@ unset($_SESSION['success'], $_SESSION['mail_error'], $_SESSION['registered_email
           echo "Nous n'avons pas pu envoyer l'email de confirmation à <strong>{$registeredEmail}</strong>.<br>";
           echo "Erreur: {$mailError}";
         } else {
-          echo "✅ Un email de confirmation a été envoyé à <strong>{$registeredEmail}</strong>.<br><br>";
-          echo "📌 <strong>Étapes à suivre :</strong><br>";
+          echo " Un email de confirmation a été envoyé à <strong>{$registeredEmail}</strong>.<br><br>";
+          echo " <strong>Étapes à suivre :</strong><br>";
           echo "1. Vérifiez votre boîte email et cliquez sur le lien de confirmation.<br>";
           echo "2. Votre compte sera ensuite examiné par l'administrateur.<br>";
           echo "3. Vous recevrez une notification dès que votre compte sera activé.";
@@ -97,7 +97,7 @@ unset($_SESSION['success'], $_SESSION['mail_error'], $_SESSION['registered_email
     <?php if ($adminNotified && !$mailError): ?>
       <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <p class="text-xs text-blue-700">
-          📧 L'administrateur a été notifié de votre inscription.
+           L'administrateur a été notifié de votre inscription.
         </p>
       </div>
     <?php endif; ?>

@@ -69,50 +69,68 @@ class ClassesModel
     }
 
     /**
-     * Crée une nouvelle classe
+     * ✅ CORRIGÉ : Crée une nouvelle classe
      */
     public function createClass($data)
     {
         try {
+            // S'assurer que les valeurs sont des INT ou NULL
+            $levelId = !empty($data['level_id']) ? (int)$data['level_id'] : null;
+            $serieId = !empty($data['serie_id']) ? (int)$data['serie_id'] : null;
+            $maxStudents = !empty($data['max_students']) ? (int)$data['max_students'] : 50;
+            $academicYear = !empty($data['academic_year']) ? (int)$data['academic_year'] : date('Y');
+            
+            // group_name peut être NULL pour le second cycle
+            $groupName = !empty($data['group_name']) ? $data['group_name'] : null;
+
             $stmt = $this->pdo->prepare("
                 INSERT INTO classes (school_id, level_id, serie_id, group_name, max_students, academic_year)
                 VALUES (?, ?, ?, ?, ?, ?)
             ");
             $stmt->execute([
                 $data['school_id'],
-                $data['level_id'],
-                $data['serie_id'],
-                $data['group_name'],
-                $data['max_students'],
-                $data['academic_year']
+                $levelId,
+                $serieId,
+                $groupName,
+                $maxStudents,
+                $academicYear
             ]);
             return $this->pdo->lastInsertId();
         } catch (PDOException $e) {
+            error_log('[ClassesModel] Erreur createClass: ' . $e->getMessage());
             return false;
         }
     }
 
     /**
-     * Met à jour une classe
+     * ✅ CORRIGÉ : Met à jour une classe
      */
     public function updateClass($id, $data)
     {
         try {
+            // S'assurer que les valeurs sont des INT ou NULL
+            $levelId = !empty($data['level_id']) ? (int)$data['level_id'] : null;
+            $serieId = !empty($data['serie_id']) ? (int)$data['serie_id'] : null;
+            $maxStudents = !empty($data['max_students']) ? (int)$data['max_students'] : 50;
+            $academicYear = !empty($data['academic_year']) ? (int)$data['academic_year'] : date('Y');
+            $groupName = !empty($data['group_name']) ? $data['group_name'] : null;
+
             $stmt = $this->pdo->prepare("
                 UPDATE classes 
                 SET level_id = ?, serie_id = ?, group_name = ?, max_students = ?, academic_year = ?
                 WHERE id = ?
             ");
             $stmt->execute([
-                $data['level_id'],
-                $data['serie_id'],
-                $data['group_name'],
-                $data['max_students'],
-                $data['academic_year'],
+                $levelId,
+                $serieId,
+                $groupName,
+                $maxStudents,
+                $academicYear,
                 $id
             ]);
             return true;
         } catch (PDOException $e) {
+            error_log('[ClassesModel] Erreur updateClass: ' . $e->getMessage());
             return false;
         }
     }
@@ -127,6 +145,7 @@ class ClassesModel
             $stmt->execute([$id]);
             return true;
         } catch (PDOException $e) {
+            error_log('[ClassesModel] Erreur deleteClass: ' . $e->getMessage());
             return false;
         }
     }
@@ -157,7 +176,7 @@ class ClassesModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-        /**
+    /**
      * Récupère les matières d'une classe via curriculum_subjects avec classe_id
      */
     public function getSubjectsByClass($classId)

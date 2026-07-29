@@ -93,90 +93,95 @@ class ClassesController
         ]);
         exit;
     }
-
-    /**
-     * Crée une nouvelle classe (AJAX)
-     */
-    public function store()
-    {
-        header('Content-Type: application/json');
-        
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            echo json_encode(['error' => 'Méthode non autorisée']);
-            exit;
-        }
-
-        $schoolId = $_SESSION['school_id'] ?? null;
-        if (!$schoolId) {
-            echo json_encode(['error' => 'École non trouvée']);
-            exit;
-        }
-
-        $data = [
-            'school_id' => $schoolId,
-            'level_id' => $_POST['level_id'] ?? null,
-            'serie_id' => $_POST['serie_id'] ?? null,
-            'group_name' => $_POST['group_name'] ?? null,
-            'max_students' => $_POST['max_students'] ?? 50,
-            'academic_year' => $_POST['academic_year'] ?? date('Y')
-        ];
-
-        // Validation
-        if (!$data['level_id']) {
-            echo json_encode(['error' => 'Le niveau est obligatoire']);
-            exit;
-        }
-
-        $result = $this->model->createClass($data);
-        
-        if ($result) {
-            echo json_encode(['success' => true, 'message' => 'Classe créée avec succès', 'id' => $result]);
-        } else {
-            echo json_encode(['error' => 'Erreur lors de la création']);
-        }
+/**
+ * Crée une nouvelle classe (AJAX)
+ */
+public function store()
+{
+    header('Content-Type: application/json');
+    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        echo json_encode(['error' => 'Méthode non autorisée']);
         exit;
     }
 
-    /**
-     * Met à jour une classe (AJAX)
-     */
-    public function update()
-    {
-        header('Content-Type: application/json');
-        
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            echo json_encode(['error' => 'Méthode non autorisée']);
-            exit;
-        }
-
-        $id = $_POST['id'] ?? null;
-        if (!$id) {
-            echo json_encode(['error' => 'ID manquant']);
-            exit;
-        }
-
-        $data = [
-            'level_id' => $_POST['level_id'] ?? null,
-            'serie_id' => $_POST['serie_id'] ?? null,
-            'group_name' => $_POST['group_name'] ?? null,
-            'max_students' => $_POST['max_students'] ?? 50,
-            'academic_year' => $_POST['academic_year'] ?? date('Y')
-        ];
-
-        if (!$data['level_id']) {
-            echo json_encode(['error' => 'Le niveau est obligatoire']);
-            exit;
-        }
-
-        $result = $this->model->updateClass($id, $data);
-        
-        if ($result) {
-            echo json_encode(['success' => true, 'message' => 'Classe modifiée avec succès']);
-        } else {
-            echo json_encode(['error' => 'Erreur lors de la modification']);
-        }
+    $schoolId = $_SESSION['school_id'] ?? null;
+    if (!$schoolId) {
+        echo json_encode(['error' => 'École non trouvée']);
         exit;
     }
+
+    // Log des données reçues
+    error_log('[ClassesController] store - POST: ' . print_r($_POST, true));
+
+    $data = [
+        'school_id' => $schoolId,
+        'level_id' => $_POST['level_id'] ?? null,
+        'serie_id' => $_POST['serie_id'] ?? null,
+        'group_name' => $_POST['group_name'] ?? null,
+        'max_students' => $_POST['max_students'] ?? 50,
+        'academic_year' => $_POST['academic_year'] ?? date('Y')
+    ];
+
+    // Validation
+    if (!$data['level_id']) {
+        echo json_encode(['error' => 'Le niveau est obligatoire']);
+        exit;
+    }
+
+    $result = $this->model->createClass($data);
+    
+    if ($result) {
+        echo json_encode(['success' => true, 'message' => 'Classe créée avec succès', 'id' => $result]);
+    } else {
+        echo json_encode(['error' => 'Erreur lors de la création']);
+    }
+    exit;
+}
+
+/**
+ * Met à jour une classe (AJAX)
+ */
+public function update()
+{
+    header('Content-Type: application/json');
+    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        echo json_encode(['error' => 'Méthode non autorisée']);
+        exit;
+    }
+
+    $id = $_POST['id'] ?? null;
+    if (!$id) {
+        echo json_encode(['error' => 'ID manquant']);
+        exit;
+    }
+
+    // Log des données reçues
+    error_log('[ClassesController] update - POST: ' . print_r($_POST, true));
+
+    $data = [
+        'level_id' => $_POST['level_id'] ?? null,
+        'serie_id' => $_POST['serie_id'] ?? null,
+        'group_name' => $_POST['group_name'] ?? null,
+        'max_students' => $_POST['max_students'] ?? 50,
+        'academic_year' => $_POST['academic_year'] ?? date('Y')
+    ];
+
+    if (!$data['level_id']) {
+        echo json_encode(['error' => 'Le niveau est obligatoire']);
+        exit;
+    }
+
+    $result = $this->model->updateClass($id, $data);
+    
+    if ($result) {
+        echo json_encode(['success' => true, 'message' => 'Classe modifiée avec succès']);
+    } else {
+        echo json_encode(['error' => 'Erreur lors de la modification']);
+    }
+    exit;
+}
 
     /**
      * Supprime une classe (AJAX)

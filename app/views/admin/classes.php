@@ -42,6 +42,19 @@
     .confirm-modal .modal-content { max-width: 24rem; }
     .table-actions .btn-icon { width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s; }
     .table-actions .btn-icon:hover { transform: scale(1.08); }
+
+        .modal-content {
+        max-width: 90%;
+        width: 56rem; /* ~896px = 70% de l'écran */
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    @media (min-width: 1024px) {
+        .modal-content {
+            width: 64rem; /* ~1024px */
+        }
+    }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 text-slate-800 antialiased">
@@ -273,31 +286,37 @@
   </div>
 
   <!-- MODAL : DÉTAIL CLASSE -->
-  <div id="detailModal" class="modal-overlay">
-      <div class="modal-content bg-white rounded-2xl shadow-2xl p-6 max-w-4xl">
-          <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
-              <div>
-                  <h3 class="font-heading text-xl font-bold text-slate-900">
-                      <i class="fas fa-info-circle text-primary mr-2"></i>Détails de la classe
-                  </h3>
-                  <p class="text-xs text-gray-400">Informations complètes de la classe</p>
-              </div>
-              <button id="close-detail-modal" class="text-slate-400 hover:text-slate-600 w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center">
-                  <i class="fas fa-times"></i>
-              </button>
-          </div>
-          <div id="detail-body" class="space-y-6">
-              <!-- Contenu chargé via AJAX -->
-              <div class="text-center py-8 text-gray-400">
-                  <i class="fas fa-spinner fa-spin text-2xl"></i>
-                  <p class="mt-2">Chargement...</p>
-              </div>
-          </div>
-          <div class="mt-6 flex justify-end border-t border-gray-100 pt-4">
-              <button id="detail-close-btn" class="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">Fermer</button>
-          </div>
-      </div>
-  </div>
+<div id="detailModal" class="modal-overlay">
+    <div class="modal-content bg-white rounded-2xl shadow-2xl p-8 max-w-5xl w-full">
+        <!-- HEADER minimal -->
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h3 class="font-heading text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="text-primary">#</span> Détails de la classe
+                </h3>
+                <p class="text-xs text-gray-400 mt-0.5">Informations générales et matières associées</p>
+            </div>
+            <button id="close-detail-modal" class="text-gray-400 hover:text-gray-600 w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- BODY -->
+        <div id="detail-body" class="space-y-6">
+            <div class="text-center py-12 text-gray-400">
+                <i class="fas fa-spinner fa-spin text-2xl text-primary"></i>
+                <p class="mt-2 text-sm">Chargement...</p>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="mt-6 flex justify-end border-t border-gray-100 pt-4">
+            <button id="detail-close-btn" class="px-6 py-2.5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primaryDark transition shadow-sm">
+                <i class="fas fa-times mr-2"></i>Fermer
+            </button>
+        </div>
+    </div>
+</div>
 
   <!-- MODAL : CONFIRMATION SUPPRESSION -->
   <div id="deleteModal" class="modal-overlay">
@@ -439,9 +458,9 @@
 
               async function openDetailModal(id) {
     detailBody.innerHTML = `
-        <div class="text-center py-8 text-gray-400">
-            <i class="fas fa-spinner fa-spin text-2xl"></i>
-            <p class="mt-2">Chargement...</p>
+        <div class="text-center py-12 text-gray-400">
+            <i class="fas fa-spinner fa-spin text-2xl text-primary"></i>
+            <p class="mt-2 text-sm">Chargement...</p>
         </div>
     `;
     detailModal.classList.add('is-open');
@@ -452,7 +471,12 @@
         const data = await response.json();
 
         if (data.error) {
-            detailBody.innerHTML = `<p class="text-red-500">${data.error}</p>`;
+            detailBody.innerHTML = `
+                <div class="text-center py-12 text-red-500">
+                    <i class="fas fa-exclamation-circle text-2xl"></i>
+                    <p class="mt-2 text-sm">${data.error}</p>
+                </div>
+            `;
             return;
         }
 
@@ -462,93 +486,102 @@
             ? c.level_name + ' ' + c.serie_name
             : c.level_name + ' ' + c.group_name;
 
-        // Construction du HTML des matières (liste simple)
+        // Calcul du taux d'occupation
+        const occupationRate = c.max_students > 0 
+            ? Math.round((c.students_count / c.max_students) * 100) 
+            : 0;
+
+        // Construction des matières en grille 3 colonnes
         let subjectsHtml = '';
         if (subjects.length > 0) {
             subjectsHtml = `
-                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
-                    <p class="text-xs font-semibold uppercase text-slate-500 flex items-center gap-2 mb-3">
-                        <i class="fas fa-book-open text-primary"></i> Matières enseignées
-                        <span class="ml-auto text-[10px] text-gray-400">${subjects.length} matières</span>
-                    </p>
-                    <ul class="space-y-2">
+                <div>
+                    <h4 class="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                        <i class="fas fa-book-open text-primary text-xs"></i>
+                        Matières enseignées
+                        <span class="text-xs font-normal text-gray-400 ml-auto">${subjects.length} matières</span>
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                         ${subjects.map(s => `
-                            <li class="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-slate-100">
-                                <span class="text-sm text-slate-700">${s.subject_name}</span>
-                                <span class="text-sm font-semibold text-primary">Coef. ${s.coefficient}</span>
-                            </li>
+                            <div class="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2.5 border border-gray-100">
+                                <span class="text-sm text-slate-700 font-medium">${s.subject_name}</span>
+                                <span class="text-xs font-semibold text-primary bg-primary/5 px-2 py-0.5 rounded-full">Coef ${s.coefficient}</span>
+                            </div>
                         `).join('')}
-                    </ul>
+                    </div>
                 </div>
             `;
         } else {
             subjectsHtml = `
-                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 text-center text-gray-400">
-                    <i class="fas fa-book-open text-2xl block mb-2 text-gray-300"></i>
+                <div class="text-center py-6 text-gray-400 border border-dashed border-gray-200 rounded-xl">
+                    <i class="fas fa-book-open text-2xl text-gray-300 block mb-2"></i>
                     <p class="text-sm">Aucune matière associée</p>
                 </div>
             `;
         }
 
         detailBody.innerHTML = `
-            <!-- En-tête avec le nom de la classe -->
-            <div class="bg-gradient-to-r from-primary/5 via-primary/10 to-accent/20 rounded-xl p-4 border border-primary/20">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-semibold uppercase text-slate-500">Classe</p>
-                        <h4 class="text-2xl font-bold text-slate-900">${classDisplay || '---'}</h4>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-full">
-                            <i class="fas fa-users mr-1"></i> ${c.students_count || 0} élèves
-                        </span>
-                        <span class="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full">
-                            <i class="fas fa-user-plus mr-1"></i> ${c.max_students || 50} places
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- GRILLE 2 COLONNES BENTO -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Colonne gauche : Infos générales -->
-                <div class="space-y-4">
-                    <div class="bg-white rounded-xl p-4 border border-slate-200">
-                        <p class="text-xs font-semibold uppercase text-slate-500 flex items-center gap-2">
-                            <i class="fas fa-layer-group text-primary"></i> Niveau
-                        </p>
-                        <p class="text-slate-800 font-medium text-lg mt-1">${c.level_name || '---'}</p>
-                    </div>
-                    <div class="bg-white rounded-xl p-4 border border-slate-200">
-                        <p class="text-xs font-semibold uppercase text-slate-500 flex items-center gap-2">
-                            <i class="fas fa-tag text-primary"></i> Série
-                        </p>
-                        <p class="text-slate-800 font-medium text-lg mt-1">${c.serie_name || 'Aucune'}</p>
-                    </div>
-                    <div class="bg-white rounded-xl p-4 border border-slate-200">
-                        <p class="text-xs font-semibold uppercase text-slate-500 flex items-center gap-2">
-                            <i class="fas fa-calendar-alt text-primary"></i> Année scolaire
-                        </p>
-                        <p class="text-slate-800 font-medium text-lg mt-1">${c.academic_year || '---'}</p>
-                    </div>
-                    <div class="bg-white rounded-xl p-4 border border-slate-200">
-                        <p class="text-xs font-semibold uppercase text-slate-500 flex items-center gap-2">
-                            <i class="fas fa-flag text-primary"></i> Cycle
-                        </p>
-                        <p class="text-slate-800 font-medium text-lg mt-1">
-                            ${c.serie_name ? 'Second cycle (Lycée)' : 'Premier cycle (Collège)'}
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Colonne droite : Matières enseignées -->
+            <!-- En-tête : Nom de la classe -->
+            <div class="flex items-center justify-between pb-4 border-b border-gray-100">
                 <div>
-                    ${subjectsHtml}
+                    <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">Classe</p>
+                    <h2 class="text-2xl font-bold text-slate-900">${classDisplay || '---'}</h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-500 flex items-center gap-1.5">
+                        <i class="fas fa-user-graduate text-primary"></i>
+                        ${c.students_count || 0} élèves
+                    </span>
+                    <span class="text-sm text-gray-500 flex items-center gap-1.5">
+                        <i class="fas fa-chair text-primary"></i>
+                        ${c.max_students || 50} places
+                    </span>
+                    <span class="text-sm font-medium ${occupationRate > 80 ? 'text-amber-600' : 'text-emerald-600'}">
+                        ${occupationRate}% occupé
+                    </span>
                 </div>
             </div>
+
+            <!-- GRILLE 2x2 pour les infos générales -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <p class="text-xs font-medium text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fas fa-layer-group text-primary"></i> Niveau
+                    </p>
+                    <p class="text-slate-800 font-medium text-base mt-1">${c.level_name || '---'}</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <p class="text-xs font-medium text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fas fa-tag text-primary"></i> Série
+                    </p>
+                    <p class="text-slate-800 font-medium text-base mt-1">${c.serie_name || 'Aucune'}</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <p class="text-xs font-medium text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fas fa-calendar-alt text-primary"></i> Année scolaire
+                    </p>
+                    <p class="text-slate-800 font-medium text-base mt-1">${c.academic_year || '---'}</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <p class="text-xs font-medium text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fas fa-flag text-primary"></i> Cycle
+                    </p>
+                    <p class="text-slate-800 font-medium text-base mt-1">
+                        ${c.serie_name ? 'Second cycle' : 'Premier cycle'}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Matières en grille 3 colonnes -->
+            ${subjectsHtml}
         `;
     } catch (error) {
-        detailBody.innerHTML = `<p class="text-red-500">Erreur de chargement</p>`;
+        detailBody.innerHTML = `
+            <div class="text-center py-12 text-red-500">
+                <i class="fas fa-exclamation-circle text-2xl"></i>
+                <p class="mt-2 text-sm">Erreur de chargement</p>
+            </div>
+        `;
     }
 }
 
