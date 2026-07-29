@@ -10,13 +10,11 @@ class MatieresModel
         $this->pdo = $pdo;
     }
 
-    /**
+  /**
  * Récupère toutes les classes avec leurs matières
- * Utilise classe_id dans curriculum_subjects
  */
 public function getClassesWithMatieres($schoolId)
 {
-    // Récupérer toutes les classes avec leur nom affiché
     $stmt = $this->pdo->prepare("
         SELECT 
             c.id,
@@ -24,19 +22,34 @@ public function getClassesWithMatieres($schoolId)
             c.serie_id,
             c.group_name,
             CASE 
-                WHEN c.level_id IS NOT NULL AND c.serie_id IS NULL THEN CONCAT(l.name, ' ', c.group_name)
-                WHEN c.level_id IS NOT NULL AND c.serie_id IS NOT NULL THEN CONCAT(l.name, ' ', c.group_name)
+                -- Premier cycle : level_id + group_name (ex: 6ème A)
+                WHEN c.level_id IS NOT NULL AND c.serie_id IS NULL 
+                    THEN CONCAT(l.name, ' ', c.group_name)
+                -- Second cycle : group_name + serie_name (ex: Terminale D)
+                WHEN c.level_id IS NOT NULL AND c.serie_id IS NOT NULL 
+                    THEN CONCAT(c.group_name, ' ', s.name)
                 ELSE c.group_name
-            END as nom
+            END as nom,
+            CASE 
+                WHEN c.level_id IS NOT NULL AND c.serie_id IS NULL THEN 'premier_cycle'
+                WHEN c.level_id IS NOT NULL AND c.serie_id IS NOT NULL THEN 'second_cycle'
+                ELSE 'unknown'
+            END as cycle
         FROM classes c
         LEFT JOIN levels l ON c.level_id = l.id
+        LEFT JOIN series s ON c.serie_id = s.id
         WHERE c.school_id = ?
-        ORDER BY c.level_id, c.group_name, c.serie_id
+        ORDER BY 
+            CASE 
+                WHEN c.level_id IS NOT NULL THEN c.level_id
+                ELSE c.group_name
+            END,
+            c.group_name,
+            c.serie_id
     ");
     $stmt->execute([$schoolId]);
     $classes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Pour chaque classe, récupérer ses matières via classe_id
     foreach ($classes as &$classe) {
         $stmt = $this->pdo->prepare("
             SELECT 
@@ -56,6 +69,7 @@ public function getClassesWithMatieres($schoolId)
 
     return $classes;
 }
+    
     /**
      * Récupère toutes les matières disponibles pour une école
      */

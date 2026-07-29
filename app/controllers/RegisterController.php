@@ -59,7 +59,7 @@ class RegisterController
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
             $_SESSION['old'] = $_POST;
-            header("Location: ../views/auth/register.php");
+            header("Location: ../app/views/auth/register.php");
             exit;
         }
 
@@ -69,7 +69,7 @@ class RegisterController
         if (!empty($result['error'])) {
             $_SESSION['errors'] = $result['error'];
             $_SESSION['old'] = $_POST;
-            header("Location: ../views/auth/register.php");
+            header("Location: ../app/views/auth/register.php");
             exit;
         }
 
