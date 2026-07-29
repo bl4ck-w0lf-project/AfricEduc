@@ -1,13 +1,12 @@
 <?php 
 session_start();
 
-// Récupération des messages de session
 $success = $_SESSION['success'] ?? null;
 $mailError = $_SESSION['mail_error'] ?? null;
 $registeredEmail = $_SESSION['registered_email'] ?? null;
+$adminNotified = $_SESSION['admin_notified'] ?? false;
 
-// On nettoie les sessions
-unset($_SESSION['success'], $_SESSION['mail_error'], $_SESSION['registered_email']);
+unset($_SESSION['success'], $_SESSION['mail_error'], $_SESSION['registered_email'], $_SESSION['admin_notified']);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -46,6 +45,13 @@ unset($_SESSION['success'], $_SESSION['mail_error'], $_SESSION['registered_email
       box-shadow: 0 20px 40px -12px rgba(115, 0, 233, 0.15);
       backdrop-filter: blur(14px);
     }
+    .status-icon {
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
   </style>
 </head>
 <body class="page-bg min-h-screen flex items-center justify-center px-4">
@@ -65,12 +71,12 @@ unset($_SESSION['success'], $_SESSION['mail_error'], $_SESSION['registered_email
     </a>
 
     <!-- Status icon -->
-    <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full <?php echo $mailError ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'; ?> text-3xl">
+    <div class="status-icon mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full <?php echo $mailError ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'; ?> text-3xl">
       <?php echo $mailError ? '!' : '✓'; ?>
     </div>
 
     <h1 class="text-2xl font-bold text-slate-900 mb-2">
-      <?php echo $mailError ? "Compte créé mais email non envoyé !" : "Compte créé avec succès !!"; ?>
+      <?php echo $mailError ? "Compte créé mais email non envoyé !" : "Inscription en attente de validation !!"; ?>
     </h1>
 
     <p class="mt-4 text-slate-600 text-sm leading-relaxed">
@@ -79,11 +85,22 @@ unset($_SESSION['success'], $_SESSION['mail_error'], $_SESSION['registered_email
           echo "Nous n'avons pas pu envoyer l'email de confirmation à <strong>{$registeredEmail}</strong>.<br>";
           echo "Erreur: {$mailError}";
         } else {
-          echo "Un email de confirmation a été envoyé à <strong>{$registeredEmail}</strong>.<br>";
-          echo "Veuillez contacter le service pour activer votre compte avant de vous connecter.";
+          echo "✅ Un email de confirmation a été envoyé à <strong>{$registeredEmail}</strong>.<br><br>";
+          echo "📌 <strong>Étapes à suivre :</strong><br>";
+          echo "1. Vérifiez votre boîte email et cliquez sur le lien de confirmation.<br>";
+          echo "2. Votre compte sera ensuite examiné par l'administrateur.<br>";
+          echo "3. Vous recevrez une notification dès que votre compte sera activé.";
         }
       ?>
     </p>
+
+    <?php if ($adminNotified && !$mailError): ?>
+      <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <p class="text-xs text-blue-700">
+          📧 L'administrateur a été notifié de votre inscription.
+        </p>
+      </div>
+    <?php endif; ?>
 
     <div class="mt-8 space-y-3">
       <a href="login.php"
@@ -96,7 +113,7 @@ unset($_SESSION['success'], $_SESSION['mail_error'], $_SESSION['registered_email
       </p>
       <?php else: ?>
       <p class="text-xs text-slate-500">
-        Vous ne trouvez pas l’email ? Vérifiez vos spams.
+        Vous ne trouvez pas l'email ? Vérifiez vos spams.
       </p>
       <?php endif; ?>
     </div>
@@ -105,4 +122,3 @@ unset($_SESSION['success'], $_SESSION['mail_error'], $_SESSION['registered_email
 
 </body>
 </html>
-
