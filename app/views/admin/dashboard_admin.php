@@ -130,7 +130,7 @@
       </p>
       
       <!-- Infos en colonne (3 lignes alignées verticalement) -->
-      <div class="flex items-center  gap-2 text-white/70 text-md pt-1">
+      <div class="flex items-center max-w-[200px] gap-2 text-white/70 text-md pt-1">
         <span>
           Des classes et des matières ont été créées automatiquement pour votre établissement
         </span>

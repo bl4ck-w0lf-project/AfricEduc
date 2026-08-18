@@ -238,6 +238,38 @@
             color: #a7f3d0;
         }
 
+        /* ===== PAGINATION ===== */
+        .pagination-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+            cursor: pointer;
+        }
+
+        .pagination-btn:hover:not(.disabled) {
+            background: #f1f5f9;
+            border-color: #0F9D72;
+            color: #0F9D72;
+        }
+
+        .pagination-btn.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .pagination-btn i {
+            font-size: 0.75rem;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 992px) {
             .header-banner {
@@ -354,7 +386,7 @@
                                 <i class="fas fa-user"></i>
                             </div>
                             <div class="user-details">
-                                <p class="user-name"><?= htmlspecialchars($_SESSION['user_name'] ?? 'Utilisateur') ?></p>
+                                <p class="user-name"><?= htmlspecialchars($admin['name'] ?? 'Utilisateur') ?></p>
                                 <p class="user-role text-emerald-200">
                                     <i class="fas fa-user-graduate text-[10px]"></i>
                                     <?= htmlspecialchars($_SESSION['user_role'] ?? 'Administrateur') ?>
@@ -450,7 +482,7 @@
                 </div>
             </section>
 
-            <!-- LISTE DES CLASSES AVEC LEURS MATIÈRES -->
+            <!-- LISTE DES CLASSES AVEC LEURS MATIÈRES + PAGINATION -->
             <section>
                 <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
                     <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
@@ -516,6 +548,25 @@
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
+
+                <!-- PAGINATION -->
+                <?php if (!empty($classes) && count($classes) > 6): ?>
+                <div id="pagination-container" class="flex items-center justify-between flex-wrap gap-4 mt-6">
+                    <div class="flex items-center gap-3">
+                        <button id="prev-page" class="pagination-btn disabled">
+                            <i class="fas fa-chevron-left"></i> Précédent
+                        </button>
+                        <button id="next-page" class="pagination-btn">
+                            Suivant <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="text-sm text-slate-500">
+                        <span id="page-indicator" class="text-sm font-medium text-slate-700">
+                            Page 1 sur <?= max(1, ceil(count($classes) / 6)) ?>
+                        </span>
+                    </div>
+                </div>
+                <?php endif; ?>
             </section>
 
             <footer class="mt-12 pb-8 text-center text-xs text-slate-400">
@@ -524,7 +575,7 @@
         </main>
     </div>
 
-    <!-- MODALS (inchangées) -->
+    <!-- MODAL : AJOUTER UNE MATIÈRE À UNE CLASSE -->
     <div id="addMatiereModal" class="modal-overlay">
         <div class="modal-content bg-white rounded-2xl shadow-2xl p-6 max-w-2xl">
             <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
@@ -565,6 +616,7 @@
         </div>
     </div>
 
+    <!-- MODAL : MODIFIER LE COEFFICIENT -->
     <div id="editCoeffModal" class="modal-overlay">
         <div class="modal-content bg-white rounded-2xl shadow-2xl p-6 max-w-md">
             <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
@@ -596,6 +648,7 @@
         </div>
     </div>
 
+    <!-- MODAL : CONFIRMATION SUPPRESSION -->
     <div id="deleteModal" class="modal-overlay">
         <div class="modal-content bg-white rounded-2xl shadow-2xl p-6 max-w-md">
             <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
@@ -638,10 +691,15 @@
 
     <script>
         // ============================================================
-        // GESTION DES MATIÈRES PAR CLASSE AVEC FETCH
+        // GESTION DES MATIÈRES PAR CLASSE AVEC PAGINATION
         // ============================================================
         (function() {
             const baseUrl = '/AfricEduc/public/index.php?url=matieres';
+            const PER_PAGE = 6;
+            const classesBlocks = document.querySelectorAll('.classe-block');
+            const totalClasses = classesBlocks.length;
+            const totalPages = Math.max(1, Math.ceil(totalClasses / PER_PAGE));
+            let currentPage = 1;
 
             function showToast(msg, type = 'success') {
                 const toast = document.getElementById('toast');
@@ -651,12 +709,56 @@
                 setTimeout(() => toast.classList.remove('show'), 3000);
             }
 
+            // ─── PAGINATION ───
+            const prevBtn = document.getElementById('prev-page');
+            const nextBtn = document.getElementById('next-page');
+            const pageIndicator = document.getElementById('page-indicator');
+
+            function renderPage(page) {
+                const start = (page - 1) * PER_PAGE;
+                const end = Math.min(start + PER_PAGE, totalClasses);
+
+                // Cacher toutes les classes
+                classesBlocks.forEach(block => block.style.display = 'none');
+
+                // Afficher celles de la page courante
+                for (let i = start; i < end; i++) {
+                    if (classesBlocks[i]) {
+                        classesBlocks[i].style.display = 'block';
+                    }
+                }
+
+                // Mise à jour des indicateurs
+                if (pageIndicator) {
+                    pageIndicator.textContent = `Page ${page} sur ${totalPages}`;
+                }
+
+                // Gestion des boutons
+                if (prevBtn) {
+                    if (page <= 1) {
+                        prevBtn.classList.add('disabled');
+                    } else {
+                        prevBtn.classList.remove('disabled');
+                    }
+                }
+
+                if (nextBtn) {
+                    if (page >= totalPages) {
+                        nextBtn.classList.add('disabled');
+                    } else {
+                        nextBtn.classList.remove('disabled');
+                    }
+                }
+
+                // Réappliquer les filtres après changement de page
+                applyFilters();
+            }
+
             // ─── FILTRES ET RECHERCHE ───
             const searchInput = document.getElementById('searchMatiereInput');
             const filterClasse = document.getElementById('filterClasseSelect');
             const filterMatiere = document.getElementById('filterMatiereSelect');
             const resetBtn = document.getElementById('resetFiltersBtn');
-            const classesBlocks = document.querySelectorAll('.classe-block');
 
             function applyFilters() {
                 const searchTerm = searchInput.value.toLowerCase().trim();
@@ -667,36 +769,27 @@
                     const classeNom = block.dataset.classeNom?.toLowerCase() || '';
                     const matieres = block.querySelectorAll('.matiere-item');
                     const matieresGrid = block.querySelector('.matieres-grid');
-                    
+
                     let showClasse = true;
                     if (classeFilter && classeNom !== classeFilter) {
                         showClasse = false;
                     }
 
                     if (showClasse) {
-                        block.style.display = 'block';
-                        
                         const oldMsg = block.querySelector('.filter-no-result');
                         if (oldMsg) oldMsg.remove();
-                        
+
                         if (matieresGrid) {
                             let hasVisibleMatiere = false;
-                            
                             matieres.forEach(item => {
                                 const matiereNom = item.dataset.matiereNom || '';
                                 let match = true;
-                                
-                                if (searchTerm && !matiereNom.includes(searchTerm)) {
-                                    match = false;
-                                }
-                                if (matiereFilter && !matiereNom.includes(matiereFilter)) {
-                                    match = false;
-                                }
-                                
+                                if (searchTerm && !matiereNom.includes(searchTerm)) match = false;
+                                if (matiereFilter && !matiereNom.includes(matiereFilter)) match = false;
                                 item.style.display = match ? 'flex' : 'none';
                                 if (match) hasVisibleMatiere = true;
                             });
-                            
+
                             if (matieres.length > 0 && !hasVisibleMatiere) {
                                 const msg = document.createElement('p');
                                 msg.className = 'filter-no-result text-center text-xs text-gray-400 py-2';
@@ -704,23 +797,57 @@
                                 matieresGrid.parentNode.appendChild(msg);
                             }
                         }
-                    } else {
-                        block.style.display = 'none';
+                    }
+                });
+
+                // Réafficher la page courante avec les filtres
+                const start = (currentPage - 1) * PER_PAGE;
+                const end = Math.min(start + PER_PAGE, totalClasses);
+                classesBlocks.forEach((block, index) => {
+                    if (index >= start && index < end) {
+                        const classeNom = block.dataset.classeNom?.toLowerCase() || '';
+                        let show = true;
+                        if (classeFilter && classeNom !== classeFilter) {
+                            show = false;
+                        }
+                        block.style.display = show ? 'block' : 'none';
                     }
                 });
             }
 
-            searchInput.addEventListener('input', applyFilters);
-            filterClasse.addEventListener('change', applyFilters);
-            filterMatiere.addEventListener('change', applyFilters);
+            // ─── ÉVÉNEMENTS DE PAGINATION ───
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function() {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderPage(currentPage);
+                    }
+                });
+            }
 
-            resetBtn.addEventListener('click', function() {
-                searchInput.value = '';
-                filterClasse.value = '';
-                filterMatiere.value = '';
-                applyFilters();
-                showToast('Filtres réinitialisés', 'info');
-            });
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function() {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderPage(currentPage);
+                    }
+                });
+            }
+
+            // ─── FILTRES ───
+            if (searchInput) searchInput.addEventListener('input', applyFilters);
+            if (filterClasse) filterClasse.addEventListener('change', applyFilters);
+            if (filterMatiere) filterMatiere.addEventListener('change', applyFilters);
+
+            if (resetBtn) {
+                resetBtn.addEventListener('click', function() {
+                    if (searchInput) searchInput.value = '';
+                    if (filterClasse) filterClasse.value = '';
+                    if (filterMatiere) filterMatiere.value = '';
+                    applyFilters();
+                    showToast('Filtres réinitialisés', 'info');
+                });
+            }
 
             // ─── AJOUTER UNE MATIÈRE À UNE CLASSE ───
             const addModal = document.getElementById('addMatiereModal');
@@ -749,45 +876,47 @@
                 addForm.reset();
             }
 
-            closeAddBtn.addEventListener('click', closeAddModal);
-            addCancel.addEventListener('click', closeAddModal);
-            addModal.addEventListener('click', (e) => { if (e.target === addModal) closeAddModal(); });
+            if (closeAddBtn) closeAddBtn.addEventListener('click', closeAddModal);
+            if (addCancel) addCancel.addEventListener('click', closeAddModal);
+            if (addModal) addModal.addEventListener('click', (e) => { if (e.target === addModal) closeAddModal(); });
 
-            addForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
+            if (addForm) {
+                addForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
 
-                const classeId = document.getElementById('add-classe-id').value;
-                const matiereId = document.getElementById('add-matiere-select').value;
-                const coefficient = document.getElementById('add-coeff').value;
+                    const classeId = document.getElementById('add-classe-id').value;
+                    const matiereId = document.getElementById('add-matiere-select').value;
+                    const coefficient = document.getElementById('add-coeff').value;
 
-                if (!matiereId) {
-                    showToast('Veuillez sélectionner une matière', 'error');
-                    return;
-                }
-
-                const formData = new FormData();
-                formData.append('classe_id', classeId);
-                formData.append('matiere_id', matiereId);
-                formData.append('coefficient', coefficient);
-
-                try {
-                    const response = await fetch(baseUrl + '&action=add_matiere_to_classe', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    const result = await response.json();
-
-                    if (result.success) {
-                        showToast(result.message);
-                        closeAddModal();
-                        setTimeout(() => location.reload(), 1000);
-                    } else {
-                        showToast(result.error || 'Erreur', 'error');
+                    if (!matiereId) {
+                        showToast('Veuillez sélectionner une matière', 'error');
+                        return;
                     }
-                } catch (error) {
-                    showToast('Erreur de connexion', 'error');
-                }
-            });
+
+                    const formData = new FormData();
+                    formData.append('classe_id', classeId);
+                    formData.append('matiere_id', matiereId);
+                    formData.append('coefficient', coefficient);
+
+                    try {
+                        const response = await fetch(baseUrl + '&action=add_matiere_to_classe', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const result = await response.json();
+
+                        if (result.success) {
+                            showToast(result.message);
+                            closeAddModal();
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showToast(result.error || 'Erreur', 'error');
+                        }
+                    } catch (error) {
+                        showToast('Erreur de connexion', 'error');
+                    }
+                });
+            }
 
             // ─── MODIFIER LE COEFFICIENT ───
             const coeffModal = document.getElementById('editCoeffModal');
@@ -816,38 +945,40 @@
                 coeffForm.reset();
             }
 
-            closeCoeffBtn.addEventListener('click', closeCoeffModal);
-            coeffCancel.addEventListener('click', closeCoeffModal);
-            coeffModal.addEventListener('click', (e) => { if (e.target === coeffModal) closeCoeffModal(); });
+            if (closeCoeffBtn) closeCoeffBtn.addEventListener('click', closeCoeffModal);
+            if (coeffCancel) coeffCancel.addEventListener('click', closeCoeffModal);
+            if (coeffModal) coeffModal.addEventListener('click', (e) => { if (e.target === coeffModal) closeCoeffModal(); });
 
-            coeffForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
+            if (coeffForm) {
+                coeffForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
 
-                const id = document.getElementById('edit-curriculum-subject-id').value;
-                const coefficient = document.getElementById('edit-coeff-input').value;
+                    const id = document.getElementById('edit-curriculum-subject-id').value;
+                    const coefficient = document.getElementById('edit-coeff-input').value;
 
-                const formData = new FormData();
-                formData.append('id', id);
-                formData.append('coefficient', coefficient);
+                    const formData = new FormData();
+                    formData.append('id', id);
+                    formData.append('coefficient', coefficient);
 
-                try {
-                    const response = await fetch(baseUrl + '&action=update_coeff', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    const result = await response.json();
+                    try {
+                        const response = await fetch(baseUrl + '&action=update_coeff', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const result = await response.json();
 
-                    if (result.success) {
-                        showToast(result.message);
-                        closeCoeffModal();
-                        setTimeout(() => location.reload(), 1000);
-                    } else {
-                        showToast(result.error || 'Erreur', 'error');
+                        if (result.success) {
+                            showToast(result.message);
+                            closeCoeffModal();
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showToast(result.error || 'Erreur', 'error');
+                        }
+                    } catch (error) {
+                        showToast('Erreur de connexion', 'error');
                     }
-                } catch (error) {
-                    showToast('Erreur de connexion', 'error');
-                }
-            });
+                });
+            }
 
             // ─── RETIRER UNE MATIÈRE ───
             const deleteModal = document.getElementById('deleteModal');
@@ -876,49 +1007,53 @@
                 pendingDeleteId = null;
             }
 
-            deleteInput.addEventListener('input', function() {
-                if (this.value === 'RETIRER') {
-                    deleteConfirm.disabled = false;
-                    deleteConfirm.classList.remove('opacity-50', 'cursor-not-allowed');
-                } else {
-                    deleteConfirm.disabled = true;
-                    deleteConfirm.classList.add('opacity-50', 'cursor-not-allowed');
-                }
-            });
-
-            deleteConfirm.addEventListener('click', async function() {
-                if (!this.disabled && pendingDeleteId) {
-                    try {
-                        const formData = new FormData();
-                        formData.append('id', pendingDeleteId);
-
-                        const response = await fetch(baseUrl + '&action=remove_matiere_from_classe', {
-                            method: 'POST',
-                            body: formData
-                        });
-                        const result = await response.json();
-
-                        if (result.success) {
-                            showToast(result.message);
-                            closeDeleteModal();
-                            setTimeout(() => location.reload(), 1000);
-                        } else {
-                            showToast(result.error || 'Erreur', 'error');
-                        }
-                    } catch (error) {
-                        showToast('Erreur de connexion', 'error');
+            if (deleteInput) {
+                deleteInput.addEventListener('input', function() {
+                    if (this.value === 'RETIRER') {
+                        deleteConfirm.disabled = false;
+                        deleteConfirm.classList.remove('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        deleteConfirm.disabled = true;
+                        deleteConfirm.classList.add('opacity-50', 'cursor-not-allowed');
                     }
-                }
-            });
+                });
+            }
 
-            closeDeleteBtn.addEventListener('click', closeDeleteModal);
-            deleteCancel.addEventListener('click', closeDeleteModal);
-            deleteModal.addEventListener('click', (e) => { if (e.target === deleteModal) closeDeleteModal(); });
+            if (deleteConfirm) {
+                deleteConfirm.addEventListener('click', async function() {
+                    if (!this.disabled && pendingDeleteId) {
+                        try {
+                            const formData = new FormData();
+                            formData.append('id', pendingDeleteId);
 
+                            const response = await fetch(baseUrl + '&action=remove_matiere_from_classe', {
+                                method: 'POST',
+                                body: formData
+                            });
+                            const result = await response.json();
+
+                            if (result.success) {
+                                showToast(result.message);
+                                closeDeleteModal();
+                                setTimeout(() => location.reload(), 1000);
+                            } else {
+                                showToast(result.error || 'Erreur', 'error');
+                            }
+                        } catch (error) {
+                            showToast('Erreur de connexion', 'error');
+                        }
+                    }
+                });
+            }
+
+            if (closeDeleteBtn) closeDeleteBtn.addEventListener('click', closeDeleteModal);
+            if (deleteCancel) deleteCancel.addEventListener('click', closeDeleteModal);
+            if (deleteModal) deleteModal.addEventListener('click', (e) => { if (e.target === deleteModal) closeDeleteModal(); });
+
+            // ─── INITIALISATION ───
             document.getElementById('last-update').textContent = new Date().toLocaleTimeString('fr-FR');
+            renderPage(1);
 
-            // Appliquer les filtres au chargement
-            applyFilters();
         })();
     </script>
 </body>

@@ -148,7 +148,7 @@
             ?>
           <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent-dark text-sm font-bold text-primary"><?= $initials ?></span>
           <span class="hidden text-left text-sm sm:block">
-            <span class="block font-medium text-slate-900"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
+            <span class="block font-medium text-slate-900"><?= htmlspecialchars($admin['name']) ?></span>
             <span class="text-xs text-slate-500"><?= htmlspecialchars($_SESSION['user_role']) ?></span>
           </span>
         </button>
@@ -171,7 +171,7 @@
                           $salutation = "Bonsoir";
                       }
               ?>
-            <h1 class="font-heading text-xl font-bold text-slate-900 sm:text-2xl"><?= $salutation ?>  <?= htmlspecialchars($_SESSION['user_name']) ?>
+            <h1 class="font-heading text-xl font-bold text-slate-900 sm:text-2xl"><?= $salutation ?>  <?= htmlspecialchars($admin['name']) ?>
         (<?= htmlspecialchars($_SESSION['user_role']) ?>)  👋   —  <span class="text-primary"><?= htmlspecialchars($_SESSION['school_name'] ?? 'Aucune école') ?></span></h1>
             <p class="mt-2 max-w-2xl text-sm text-slate-600">
               Voici votre espace de travail personnalisé. Concentrez-vous sur les tâches prioritaires et vos actions quotidiennes.

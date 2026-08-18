@@ -144,6 +144,29 @@ h1,h2,h3,h4 { font-family: "Quicksand", sans-serif; }
     pointer-events: auto;
     opacity: 1;
 }
+/* Bouton déconnexion rouge */
+.sidebar-link.logout {
+    color: #dc2626;
+    transition: all 0.2s ease;
+}
+
+.sidebar-link.logout i {
+    color: #dc2626;
+}
+
+.sidebar-link.logout:hover {
+    background-color: #fef2f2;
+    color: #b91c1c;
+}
+
+.sidebar-link.logout:hover i {
+    color: #b91c1c;
+    transform: scale(1.1);
+}
+
+.sidebar-link.logout i {
+    transition: transform 0.2s ease;
+}
 </style>
 
 </head>
@@ -335,46 +358,46 @@ h1,h2,h3,h4 { font-family: "Quicksand", sans-serif; }
         <?php endif; ?>
 
         <!-- PROFIL & LOGOUT -->
-        <div class="mt-8 border-t border-gray-200 pt-4">
-            
-            
-            <!-- Infos utilisateur -->
-            <div class="flex items-center gap-3 px-3 py-2.5 mb-2 bg-gray-50 rounded-xl hover:bg-gray-100 transition cursor-default">
-                <!-- Avatar -->
-                <div class="w-10 h-10 rounded-full bg-[#0F9D72] flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden">
-                    <?php if (!empty($userPhoto)): ?>
-                        <img src="<?= htmlspecialchars($userPhoto) ?>" 
-                             alt="Photo de profil" 
-                             class="w-full h-full object-cover">
-                    <?php else: ?>
-                        <?= $initials ?>
-                    <?php endif; ?>
-                </div>
-                
-                <!-- Infos -->
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-semibold text-slate-900 truncate">
-                        <?= htmlspecialchars($userNom) ?>
-                    </p>
-                    <p class="text-xs <?= $roleColor ?> truncate flex items-center gap-1">
-                        <i class="fas <?= $roleIcon ?> text-[10px]"></i>
-                        <?= $roleDisplay ?>
-                    </p>
-                    <?php if (!empty($userSchool)): ?>
-                        <p class="text-[10px] text-gray-400 truncate flex items-center gap-1">
-                            <i class="fa-solid fa-school text-[10px]"></i>
-                            <?= htmlspecialchars($userSchool) ?>
-                        </p>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Déconnexion -->
-            <a href="<?= $baseUrl ?>logout" class="sidebar-link text-red-500 hover:bg-red-50 hover:text-red-700 group">
-                <i class="fa-solid fa-right-from-bracket group-hover:scale-110 transition"></i> 
-                <span>Déconnexion</span>
-            </a>
+        <!-- PROFIL & LOGOUT -->
+<div class="mt-8 border-t border-gray-200 pt-4">
+    
+    <!-- Infos utilisateur -->
+    <div class="flex items-center gap-3 px-3 py-2.5 mb-2 bg-gray-50 rounded-xl hover:bg-gray-100 transition cursor-default">
+        <!-- Avatar -->
+        <div class="w-10 h-10 rounded-full bg-[#0F9D72] flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden">
+            <?php if (!empty($userPhoto)): ?>
+                <img src="<?= htmlspecialchars($userPhoto) ?>" 
+                     alt="Photo de profil" 
+                     class="w-full h-full object-cover">
+            <?php else: ?>
+                <?= $initials ?>
+            <?php endif; ?>
         </div>
+        
+        <!-- Infos -->
+        <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-slate-900 truncate">
+                <?= htmlspecialchars($userNom) ?>
+            </p>
+            <p class="text-xs <?= $roleColor ?> truncate flex items-center gap-1">
+                <i class="fas <?= $roleIcon ?> text-[10px]"></i>
+                <?= $roleDisplay ?>
+            </p>
+            <?php if (!empty($userSchool)): ?>
+                <p class="text-[10px] text-gray-400 truncate flex items-center gap-1">
+                    <i class="fa-solid fa-school text-[10px]"></i>
+                    <?= htmlspecialchars($userSchool) ?>
+                </p>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Déconnexion - ROUGE -->
+    <a href="<?= $baseUrl ?>logout" class="sidebar-link logout">
+        <i class="fa-solid fa-right-from-bracket"></i> 
+        <span>Déconnexion</span>
+    </a>
+</div>
 
     </nav>
 </aside>

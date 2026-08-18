@@ -519,7 +519,7 @@ if (!isset($_SESSION['user_id'])) {
                     <i class="fas fa-user"></i>
                   </div>
                   <div class="user-details">
-                    <p class="user-name"><?= htmlspecialchars($_SESSION['user_name'] ?? 'Utilisateur') ?></p>
+                    <p class="user-name"><?= htmlspecialchars($admin['name'] ?? 'Utilisateur') ?></p>
                     <p class="user-role text-emerald-200">
                       <i class="fas fa-user-graduate text-[10px]"></i>
                       <?= htmlspecialchars($_SESSION['user_role'] ?? 'Administrateur') ?>

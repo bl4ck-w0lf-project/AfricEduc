@@ -12,8 +12,8 @@
       theme: {
         extend: {
           colors: {
-            primary: "#7300e9",
-            primaryDark: "#5c00bd",
+            primary: "#0F9D72",
+            primaryDark: "#0B7A58",
             accent: "#99fbe3",
             danger: "#ef4444",
             warning: "#f59e0b",
@@ -54,7 +54,7 @@
     
     .input-focus-effect:focus {
       box-shadow: 0 0 0 3px rgba(115, 0, 233, 0.1);
-      border-color: #7300e9;
+      border-color: #0F9D72;
     }
     
     .action-btn {
@@ -75,13 +75,13 @@
       cursor: pointer;
     }
     .radio-status:checked {
-      border-color: #7300e9;
-      background-color: #7300e9;
+      border-color: #0F9D72;
+      background-color: #0F9D72;
       box-shadow: inset 0 0 0 3px white;
     }
     .radio-status:focus {
       outline: none;
-      ring: 2px solid #7300e9;
+      ring: 2px solid #0F9D72;
     }
     
     .toast {
@@ -141,17 +141,6 @@
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     
-    .app-header {
-      position: fixed;
-      top: 0;
-      right: 0;
-      left: 0;
-      z-index: 40;
-      background-color: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid #e2e8f0;
-    }
-    
     /* Password strength meter */
     .strength-meter {
       height: 4px;
@@ -163,75 +152,287 @@
       border-radius: 4px;
       transition: width 0.3s ease;
     }
+
+    /* ===== HEADER BANNER ===== */
+    .header-banner {
+      background: linear-gradient(135deg, #0F9D72 0%, #0B7A58 100%);
+      border-radius: 1.5rem;
+      padding: 1.8rem 2.5rem;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      box-shadow: 0 8px 32px rgba(15, 157, 114, 0.30);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .header-banner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .header-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .header-banner:hover {
+      box-shadow: 0 12px 40px rgba(15, 157, 114, 0.40);
+      transform: translateY(-2px);
+    }
+
+    .header-left {
+      flex: 1 1 300px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .title-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .header-banner h2 {
+      font-weight: 700;
+      font-size: 1.6rem;
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+
+    .header-banner p {
+      opacity: 0.85;
+      font-size: 0.95rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .badge-year {
+      background: rgba(255, 255, 255, 0.20) !important;
+      border: 1px solid rgba(255, 255, 255, 0.20) !important;
+      font-weight: 600 !important;
+      padding: 0.5rem 1.4rem !important;
+      font-size: 0.85rem !important;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: white;
+      white-space: nowrap;
+    }
+
+    .user-info-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      border-radius: 1rem;
+      padding: 0.6rem 1.2rem 0.6rem 0.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      min-width: 200px;
+      transition: all 0.3s ease;
+    }
+
+    .user-info-card:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .user-info-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: white;
+      flex-shrink: 0;
+      border: 2px solid rgba(255, 255, 255, 0.10);
+    }
+
+    .user-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: white;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-role {
+      font-size: 0.75rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-role.text-emerald-200 {
+      color: #a7f3d0;
+    }
+
+    @media (max-width: 992px) {
+      .header-banner {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1.5rem 1.8rem;
+      }
+      .header-right {
+        justify-content: space-between;
+        width: 100%;
+      }
+      .user-info-card {
+        flex: 1;
+        min-width: unset;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-banner {
+        padding: 1.2rem 1.2rem;
+        border-radius: 1rem;
+      }
+      .title-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+      }
+      .header-banner h2 {
+        font-size: 1.3rem;
+      }
+      .header-banner p {
+        font-size: 0.85rem;
+      }
+      .header-right {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.8rem;
+      }
+      .badge-year {
+        text-align: center;
+        justify-content: center;
+      }
+      .user-info-card {
+        padding: 0.6rem 1rem;
+      }
+      .user-name {
+        font-size: 0.8rem;
+      }
+      .user-role {
+        font-size: 0.7rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header-banner {
+        padding: 1rem 1rem;
+        border-radius: 0.75rem;
+      }
+      .header-banner h2 {
+        font-size: 1.1rem;
+      }
+      .header-banner p {
+        font-size: 0.78rem;
+      }
+      .user-info-card {
+        padding: 0.5rem 0.8rem;
+      }
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+      }
+    }
   </style>
 </head>
 <body>
 
-<!-- Header -->
-<header class="app-header">
-  <div class="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:pl-[270px]">
-    <div class="flex items-center gap-3">
-      <div>
-        <p class="font-heading text-sm font-semibold text-primary sm:text-base">
-          <?= htmlspecialchars($_SESSION['school_name'] ?? 'École inconnue') ?>
-        </p>
-        <p class="text-xs text-slate-500">
-          <?= htmlspecialchars($_SESSION['school_address'] ?? '') ?>
-        </p>
-      </div>
-    </div>
-    <div class="flex items-center gap-3">
-      <?php
-        $currentYear = date("Y");
-        $nextYear = $currentYear + 1;
-        $schoolYear = $currentYear . "–" . $nextYear;
-      ?>
-      <span class="hidden rounded-full border border-accent/50 bg-accent/20 px-3 py-1 text-xs font-medium text-slate-800 sm:inline-flex">
-        Année scolaire <?= $schoolYear ?>
-      </span>
-      
-      <button class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-1.5 pr-3 shadow-sm hover:shadow-md transition">
-        <?php
-          $userName = $_SESSION['user_name'] ?? 'User';
-          $userAvatar = $_SESSION['user_avatar'] ?? null;
-          $words = explode(' ', trim($userName));
-          $initials = '';
-          foreach ($words as $w) {
-              $initials .= strtoupper($w[0] ?? '');
-          }
-          $initials = substr($initials, 0, 2);
-        ?>
-        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md overflow-hidden">
-          <?php if ($userAvatar): ?>
-            <img src="<?= htmlspecialchars($userAvatar) ?>" class="w-full h-full object-cover">
-          <?php else: ?>
-            <?= $initials ?>
-          <?php endif; ?>
-        </span>
-        <span class="hidden text-left text-sm sm:block">
-          <span class="block font-medium text-slate-900"><?= htmlspecialchars($_SESSION['user_name'] ?? 'Utilisateur') ?></span>
-          <span class="text-xs text-slate-500"><?= htmlspecialchars($_SESSION['user_role'] ?? 'Rôle') ?></span>
-        </span>
-      </button>
-    </div>
-  </div>
-</header>
+<!-- Sidebar -->
+<?php include __DIR__ . '/../components/sidebar.php'; ?>
 
-<!-- Conteneur principal -->
-<div class="flex" style="padding-top: 64px;">
-  <?php include __DIR__ . '/../components/sidebar.php'; ?>
-  
-  <div class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
-    
-    <!-- En-tête -->
-    <div class="mb-8 animate-[slideUp_0.4s_ease-out]">
-      <div class="flex items-center gap-3 mb-2">
-        <div class="w-1 h-8 bg-primary rounded-full"></div>
-        <h1 class="font-heading text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-          Paramètres
-        </h1>
+<!-- Main content -->
+<div class="min-h-screen lg:pl-[260px]">
+  <main class="px-4 py-4 sm:px-6 lg:px-8">
+
+    <!-- HEADER UNIFIÉ -->
+    <div class="header-banner mb-6 mt-10 animate-[slideUp_0.4s_ease-out]">
+      <div class="header-left">
+        <div class="title-wrapper">
+          <div>
+            <h2>Paramètres</h2>
+            <p>
+              Gérez votre profil et vos informations personnelles
+            </p>
+          </div>
+        </div>
       </div>
-      <p class="text-slate-600 text-sm sm:text-base pl-4">Gérez votre profil et vos informations personnelles</p>
+
+      <div class="header-right">
+        <span class="badge badge-year">
+          <i class="fas fa-calendar-alt"></i> Année <?= date('Y') ?>
+        </span>
+
+        <div class="user-info-card">
+          <div class="user-info-item">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="user-details">
+              <p class="user-name"><?= htmlspecialchars($admin['name'] ?? 'Utilisateur') ?></p>
+              <p class="user-role text-emerald-200">
+                <i class="fas fa-user-graduate text-[10px]"></i>
+                <?= htmlspecialchars($_SESSION['user_role'] ?? 'Administrateur') ?>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Messages PHP (Toast) -->
@@ -401,23 +602,20 @@
           <div>
             <p class="text-xs font-semibold uppercase text-slate-500 tracking-wide">Dernière connexion</p>
             <p class="text-sm font-medium text-slate-800 mt-0.5">
-                    <?php if (!empty($admin['last_login'])): ?>
-            <?php
-                $dt = new DateTime($admin['last_login']);
-                $formatter = new IntlDateFormatter(
+              <?php if (!empty($admin['last_login'])): ?>
+                <?php
+                  $dt = new DateTime($admin['last_login']);
+                  $formatter = new IntlDateFormatter(
                     'fr_FR',
                     IntlDateFormatter::FULL,
                     IntlDateFormatter::NONE
-                );
-
-                $date = mb_convert_case($formatter->format($dt), MB_CASE_TITLE, "UTF-8");
-            ?>
-
-            <?= $date . ' à ' . $dt->format('H:i:s') ?>
-
-        <?php else: ?>
-            Jamais connecté
-        <?php endif; ?>
+                  );
+                  $date = mb_convert_case($formatter->format($dt), MB_CASE_TITLE, "UTF-8");
+                ?>
+                <?= $date . ' à ' . $dt->format('H:i:s') ?>
+              <?php else: ?>
+                Jamais connecté
+              <?php endif; ?>
             </p>
           </div>
         </div>
@@ -431,23 +629,24 @@
           <div>
             <p class="text-xs font-semibold uppercase text-slate-500 tracking-wide">Email vérifié</p>
             <p class="text-sm font-medium text-slate-800 mt-0.5">
-                <?= !empty($admin['email_verified_at']) 
-                    ? 'Vérifié le ' . mb_convert_case(
-                        (new IntlDateFormatter(
-                            'fr_FR',
-                            IntlDateFormatter::FULL,
-                            IntlDateFormatter::NONE
-                        ))->format(new DateTime($admin['email_verified_at'])),
-                        MB_CASE_TITLE,
-                        "UTF-8"
-                      ) . ' à ' . (new DateTime($admin['email_verified_at']))->format('H:i:s')
-                    : 'Non vérifié'
-                ?>            </p>
+              <?= !empty($admin['email_verified_at']) 
+                ? 'Vérifié le ' . mb_convert_case(
+                    (new IntlDateFormatter(
+                      'fr_FR',
+                      IntlDateFormatter::FULL,
+                      IntlDateFormatter::NONE
+                    ))->format(new DateTime($admin['email_verified_at'])),
+                    MB_CASE_TITLE,
+                    "UTF-8"
+                  ) . ' à ' . (new DateTime($admin['email_verified_at']))->format('H:i:s')
+                : 'Non vérifié'
+              ?>
+            </p>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </div>
 
 <!-- Modale de confirmation pour suppression avatar -->

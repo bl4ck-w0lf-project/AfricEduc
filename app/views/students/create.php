@@ -81,7 +81,7 @@ if (!isset($_SESSION['user_id'])) {
                 $initials = substr($initials, 0, 2);
             ?>
           <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md"><?=$initials ?></span>
-          <span class="hidden text-left text-sm sm:block"><span class="block font-medium text-slate-900"><?= htmlspecialchars($_SESSION['user_name']) ?></span><span class="text-xs text-slate-500"><?= htmlspecialchars($_SESSION['user_role']) ?></span></span>
+          <span class="hidden text-left text-sm sm:block"><span class="block font-medium text-slate-900"><?= htmlspecialchars($admin['name']) ?></span><span class="text-xs text-slate-500"><?= htmlspecialchars($_SESSION['user_role']) ?></span></span>
         </button>
       </div>
     </header>
