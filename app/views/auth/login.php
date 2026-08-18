@@ -231,7 +231,7 @@ unset($_SESSION['errors'], $_SESSION['old']);
             </button>
             <!-- Lien retour -->
               <p class="mt-8 text-center">
-                      <a href="/AfricEduc/index.php" class="inline-flex text-center items-center gap-2 text-sm font-semibold text-primary transition hover:text-violet-800">
+                      <a href="/AfricEduc/index.php" class="inline-flex text-center items-center gap-2 text-sm font-semibold text-primary transition hover:text-emerald-800">
                         <span aria-hidden="true">←</span>
                         Retournez à l'accueil
                       </a>

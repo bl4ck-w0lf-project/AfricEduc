@@ -445,7 +445,7 @@
               <!-- Top 3 -->
               <div class="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
                 ${top3.map((e, idx) => `
-                  <div class="flex items-center gap-3 rounded-xl border ${idx === 0 ? 'border-yellow-300 bg-yellow-50/50' : (idx === 1 ? 'border-slate-300 bg-slate-50' : 'border-amber-300 bg-amber-50/50')} p-3">
+                  <div class="flex items-center gap-3 rounded-xl border ${idx === 0 ? 'border-yellow-300 bg-yellow-50/50' : (idx === 1 ? 'border-slate-300 bg-slate-50' : 'border-emerald-300 bg-emerald-50/50')} p-3">
                     <span class="text-2xl">${podiumEmojis[idx]}</span>
                     <div>
                       <p class="font-medium text-slate-900">${e.nom}</p>
@@ -468,7 +468,7 @@
                   <tbody class="divide-y divide-slate-100">
                     ${c.eleves.map(e => `
                       <tr>
-                        <td class="px-4 py-3 font-medium ${e.rang === 1 ? 'text-yellow-600' : (e.rang === 2 ? 'text-slate-600' : (e.rang === 3 ? 'text-amber-600' : 'text-slate-500'))}">${e.rang}${e.rang === 1 ? 'er' : 'e'}</td>
+                        <td class="px-4 py-3 font-medium ${e.rang === 1 ? 'text-yellow-600' : (e.rang === 2 ? 'text-slate-600' : (e.rang === 3 ? 'text-emerald-600' : 'text-slate-500'))}">${e.rang}${e.rang === 1 ? 'er' : 'e'}</td>
                         <td class="px-4 py-3 font-medium text-slate-900">${e.nom}</td>
                         <td class="px-4 py-3 font-semibold text-primary">${e.moyenne_generale.toFixed(1)}/20</td>
                       </tr>

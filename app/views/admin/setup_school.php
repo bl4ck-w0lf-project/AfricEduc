@@ -21,8 +21,8 @@ if (!isset($_SESSION['user_id'])) {
       theme: {
         extend: {
           colors: {
-            primary: "#7300e9",
-            primaryDark: "#5c00bd",
+            primary: "#0F9D72",
+            primaryDark: "#00ffaa",
             accent: "#99fbe3",
             danger: "#ef4444",
             warning: "#f59e0b",
@@ -112,7 +112,7 @@ if (!isset($_SESSION['user_id'])) {
       border-radius: 10px;
     }
     ::-webkit-scrollbar-thumb {
-      background: #7300e9;
+      background: #0F9D72;
       border-radius: 10px;
     }
     
@@ -144,78 +144,404 @@ if (!isset($_SESSION['user_id'])) {
       }
     }
     
-    
-    /* Header fixe */
-    .app-header {
-      position: sticky;
-      top: 0;
-      z-index: 30;
-      background-color: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid #e2e8f0;
-    }
+/* ===== HEADER BANNER ===== */
+.header-banner {
+  background: linear-gradient(135deg, #0F9D72 0%, #0B7A58 100%);
+  border-radius: 1.5rem;
+  padding: 1.8rem 2.5rem;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  box-shadow: 0 8px 32px rgba(15, 157, 114, 0.30);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Effets de lumière */
+.header-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.header-banner::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.header-banner:hover {
+  box-shadow: 0 12px 40px rgba(15, 157, 114, 0.40);
+  transform: translateY(-2px);
+}
+
+/* ===== GAUCHE ===== */
+.header-left {
+  flex: 1 1 300px;
+  position: relative;
+  z-index: 1;
+}
+
+.title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.icon-circle {
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.icon-circle:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05) rotate(-3deg);
+}
+
+.header-banner h2 {
+  font-weight: 700;
+  font-size: 1.6rem;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.header-banner p {
+  opacity: 0.85;
+  font-size: 0.95rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ===== DROITE ===== */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+/* Badge année */
+.badge-year {
+  background: rgba(255, 255, 255, 0.20) !important;
+  border: 1px solid rgba(255, 255, 255, 0.20) !important;
+  font-weight: 600 !important;
+  padding: 0.5rem 1.4rem !important;
+  font-size: 0.85rem !important;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  white-space: nowrap;
+}
+
+/* ===== CARTE UTILISATEUR ===== */
+.user-info-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  border-radius: 1rem;
+  padding: 0.6rem 1.2rem 0.6rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  min-width: 200px;
+  transition: all 0.3s ease;
+}
+
+.user-info-card:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.user-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+/* Avatar */
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: white;
+  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.10);
+}
+
+/* Détails utilisateur */
+.user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role.text-emerald-200 {
+  color: #a7f3d0;
+}
+
+.user-role.text-blue-200 {
+  color: #bfdbfe;
+}
+
+.user-role.text-emerald-200 {
+  color: #fde68a;
+}
+
+.user-role.text-rose-200 {
+  color: #fecdd3;
+}
+
+.user-school {
+  font-size: 0.625rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-address {
+  font-size: 0.625rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+  .header-banner {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.5rem 1.8rem;
+  }
+
+  .header-right {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .user-info-card {
+    flex: 1;
+    min-width: unset;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-banner {
+    padding: 1.2rem 1.2rem;
+    border-radius: 1rem;
+  }
+
+  .title-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+
+  .icon-circle {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+
+  .header-banner h2 {
+    font-size: 1.3rem;
+  }
+
+  .header-banner p {
+    font-size: 0.85rem;
+  }
+
+  .header-right {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+
+  .badge-year {
+    text-align: center;
+    justify-content: center;
+  }
+
+  .user-info-card {
+    padding: 0.6rem 1rem;
+  }
+
+  .user-info-item {
+    gap: 0.6rem;
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 0.85rem;
+  }
+
+  .user-name {
+    font-size: 0.8rem;
+  }
+
+  .user-role {
+    font-size: 0.7rem;
+  }
+
+  .user-school,
+  .user-address {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-banner h2 {
+    font-size: 1.1rem;
+  }
+
+  .header-banner p {
+    font-size: 0.78rem;
+  }
+
+  .icon-circle {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+    border-radius: 10px;
+  }
+
+  .user-info-card {
+    padding: 0.5rem 0.8rem;
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+  }
+}
   </style>
 </head>
-<body>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 text-slate-800 antialiased">
 
-<div class="app-container">
+<div class="min-h-screen lg:pl-[260px]">
   <!-- Overlay sidebar mobile -->
 
   <!-- Sidebar -->
    <?php include __DIR__ . '/../components/sidebar.php'; ?>
 
   <!-- Main content -->
-  <div class="main-content">
+  <div class="px-4 py-4 sm:px-6 lg:px-8">
     <!-- Header -->
-    <header class="app-header">
-      <div class="flex h-16 items-center justify-between gap-4 px-4 sm:px-6">
-        <div class="flex items-center gap-3 ml-14 lg:ml-0">
-          
-          <div>
-            <p class="font-heading text-sm font-semibold text-primary sm:text-base" id="school-name-header"><?= htmlspecialchars($_SESSION['school_name'] ?? 'École inconnue') ?> </p>
-            <p class="text-xs text-slate-500" id="school-location"><?= htmlspecialchars($_SESSION['school_address'] ?? 'École inconnue') ?> </p>
+   <div class="header-banner mb-6 mt-10">
+  <!-- Partie gauche : Titre + description -->
+          <div class="header-left">
+            <div class="title-wrapper">
+              <div>
+                <h2>Configuration initiale</h2>
+                <p>
+                  Paramétrez le système pédagogique de votre collège en quelques étapes.
+                </p>
+              </div>
+            </div>
           </div>
+
+  <!-- Partie droite : Infos utilisateur -->
+            <div class="header-right">
+              <span class="badge badge-year">
+                <i class="fas fa-calendar-alt"></i> Année <?= date('Y') ?>
+              </span>
+
+              <div class="user-info-card">
+                <!-- Nom utilisateur -->
+                <div class="user-info-item">
+                  <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  <div class="user-details">
+                    <p class="user-name"><?= htmlspecialchars($_SESSION['user_name'] ?? 'Utilisateur') ?></p>
+                    <p class="user-role text-emerald-200">
+                      <i class="fas fa-user-graduate text-[10px]"></i>
+                      <?= htmlspecialchars($_SESSION['user_role'] ?? 'Administrateur') ?>
+                    </p>
+                    <!-- <p class="user-school">
+                      <i class="fa-solid fa-school text-[10px]"></i>
+                      <?= htmlspecialchars($_SESSION['school_name'] ?? 'Mon École') ?>
+                    </p>
+                    <p class="user-address">
+                      <i class="fas fa-map-pin text-[10px]"></i>
+                      <?= htmlspecialchars($_SESSION['school_address'] ?? 'Cotonou, Bénin') ?>
+                    </p> -->
+                  </div>
+                </div>
+              </div>
+            </div>
         </div>
-        <div class="flex items-center gap-3">
-          <?php
-        $currentYear = date("Y");
-        $nextYear = $currentYear + 1;
-        $schoolYear = $currentYear . "–" . $nextYear;
-        ?>
-          <span class="hidden rounded-full border border-accent/50 bg-accent/20 px-3 py-1 text-xs font-medium text-slate-800 sm:inline-flex" id="school-year">Année scolaire  <?= $schoolYear ?></span>
-          <button class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-1.5 pr-3 shadow-sm hover:shadow-md transition">
-            <?php
-                $userName = $_SESSION['user_name'] ?? 'User';
-
-                // on récupère les initiales
-                $words = explode(' ', trim($userName));
-                $initials = '';
-
-                foreach ($words as $w) {
-                    $initials .= strtoupper($w[0] ?? '');
-                }
-
-                // limite à 2 caractères max
-                $initials = substr($initials, 0, 2);
-            ?>
-            <span id="header-avatar" class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md"><?= $initials ?></span>
-            <span class="hidden text-left text-sm sm:block">
-              <span class="block font-medium text-slate-900"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
-              <span class="text-xs text-slate-500"><?= htmlspecialchars($_SESSION['user_role']) ?></span>
-            </span>
-          </button>
-        </div>
-      </div>
-    </header>
 
     <!-- Main content area -->
     <main class="flex-1 px-4 py-6 sm:px-6 lg:px-8">
       <!-- Assistant de configuration -->
       <div class="max-w-5xl mx-auto">
-        <div class="mb-6">
-          <h1 class="font-heading text-2xl font-bold text-slate-900 sm:text-3xl">Configuration initiale</h1>
-          <p class="mt-1 text-sm text-slate-600">Paramétrez le système pédagogique de votre collège en quelques étapes.</p>
-        </div>
 
         <!-- Progress bar -->
         <div class="mt-6">
@@ -231,7 +557,7 @@ if (!isset($_SESSION['user_id'])) {
         </div>
 
         <!-- Formulaire -->
-        <div class="mt-8 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xl shadow-violet-100/50 sm:p-10">
+        <div class="mt-8 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xl shadow-emerald-100/50 sm:p-10">
           <p id="step-banner" class="mb-6 text-center text-sm font-semibold text-primary">Étape 1/4 — Système pédagogique</p>
 
           <form method="POST" id="setup-form" novalidate action="/AfricEduc/public/index.php?url=setup_school">
@@ -277,7 +603,7 @@ if (!isset($_SESSION['user_id'])) {
                 </label>
               </div>
               
-              <div class="formula-box mt-8 rounded-2xl border border-violet-100 bg-violet-50/60 px-4 py-4 sm:px-5">
+              <div class="formula-box mt-8 rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 py-4 sm:px-5">
                 <p class="text-xs font-semibold uppercase tracking-wide text-primary">Formule annuelle (aperçu)</p>
                 <p id="formula-period" class="mt-2 font-mono text-sm text-slate-800 sm:text-base"></p>
               </div>
@@ -345,7 +671,7 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
               </div>
               
-              <div class="formula-box mt-6 rounded-2xl border border-violet-100 bg-violet-50/60 px-4 py-4">
+              <div class="formula-box mt-6 rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 py-4">
                 <p class="text-xs font-semibold uppercase text-primary">Formule annuelle (rappel)</p>
                 <p id="formula-period-full" class="mt-2 font-mono text-sm text-slate-800"></p>
               </div>
@@ -374,8 +700,8 @@ if (!isset($_SESSION['user_id'])) {
             <div class="mt-10 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
               <button type="button" id="btn-prev" class="rounded-xl border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40">Précédent</button>
               <div class="flex flex-col gap-3 sm:flex-row sm:gap-3">
-                <button type="button" id="btn-next" class="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/25 transition hover:bg-violet-800">Suivant</button>
-                <button type="submit" id="btn-submit" class="hidden items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/25 transition hover:bg-violet-800 disabled:opacity-60">
+                <button type="button" id="btn-next" class="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/25 transition hover:bg-[#00ce90]">Suivant</button>
+                <button type="submit" id="btn-submit" class="hidden items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/25 transition hover:bg-[#00ce90] disabled:opacity-60">
                   <span id="btn-submit-label">Confirmer</span>
                   <svg id="btn-submit-spinner" class="hidden h-5 w-5 animate-spin text-white" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-25" />

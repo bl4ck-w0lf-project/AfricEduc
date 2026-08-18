@@ -83,7 +83,7 @@
       </div>
 
       <div class="flex shrink-0 items-center gap-3">
-        <span class="hidden rounded-full border border-primary/15 bg-violet-50 px-3 py-1 text-xs font-semibold text-primary md:inline-flex">Plateforme</span>
+        <span class="hidden rounded-full border border-primary/15 bg-emerald-50 px-3 py-1 text-xs font-semibold text-primary md:inline-flex">Plateforme</span>
         <button type="button" class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-1.5 pr-3 shadow-sm transition hover:border-primary/30">
           <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-sm font-bold text-primary"><?php echo $initials ?? 'SN'; ?></span>
           <span class="hidden text-left text-sm lg:block">

@@ -1,4 +1,3 @@
-<
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -11,7 +10,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { primary: "#7300e9", primaryDark: "#5c00bd", accent: "#99fbe3", danger: "#ef4444", warning: "#f59e0b", success: "#10b981" },
+                    colors: { primary: "#0F9D72", primaryDark: "#0B7A58", accent: "#99fbe3", danger: "#ef4444", warning: "#f59e0b", success: "#10b981" },
                     fontFamily: { heading: ["Quicksand", "sans-serif"], body: ["Outfit", "sans-serif"] },
                     animation: { 'fade-in': 'fadeIn 0.3s ease-in-out' },
                     keyframes: { fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } } }
@@ -21,33 +20,302 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: "Outfit", sans-serif; }
+        body { font-family: "Outfit", sans-serif; background: #f8fafc; }
         h1, h2, h3, .font-heading { font-family: "Quicksand", sans-serif; }
+        
         .sidebar-link { transition: all 0.2s ease; }
         .sidebar-link:hover { background-color: rgba(255,255,255,0.1); transform: translateX(4px); }
-        .sidebar-link.active { background-color: rgba(153,251,227,0.2); color: #99fbe3; border-left: 3px solid #99fbe3; }
+        .sidebar-link.active { background-color: rgba(15,157,114,0.2); color: #0F9D72; border-left: 3px solid #0F9D72; }
         .submenu { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
         .submenu.open { max-height: 320px; }
         #sidebar-overlay { pointer-events: none; opacity: 0; transition: opacity 0.2s ease; }
         #sidebar-overlay.is-open { pointer-events: auto; opacity: 1; }
+        
         .kpi-card { transition: all 0.2s ease; background: white; border: 1px solid #e2e8f0; }
         .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -12px rgba(0,0,0,0.15); }
+        
         .action-button { transition: all 0.2s ease; }
         .action-button:hover { transform: scale(1.05); }
+        
         .modal-overlay { pointer-events: none; opacity: 0; transition: opacity 0.2s ease; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
         .modal-overlay.is-open { pointer-events: auto; opacity: 1; }
         .modal-content { transform: scale(0.95); transition: transform 0.2s ease; max-width: 90%; width: 40rem; background: white; border-radius: 1rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         .modal-overlay.is-open .modal-content { transform: scale(1); }
+        
         .toast { position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 12px 20px; border-radius: 12px; font-size: 0.875rem; z-index: 10000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
         .toast.show { opacity: 1; }
+        
         .table-actions .btn-icon { width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s; }
         .table-actions .btn-icon:hover { transform: scale(1.08); }
-        .toggle-btn.active { background-color: #7300e9; color: white; }
-        .classe-block {
-            transition: all 0.2s ease;
+        
+        .classe-block { transition: all 0.2s ease; }
+        .classe-block:hover { box-shadow: 0 4px 16px rgba(15,157,114,0.08); }
+
+        /* ===== HEADER BANNER ===== */
+        .header-banner {
+            background: linear-gradient(135deg, #0F9D72 0%, #0B7A58 100%);
+            border-radius: 1.5rem;
+            padding: 1.8rem 2.5rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            box-shadow: 0 8px 32px rgba(15, 157, 114, 0.30);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
         }
-        .classe-block:hover {
-            box-shadow: 0 4px 16px rgba(115,0,233,0.08);
+
+        /* Effets de lumière */
+        .header-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .header-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .header-banner:hover {
+            box-shadow: 0 12px 40px rgba(15, 157, 114, 0.40);
+            transform: translateY(-2px);
+        }
+
+        /* ===== GAUCHE ===== */
+        .header-left {
+            flex: 1 1 300px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .icon-circle {
+            width: 52px;
+            height: 52px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .icon-circle:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05) rotate(-3deg);
+        }
+
+        .header-banner h2 {
+            font-weight: 700;
+            font-size: 1.6rem;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .header-banner p {
+            opacity: 0.85;
+            font-size: 0.95rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ===== DROITE ===== */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge-year {
+            background: rgba(255, 255, 255, 0.20) !important;
+            border: 1px solid rgba(255, 255, 255, 0.20) !important;
+            font-weight: 600 !important;
+            padding: 0.5rem 1.4rem !important;
+            font-size: 0.85rem !important;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            white-space: nowrap;
+        }
+
+        .user-info-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            border-radius: 1rem;
+            padding: 0.6rem 1.2rem 0.6rem 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            min-width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .user-info-card:hover {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .user-info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+            border: 2px solid rgba(255, 255, 255, 0.10);
+        }
+
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role.text-emerald-200 {
+            color: #a7f3d0;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .header-banner {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 1.5rem 1.8rem;
+            }
+            .header-right {
+                justify-content: space-between;
+                width: 100%;
+            }
+            .user-info-card {
+                flex: 1;
+                min-width: unset;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-banner {
+                padding: 1.2rem 1.2rem;
+                border-radius: 1rem;
+                margin: 0.5rem 0 1.5rem 0;
+            }
+            .title-wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.8rem;
+            }
+            .icon-circle {
+                width: 44px;
+                height: 44px;
+                font-size: 1.2rem;
+            }
+            .header-banner h2 {
+                font-size: 1.3rem;
+            }
+            .header-banner p {
+                font-size: 0.85rem;
+            }
+            .header-right {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+            .badge-year {
+                text-align: center;
+                justify-content: center;
+            }
+            .user-info-card {
+                padding: 0.6rem 1rem;
+            }
+            .user-name {
+                font-size: 0.8rem;
+            }
+            .user-role {
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-banner {
+                padding: 1rem 1rem;
+                border-radius: 0.75rem;
+            }
+            .header-banner h2 {
+                font-size: 1.1rem;
+            }
+            .header-banner p {
+                font-size: 0.78rem;
+            }
+            .user-info-card {
+                padding: 0.5rem 0.8rem;
+            }
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.75rem;
+            }
         }
     </style>
 </head>
@@ -58,38 +326,45 @@
 
     <!-- Main content -->
     <div class="min-h-screen lg:pl-[260px]">
-        <header class="flex items-center justify-between mb-6 bg-white/80 backdrop-blur-sm sticky top-0 z-30 py-4 px-4 md:px-6 rounded-2xl shadow-sm border border-gray-100/50">
-            <div class="flex items-center gap-4">
-                <button id="btn-menu" class="lg:hidden w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center text-gray-700">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-                <div>
-                    <h2 class="text-xl md:text-2xl font-bold text-[#0F172A]">Matières par Classe</h2>
-                    <p class="text-xs text-gray-400 hidden sm:block">Gérer les matières de chaque classe</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="hidden md:flex flex-col items-end">
-                    <div class="flex items-center gap-3">
-                        <span class="flex items-center gap-2 bg-accent/30 border border-accent/50 rounded-full px-3 py-1.5 text-xs font-medium text-slate-700">
-                            <i class="fas fa-calendar-alt text-primary"></i> Année <?= date('Y') ?>
-                        </span>
-                        <span class="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-3 py-1.5 text-xs font-medium text-primary">
-                            <i class="fas fa-school"></i> <?= $_SESSION['school_name'] ?? 'Mon École' ?>
-                        </span>
+        <main class="px-4 py-4 sm:px-6 lg:px-8">
+            
+            <!-- BANNIÈRE EN-TÊTE -->
+            <div class="header-banner mb-6 mt-10">
+                <!-- Partie gauche : Titre + description -->
+                <div class="header-left">
+                    <div class="title-wrapper">
+                        <div>
+                            <h2>Gestion des Matières</h2>
+                            <p>
+                                Gérer les matières et les coefficients par classe
+                            </p>
+                        </div>
                     </div>
-                    <p class="text-[15px] text-gray-400 mt-1 flex items-center gap-1">
-                        <i class="fas fa-map-pin text-gray-300"></i>
-                        <?= $_SESSION['school_address'] ?? 'Cotonou, Bénin' ?>
-                    </p>
                 </div>
-                <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold text-sm shadow-md">
-                    <?= isset($_SESSION['user_name']) ? substr($_SESSION['user_name'], 0, 2) : 'AK' ?>
+
+                <!-- Partie droite : Infos utilisateur -->
+                <div class="header-right">
+                    <span class="badge badge-year">
+                        <i class="fas fa-calendar-alt"></i> Année <?= date('Y') ?>
+                    </span>
+
+                    <div class="user-info-card">
+                        <div class="user-info-item">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="user-details">
+                                <p class="user-name"><?= htmlspecialchars($_SESSION['user_name'] ?? 'Utilisateur') ?></p>
+                                <p class="user-role text-emerald-200">
+                                    <i class="fas fa-user-graduate text-[10px]"></i>
+                                    <?= htmlspecialchars($_SESSION['user_role'] ?? 'Administrateur') ?>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </header>
 
-        <main class="px-4 py-6 sm:px-6 lg:px-8">
             <!-- STATISTIQUES -->
             <section class="mb-6">
                 <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
@@ -146,12 +421,10 @@
             <section class="mb-4">
                 <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm">
                     <div class="flex flex-wrap items-center gap-3">
-                        <!-- Recherche -->
                         <div class="flex-1 min-w-[180px] relative">
                             <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
                             <input type="text" id="searchMatiereInput" placeholder="Rechercher une matière..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition">
                         </div>
-                        <!-- Filtre par Classe -->
                         <div class="min-w-[160px]">
                             <select id="filterClasseSelect" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm text-gray-600 focus:outline-none focus:border-primary focus:bg-white transition">
                                 <option value="">Toutes les classes</option>
@@ -162,7 +435,6 @@
                                 <?php endif; ?>
                             </select>
                         </div>
-                        <!-- Filtre par Matière -->
                         <div class="min-w-[160px]">
                             <select id="filterMatiereSelect" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm text-gray-600 focus:outline-none focus:border-primary focus:bg-white transition">
                                 <option value="">Toutes les matières</option>
@@ -178,7 +450,7 @@
                 </div>
             </section>
 
-            <!-- LISTE DES CLASSES AVEC LEURS MATIÈRES - GRID 3 COLONNES -->
+            <!-- LISTE DES CLASSES AVEC LEURS MATIÈRES -->
             <section>
                 <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
                     <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
@@ -195,7 +467,6 @@
                     <?php else: ?>
                         <?php foreach ($classes as $classe): ?>
                             <div class="classe-block bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden" data-classe-nom="<?= htmlspecialchars($classe['nom']) ?>">
-                                <!-- En-tête de la classe -->
                                 <div class="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-200">
                                     <div class="flex items-center gap-2 min-w-0">
                                         <div class="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
@@ -209,7 +480,6 @@
                                     </button>
                                 </div>
 
-                                <!-- Liste des matières de la classe - GRID 2 COLONNES -->
                                 <div class="p-3">
                                     <?php if (empty($classe['matieres'])): ?>
                                         <p class="text-center text-xs text-gray-400 py-3">
@@ -254,7 +524,7 @@
         </main>
     </div>
 
-    <!-- MODAL : AJOUTER UNE MATIÈRE À UNE CLASSE -->
+    <!-- MODALS (inchangées) -->
     <div id="addMatiereModal" class="modal-overlay">
         <div class="modal-content bg-white rounded-2xl shadow-2xl p-6 max-w-2xl">
             <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
@@ -295,7 +565,6 @@
         </div>
     </div>
 
-    <!-- MODAL : MODIFIER LE COEFFICIENT -->
     <div id="editCoeffModal" class="modal-overlay">
         <div class="modal-content bg-white rounded-2xl shadow-2xl p-6 max-w-md">
             <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
@@ -327,7 +596,6 @@
         </div>
     </div>
 
-    <!-- MODAL : CONFIRMATION SUPPRESSION -->
     <div id="deleteModal" class="modal-overlay">
         <div class="modal-content bg-white rounded-2xl shadow-2xl p-6 max-w-md">
             <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
@@ -399,26 +667,21 @@
                     const classeNom = block.dataset.classeNom?.toLowerCase() || '';
                     const matieres = block.querySelectorAll('.matiere-item');
                     const matieresGrid = block.querySelector('.matieres-grid');
-                    const emptyMessage = block.querySelector('.no-matiere-message');
                     
-                    // Filtrer par classe
                     let showClasse = true;
                     if (classeFilter && classeNom !== classeFilter) {
                         showClasse = false;
                     }
 
                     if (showClasse) {
-                        // Toujours afficher le bloc classe
                         block.style.display = 'block';
                         
-                        // Nettoyer les anciens messages
                         const oldMsg = block.querySelector('.filter-no-result');
                         if (oldMsg) oldMsg.remove();
                         
                         if (matieresGrid) {
                             let hasVisibleMatiere = false;
                             
-                            // Filtrer les matières
                             matieres.forEach(item => {
                                 const matiereNom = item.dataset.matiereNom || '';
                                 let match = true;
@@ -434,7 +697,6 @@
                                 if (match) hasVisibleMatiere = true;
                             });
                             
-                            // Si la classe a des matières mais aucune ne correspond aux filtres
                             if (matieres.length > 0 && !hasVisibleMatiere) {
                                 const msg = document.createElement('p');
                                 msg.className = 'filter-no-result text-center text-xs text-gray-400 py-2';
@@ -499,7 +761,7 @@
                 const coefficient = document.getElementById('add-coeff').value;
 
                 if (!matiereId) {
-                    showToast('Erreur', 'Veuillez sélectionner une matière', 'error');
+                    showToast('Veuillez sélectionner une matière', 'error');
                     return;
                 }
 

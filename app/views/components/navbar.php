@@ -73,7 +73,7 @@
   <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.10/dist/dotlottie-wc.js" type="module"></script>
 </head>
 <body class="bg-white text-slate-800 antialiased">
-  <header class="fixed left-0 right-0 top-0 z-50 border-b border-violet-100/70 bg-white/85 backdrop-blur-md">
+  <header class="fixed left-0 right-0 top-0 z-50 border-b border-emerald-100/70 bg-white/85 backdrop-blur-md">
     <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
       <a href="index.html" class="group inline-flex items-center gap-3">
         <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition group-hover:rotate-6">
@@ -110,7 +110,7 @@
     </nav>
 
     <!-- Menu mobile (caché par défaut) -->
-    <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-md border-t border-violet-100/70 py-4 px-4 shadow-lg">
+    <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-md border-t border-emerald-100/70 py-4 px-4 shadow-lg">
       <div class="flex flex-col space-y-4">
         <a href="#features" class="nav-link text-gray-600 hover:text-gray-900 py-2 text-sm font-medium">Fonctionnalités</a>
         <a href="#whom" class="nav-link text-gray-600 hover:text-gray-900 py-2 text-sm font-medium">Pour qui ?</a>

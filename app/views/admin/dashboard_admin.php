@@ -71,40 +71,7 @@
 
   <!-- Main content -->
   <div class="min-h-screen lg:pl-[260px]">
-    <header class="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-slate-200 bg-white/95 px-4 backdrop-blur-md shadow-sm sm:px-6">
-      <div class="flex items-center gap-3">
-        <button id="btn-menu" class="inline-flex rounded-xl border border-slate-200 p-2 text-slate-700 hover:bg-slate-50 lg:hidden"><svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-        <div><p class="font-heading text-sm font-semibold text-primary sm:text-base"><?= htmlspecialchars($_SESSION['school_name'] ?? 'École inconnue') ?> </p><p class="text-xs text-slate-500"><?= htmlspecialchars($_SESSION['school_address'] ?? 'Adresse non renseignée') ?></p></div>
-      </div>
-      <div class="flex items-center gap-3">
-                <?php
-        $currentYear = date("Y");
-        $nextYear = $currentYear + 1;
-        $schoolYear = $currentYear . "–" . $nextYear;
-        ?>
-
-        <span class="hidden rounded-full border border-accent/50 bg-accent/20 px-3 py-1 text-xs font-medium text-slate-800 sm:inline-flex" id="school-year">
-          Année scolaire <?= $schoolYear ?>
-        </span>
-        <button class="flex items-center gap-2 rounded-2xl ">
-            <?php
-                $userName = $_SESSION['user_name'] ?? 'User';
-
-                // on récupère les initiales
-                $words = explode(' ', trim($userName));
-                $initials = '';
-
-                foreach ($words as $w) {
-                    $initials .= strtoupper($w[0] ?? '');
-                }
-
-                // limite à 2 caractères max
-                $initials = substr($initials, 0, 2);
-            ?>
-            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primaryDark text-sm font-bold text-white shadow-md"> <?= $initials ?></span>
-        </button>
-      </div>
-    </header>
+    
 
     <main class="px-4 py-6 sm:px-6 lg:px-8">
       
@@ -139,49 +106,67 @@
 
       <!-- Conteneur dynamique (les données viendront de PHP) -->
       <div id="dynamic-content">
-        <section class="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-primary/5 p-6 shadow-lg sm:p-8 animate-fade-in">
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-               <?php
-                      $heure = (int)date('H');
-
-                      // Message de bienvenue personnalisé selon l'heure
-                      if ($heure >= 5 && $heure < 12) {
-                          $salutation = 'Bonjour ';
-                      } elseif ($heure >= 12 && $heure < 18) {
-                          $salutation = 'Bonsoir';
-                      } elseif ($heure >= 18 && $heure < 22) {
-                          $salutation = 'Bonsoir ';
-                      } else {
-                          $salutation = 'Bonsoir ';
-                      }
-              ?>
-            <div><h1 class="font-heading text-xl font-bold text-slate-900 sm:text-2xl"><?= $salutation ?>  <?= htmlspecialchars($_SESSION['user_name']) ?>
-                (<?= $roleLabels[htmlspecialchars($_SESSION['user_role'])]  ?>)    —  <span class="text-primary"><?= htmlspecialchars($_SESSION['school_name'] ?? 'Aucune école') ?></span></h1>
-              <div class="mt-4 inline-flex flex-col gap-1 rounded-2xl bg-white/70 px-4 py-3 shadow-sm backdrop-blur border border-slate-200">
+        <section class="rounded-2xl border border-slate-200/80 p-6 shadow-lg sm:p-8 animate-fade-in" style="background: linear-gradient(135deg, #0F9D72 0%, #0B7A58 100%);">
+  <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <?php
+      $heure = (int)date('H');
+      if ($heure >= 5 && $heure < 12) {
+          $salutation = 'Bonjour';
+      } elseif ($heure >= 12 && $heure < 18) {
+          $salutation = 'Bonjour';
+      } else {
+          $salutation = 'Bonsoir';
+      }
+    ?>
     
-                    <div class="flex items-center gap-2 text-primary font-semibold text-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M12 8v4l3 3"></path>
-                            <circle cx="12" cy="12" r="9"></circle>
-                        </svg>
-                        Heure actuelle
-                    </div>
+    <!-- Colonne gauche : Message + Infos en colonne -->
+    <div class="flex-1">
+      <h1 class="font-heading text-xl font-bold text-white sm:text-2xl">
+        <?= $salutation ?> <?= htmlspecialchars($_SESSION['user_name']) ?>
+        <span class="text-accent">(<?= $roleLabels[htmlspecialchars($_SESSION['user_role'])] ?>)</span>
+      </h1>
+      <p class="text-white/80 text-md mt-1">
+        Bienvenue sur votre tableau de bord
+      </p>
+      
+      <!-- Infos en colonne (3 lignes alignées verticalement) -->
+      <div class="flex items-center  gap-2 text-white/70 text-md pt-1">
+        <span>
+          Des classes et des matières ont été créées automatiquement pour votre établissement
+        </span>
+      </div>
+    </div>
 
-                    <p id="clock" class="text-2xl font-bold text-slate-900 tracking-tight"></p>
+    <!-- Colonne droite : Heure + Synchro -->
+    <div class="flex flex-col items-end gap-3">
+      <!-- Horloge -->
+      <div class="flex flex-col items-end bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 border border-white/20">
+        <div class="flex items-center gap-2 text-accent font-semibold text-xs uppercase tracking-wider">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M12 8v4l3 3"></path>
+            <circle cx="12" cy="12" r="9"></circle>
+          </svg>
+          Heure actuelle
+        </div>
+        <p id="clock" class="text-3xl font-bold text-white tracking-tight"></p>
+        <div class="flex items-center gap-2 text-white/70 text-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span id="date"></span>
+        </div>
+      </div>
 
-                    <div class="flex items-center gap-2 text-slate-500 text-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                        <span id="date"></span>
-                    </div>
-
-              </div>
-            </div>
-            <div class="flex gap-2"><span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>Dernière synchro: aujourd'hui</span></div>
-          </div>
-          
-        </section>
+      <!-- Badge synchro -->
+      <span class="inline-flex items-center gap-2 rounded-full bg-white/20 backdrop-blur-sm px-4 py-1.5 text-xs font-semibold text-white border border-white/20">
+        <svg class="h-3 w-3 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
+        </svg>
+        Dernière synchro : aujourd'hui
+      </span>
+    </div>
+  </div>
+</section>
 
         <section class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <div class="kpi-card rounded-2xl border border-slate-200/80 bg-white p-5 shadow-md"><div class="flex items-start justify-between gap-2"><span class="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary"><svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 17a4 4 0 1 1 8 0"/></svg></span><span class="inline-flex items-center gap-0.5 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">---</span></div><p class="mt-4 text-3xl font-bold tracking-tight text-slate-900">---</p><p class="text-sm font-medium text-slate-500">Élèves inscrits</p></div>

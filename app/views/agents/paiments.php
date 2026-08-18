@@ -131,9 +131,9 @@
         </div>
       </div>
       <div class="flex items-center gap-3">
-        <div class="hidden md:flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-full px-3 py-1.5">
+        <div class="hidden md:flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1.5">
           <div class="h-2 w-2 rounded-full bg-urgent animate-pulse"></div>
-          <span class="text-xs font-medium text-amber-800">3 paiements en retard</span>
+          <span class="text-xs font-medium text-emerald-800">3 paiements en retard</span>
         </div>
         <button type="button" class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-1.5 pr-3 shadow-sm transition-all hover:border-primary/30 hover:shadow-md">
           <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent-dark text-sm font-bold text-primary">JM</span>
@@ -473,7 +473,7 @@
               </thead>
               <tbody class="divide-y divide-slate-100">
                 ${elevePaiements.map(p => {
-                  const badgeColor = p.statut === 'Payé' ? 'bg-emerald-100 text-emerald-800' : (p.statut === 'Partiel' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800');
+                  const badgeColor = p.statut === 'Payé' ? 'bg-emerald-100 text-emerald-800' : (p.statut === 'Partiel' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800');
                   return `
                   <tr>
                     <td class="px-3 py-3">${p.date || '—'}</td>
@@ -528,7 +528,7 @@
         tbody.innerHTML = filtered.map(p => {
           const eleve = eleves.find(e => e.id === p.eleveId);
           const reste = p.montantDu - p.montantPaye;
-          const badgeColor = p.statut === 'Payé' ? 'bg-emerald-100 text-emerald-800' : (p.statut === 'Partiel' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800');
+          const badgeColor = p.statut === 'Payé' ? 'bg-emerald-100 text-emerald-800' : (p.statut === 'Partiel' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800');
           return `
             <tr class="hover:bg-slate-50/80">
               <td class="px-5 py-4 font-medium text-slate-900">${eleve.prenom} ${eleve.nom}</td>

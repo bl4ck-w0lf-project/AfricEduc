@@ -16,7 +16,7 @@ $roleLabels = [
 $roleDisplay = $roleLabels[$userRole] ?? ucfirst($userRole);
 
 $roleColors = [
-    'super_admin' => 'text-amber-600',
+    'super_admin' => 'text-emerald-600',
     'admin' => 'text-emerald-600',
     'agent' => 'text-blue-600'
 ];
@@ -79,21 +79,21 @@ h1,h2,h3,h4 { font-family: "Quicksand", sans-serif; }
 
 .sidebar-link:hover {
     background-color: #f1f5f9;
-    color: #7300e9;
+    color: #0F9D72;
     transform: translateX(4px);
 }
 
 .sidebar-link:hover i {
-    color: #7300e9;
+    color: #0F9D72;
 }
 
 .sidebar-link.active {
-    background-color: #f3e8ff;
-    color: #7300e9;
+    background-color: #0F9D72;
+    color: #ffffff;
 }
 
 .sidebar-link.active i {
-    color: #7300e9;
+    color: #ffffff;
 }
 
 .sidebar-link.text-red-300:hover {
@@ -162,17 +162,18 @@ h1,h2,h3,h4 { font-family: "Quicksand", sans-serif; }
 <aside id="sidebar" class="fixed left-0 top-0 w-[270px] h-screen bg-white border-r border-gray-200 shadow-lg flex flex-col z-50">
 
     <!-- LOGO -->
-    <div class="flex flex-col items-start gap-0 h-auto py-4 px-5 border-b border-gray-200">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 flex items-center justify-center rounded-xl bg-primary/10 text-primary">
-                <i class="fa-solid fa-graduation-cap text-lg"></i>
+    <div class="flex flex-col items-center gap-0 h-auto py-0 px-5 border-b border-gray-200">
+        <div class=" flex items-center justify-center rounded-xl">
+                <img class="w-[130px] h-[70px]" src="/AfricEduc/public/logo.png" alt="">
             </div>
-            <h1 class="text-xl font-bold text-slate-900">Afric<span class="text-primary">Educ</span></h1>
+        <div class="flex items-center gap-3">
+            
+            <h1 class="text-xl font-bold text-slate-900">Afric<span class="text-[#0F9D72]">Educ</span></h1>
         </div>
-        <p class="text-[10px] uppercase text-gray-400 font-medium mt-1 pl-1">Plateforme de gestion scolaire</p>
+        <p class="text-[13px] uppercase text-gray-400 font-medium mt-1 pl-1">Plateforme de gestion scolaire</p>
     </div>
 
-    <nav class="flex-1 overflow-y-auto px-3 py-4 text-sm">
+    <nav class="flex-1 overflow-y-auto px-3 pt-2 text-sm">
 
         <!-- SUPER ADMIN -->
         <?php if($role === 'super_admin'): ?>
@@ -340,7 +341,7 @@ h1,h2,h3,h4 { font-family: "Quicksand", sans-serif; }
             <!-- Infos utilisateur -->
             <div class="flex items-center gap-3 px-3 py-2.5 mb-2 bg-gray-50 rounded-xl hover:bg-gray-100 transition cursor-default">
                 <!-- Avatar -->
-                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primaryDark flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden">
+                <div class="w-10 h-10 rounded-full bg-[#0F9D72] flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden">
                     <?php if (!empty($userPhoto)): ?>
                         <img src="<?= htmlspecialchars($userPhoto) ?>" 
                              alt="Photo de profil" 

@@ -104,7 +104,7 @@ unset($_SESSION['success'], $_SESSION['mail_error'], $_SESSION['registered_email
 
     <div class="mt-8 space-y-3">
       <a href="login.php"
-         class="block w-full rounded-xl bg-primary px-6 py-3 text-white font-semibold shadow-glow hover:bg-violet-800 transition">
+         class="block w-full rounded-xl bg-primary px-6 py-3 text-white font-semibold shadow-glow hover:bg-emerald-800 transition">
         Aller à la connexion
       </a>
       <?php if($mailError): ?>

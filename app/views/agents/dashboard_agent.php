@@ -121,7 +121,7 @@
         </div>
       </div>
       <div class="flex items-center gap-3">
-        <div class="hidden md:flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-full px-3 py-1.5">
+        <div class="hidden md:flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1.5">
           <div class="h-2 w-2 rounded-full bg-urgent animate-pulse"></div>
           <?php
         $currentYear = date("Y");
@@ -129,7 +129,7 @@
         $schoolYear = $currentYear . "–" . $nextYear;
         ?>
 
-          <span class="text-xs font-medium text-amber-800"> Année scolaire <?= $schoolYear ?></span>
+          <span class="text-xs font-medium text-emerald-800"> Année scolaire <?= $schoolYear ?></span>
         </div>
         <button type="button" class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-1.5 pr-3 shadow-sm transition-all hover:border-primary/30 hover:shadow-md">
            <?php
@@ -203,7 +203,7 @@
 
         <!-- KPI 2: Élèves à inscrire -->
         <article class="kpi-card rounded-2xl border-l-4 border-l-warning bg-white p-5 shadow-sm hover:shadow-md transition-all">
-          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-100">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-100">
             <svg class="h-6 w-6 text-warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3M12 4.5v15m7.5-7.5h-15" />
             </svg>
@@ -274,9 +274,9 @@
           </div>
 
           <!-- Priorité 2 - Bulletins à générer -->
-          <div class="priority-item flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-amber-50 to-transparent border border-amber-200 cursor-pointer hover:shadow-md transition-all" data-action="bulletins">
+          <div class="priority-item flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-transparent border border-emerald-200 cursor-pointer hover:shadow-md transition-all" data-action="bulletins">
             <div class="flex-shrink-0">
-              <div class="h-10 w-10 rounded-full bg-amber-200 flex items-center justify-center">
+              <div class="h-10 w-10 rounded-full bg-emerald-200 flex items-center justify-center">
                 <svg class="h-5 w-5 text-warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3.75h10.5l3 4.5v9.75a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25l3-4.5Z" />
                 </svg>
@@ -287,7 +287,7 @@
               <p class="text-xs text-slate-500">Classes : 4e A, 4e B, 3e C, Tle D · Trimestre 2</p>
             </div>
             <div class="flex-shrink-0">
-              <span class="px-2 py-1 bg-amber-100 text-warning text-xs font-bold rounded-full">À TRAITER</span>
+              <span class="px-2 py-1 bg-emerald-100 text-warning text-xs font-bold rounded-full">À TRAITER</span>
             </div>
           </div>
 
@@ -348,7 +348,7 @@
           <!-- Action 3 - Enregistrer paiement -->
           <div class="action-tile group relative flex flex-col rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-primary/40 hover:shadow-md hover:scale-[1.02]" data-action="add_payment">
             <div class="flex items-start justify-between">
-              <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-100 text-primary transition group-hover:scale-110">
+              <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-primary transition group-hover:scale-110">
                 <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" />
                 </svg>
@@ -453,8 +453,8 @@
             <li class="activity-item flex flex-wrap items-start justify-between gap-2 py-3 last:pb-0" data-type="bulletins">
               <div class="flex gap-3">
                 <div class="flex-shrink-0 mt-1">
-                  <div class="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center">
-                    <svg class="h-4 w-4 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <div class="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <svg class="h-4 w-4 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3.75h10.5l3 4.5v9.75a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25l3-4.5Z" />
                     </svg>
                   </div>
@@ -464,7 +464,7 @@
                   <p class="text-xs text-slate-500">30 mars, 15:30</p>
                 </div>
               </div>
-              <span class="rounded-full bg-purple-50 px-2 py-0.5 text-xs font-semibold text-purple-700">Bulletin</span>
+              <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">Bulletin</span>
             </li>
           </ul>
         </section>

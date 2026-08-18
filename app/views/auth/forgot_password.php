@@ -164,7 +164,7 @@ unset(
         <button type="submit"
           class="inline-flex w-full min-h-[48px] items-center justify-center
                  rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white
-                 shadow-glow transition hover:bg-violet-800
+                 shadow-glow transition hover:bg-emerald-800
                  disabled:cursor-not-allowed disabled:opacity-60">
           Envoyer le lien
         </button>
@@ -176,7 +176,7 @@ unset(
     <p class="mt-8 text-center">
       <a href="login.php"
          class="inline-flex items-center gap-2 text-sm font-semibold
-                text-primary transition hover:text-violet-800">
+                text-primary transition hover:text-emerald-800">
         <span aria-hidden="true">←</span> Retour à la connexion
       </a>
     </p>

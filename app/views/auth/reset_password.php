@@ -122,7 +122,7 @@ if (!$success && $token === '') {
           <a href="login.php"
              class="mt-4 inline-flex items-center justify-center gap-2
                     rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold
-                    text-white transition hover:bg-violet-800">
+                    text-white transition hover:bg-emerald-800">
             Aller à la connexion
           </a>
         </div>
@@ -237,7 +237,7 @@ if (!$success && $token === '') {
         <button type="submit"
           class="inline-flex w-full min-h-[48px] items-center justify-center
                  rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white
-                 shadow-glow transition hover:bg-violet-800
+                 shadow-glow transition hover:bg-emerald-800
                  disabled:cursor-not-allowed disabled:opacity-60">
           Mettre à jour le mot de passe
         </button>
@@ -248,7 +248,7 @@ if (!$success && $token === '') {
     <p class="mt-8 text-center">
       <a href="login.php"
          class="inline-flex items-center gap-2 text-sm font-semibold
-                text-primary transition hover:text-violet-800">
+                text-primary transition hover:text-emerald-800">
         <span aria-hidden="true">←</span> Retour à la connexion
       </a>
     </p>

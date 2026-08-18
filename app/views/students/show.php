@@ -103,7 +103,7 @@ $title = $title ?? 'Détails de l\'élève';
                   };
                   ?>
                   <span class="status-badge <?= $statusClass ?>"><?= ucfirst($student['status']) ?></span>
-                  <span class="status-badge bg-purple-100 text-purple-800"><?= $student['gender'] === 'M' ? 'Masculin' : 'Féminin' ?></span>
+                  <span class="status-badge bg-emerald-100 text-emerald-800"><?= $student['gender'] === 'M' ? 'Masculin' : 'Féminin' ?></span>
                 </div>
               </div>
             </div>

@@ -429,10 +429,10 @@ unset($_SESSION['old']);
             <button type="button" id="prev-btn" class="hidden px-6 py-3 rounded-xl border border-slate-300 text-slate-700 font-medium hover:bg-slate-50 transition-all">
               ← Précédent
             </button>
-            <button type="button" id="next-btn" class="px-6 py-3 rounded-xl bg-primary text-white font-medium hover:bg-violet-800 transition-all shadow-md ml-auto">
+            <button type="button" id="next-btn" class="px-6 py-3 rounded-xl bg-primary text-white font-medium hover:bg-emerald-800 transition-all shadow-md ml-auto">
               Suivant →
             </button>
-            <button type="submit" id="submit-btn" class="hidden px-6 py-3 rounded-xl bg-primary text-white font-medium hover:bg-violet-800 transition-all shadow-md">
+            <button type="submit" id="submit-btn" class="hidden px-6 py-3 rounded-xl bg-primary text-white font-medium hover:bg-emerald-800 transition-all shadow-md">
               <span id="btn-label">Créer mon compte</span>
               <svg id="btn-spinner" class="hidden h-5 w-5 spinner inline-block ml-2" viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-25" />
@@ -445,7 +445,7 @@ unset($_SESSION['old']);
         <div class="mt-3 text-center">
           <p class="text-sm text-slate-500">
             Déjà inscrit ?
-            <a href="login.php" class="font-semibold text-primary hover:text-violet-800 hover:underline transition">Se connecter</a>
+            <a href="login.php" class="font-semibold text-primary hover:text-emerald-800 hover:underline transition">Se connecter</a>
           </p>
         </div>
 
