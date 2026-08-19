@@ -97,7 +97,7 @@ unset($_SESSION['old']);
     .password-wrapper input { padding-right: 42px; }
   </style>
 </head>
-<body class="min-h-screen bg-slate-50 antialiased text-slate-800 overflow-hidden">
+<body class="min-h-screen bg-slate-50 antialiased text-slate-800 overflow-y-auto">
   <div class="min-h-screen lg:grid lg:grid-cols-2">
 
     <!-- Colonne gauche - Formulaire -->
@@ -439,7 +439,7 @@ unset($_SESSION['old']);
           </div>
         </form>
 
-        <div class="-mt-7 text-center">
+        <div class="mt-5 text-center">
           <p class="text-sm text-slate-500">
             Déjà inscrit ?
             <a href="login.php" class="font-semibold text-primary hover:text-emerald-800 hover:underline transition">Se connecter</a>
@@ -449,7 +449,7 @@ unset($_SESSION['old']);
       </main>
     </div>
 
-<aside class="relative hidden min-h-[280px] flex-col justify-between overflow-hidden p-8 lg:flex lg:min-h-screen lg:p-12 xl:p-16" style="background-image: linear-gradient(135deg, rgba(15,157,114,0.9) 0%, rgba(11,122,88,0.9) 50%, rgba(10,46,31,0.95) 100%), url('/AfricEduc/public/High-School-rafiki.svg'); background-size: cover; background-position: center; background-blend-mode: overlay;">  
+<aside class="relative hidden min-h-[280px] flex-col justify-between overflow-y-auto p-8 lg:flex lg:min-h-screen lg:p-12 xl:p-16" style="background-image: linear-gradient(135deg, rgba(15,157,114,0.9) 0%, rgba(11,122,88,0.9) 50%, rgba(10,46,31,0.95) 100%), url('/AfricEduc/public/High-School-rafiki.svg'); background-size: cover; background-position: center; background-blend-mode: overlay;">  
       <!-- Cercles décoratifs verts -->
       <div class="absolute top-20 right-20 w-64 h-64 bg-[#00ffb3]/20 rounded-full blur-3xl"></div>
       <div class="absolute bottom-20 left-20 w-48 h-48 bg-[#00ffb3]/10 rounded-full blur-2xl"></div>
