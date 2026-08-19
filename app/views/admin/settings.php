@@ -389,6 +389,15 @@
         font-size: 0.75rem;
       }
     }
+
+    /* Agrandissement du cercle avatar au survol */
+    .avatar-circle {
+      transition: all 0.3s ease;
+    }
+    .avatar-circle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 6px rgba(15, 157, 114, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -460,26 +469,38 @@
         <form method="POST" action="" enctype="multipart/form-data" class="flex flex-col items-center" id="avatar-form">
           <input type="hidden" name="action" value="update_avatar">
           
-          <div class="mb-6 w-36 h-36 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 border-4 border-primary/20 flex items-center justify-center overflow-hidden shadow-lg">
-            <?php if (!empty($admin['avatar'])): ?>
-              <img src="<?= htmlspecialchars($admin['avatar']) ?>" class="w-full h-full object-cover" alt="Avatar">
-            <?php else: ?>
-              <i class="fa-solid fa-user text-5xl text-primary"></i>
-            <?php endif; ?>
-          </div>
+          <!-- Aperçu de l'avatar avec effet hover -->
+                      <!-- Afficher l'avatar -->
+            <?php 
+              $avatarPath = '';
+              if (!empty($admin['avatar'])) {
+                  $avatarPath = '/AfricEduc/public/' . htmlspecialchars($admin['avatar']);
+              }
+            ?>
+
+            <div class="avatar-circle mb-6 w-40 h-40 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 border-4 border-primary/20 flex items-center justify-center overflow-hidden shadow-lg">
+              <?php if (!empty($admin['avatar'])): ?>
+                <img id="avatar-preview" src="<?= $avatarPath ?>" class="w-full h-full object-cover" alt="Avatar">
+              <?php else: ?>
+                <i id="avatar-placeholder" class="fa-solid fa-user text-6xl text-primary"></i>
+                <img id="avatar-preview" class="w-full h-full object-cover hidden" alt="Aperçu">
+              <?php endif; ?>
+            </div>
           
           <div class="flex flex-col sm:flex-row gap-3 justify-center w-full mt-2">
             <label class="action-btn cursor-pointer bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 flex-1">
               <i class="fa-solid fa-upload"></i>
               Changer la photo
-              <input type="file" name="avatar" accept="image/png, image/jpeg, image/jpg" class="hidden" onchange="this.form.submit()">
+              <input type="file" name="avatar" id="avatar-input" accept="image/png, image/jpeg, image/jpg" class="hidden" onchange="previewAvatar(event)">
             </label>
             
-            <button type="button" id="delete-avatar-btn" 
-                    class="action-btn bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 hover:border-red-300 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 flex-1">
-              <i class="fa-solid fa-trash-can"></i>
-              Supprimer
-            </button>
+            <?php if (!empty($admin['avatar'])): ?>
+              <button type="button" id="delete-avatar-btn" 
+                      class="action-btn bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 hover:border-red-300 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 flex-1">
+                <i class="fa-solid fa-trash-can"></i>
+                Supprimer
+              </button>
+            <?php endif; ?>
           </div>
           <p class="mt-4 text-xs text-slate-500 text-center">Formats acceptés : PNG, JPG (max 2 Mo)</p>
         </form>
@@ -649,7 +670,7 @@
   </main>
 </div>
 
-<!-- Modale de confirmation pour suppression avatar -->
+<!-- MODALE DE CONFIRMATION POUR SUPPRESSION AVATAR -->
 <div id="confirm-modal" class="modal-overlay">
   <div class="modal-content p-6">
     <div class="flex items-center justify-between mb-4">
@@ -673,11 +694,102 @@
   </div>
 </div>
 
-<!-- JS uniquement pour la jauge de force et la modale de confirmation -->
+<!-- JS -->
 <script>
-  // ==================== JAUGE DE FORCE DU MOT DE PASSE (UI uniquement) ====================
+  // ==================== PRÉVISUALISATION AVATAR ====================
+  function previewAvatar(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    // Vérifier le type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Format non accepté. Utilisez PNG ou JPG.');
+      event.target.value = '';
+      return;
+    }
+    
+    // Vérifier la taille (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      alert('L\'image ne doit pas dépasser 2 Mo.');
+      event.target.value = '';
+      return;
+    }
+    
+    // Prévisualisation
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById('avatar-preview');
+      const placeholder = document.getElementById('avatar-placeholder');
+      
+      if (preview) {
+        preview.src = e.target.result;
+        preview.classList.remove('hidden');
+      }
+      if (placeholder) {
+        placeholder.classList.add('hidden');
+      }
+    };
+    reader.readAsDataURL(file);
+    
+    // Soumission automatique du formulaire après prévisualisation
+    const form = document.getElementById('avatar-form');
+    if (form) {
+      setTimeout(function() {
+        form.submit();
+      }, 500);
+    }
+  }
+
+  // ==================== MODALE DE CONFIRMATION ====================
+  const modal = document.getElementById('confirm-modal');
+  const closeBtn = document.getElementById('close-confirm-modal');
+  const cancelBtn = document.getElementById('confirm-cancel');
+  const okBtn = document.getElementById('confirm-ok');
+  let pendingAction = null;
+  
+  function openModal(message, onConfirm) {
+    document.getElementById('confirm-body').innerHTML = message;
+    modal.classList.add('is-open');
+    pendingAction = onConfirm;
+  }
+  
+  function closeModal() {
+    modal.classList.remove('is-open');
+    pendingAction = null;
+  }
+  
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+  if (modal) modal.addEventListener('click', function(e) { 
+    if(e.target === modal) closeModal(); 
+  });
+  if (okBtn) okBtn.addEventListener('click', function() {
+    if(pendingAction) pendingAction();
+    closeModal();
+  });
+  
+  // ==================== SUPPRESSION AVATAR ====================
+  const deleteAvatarBtn = document.getElementById('delete-avatar-btn');
+  if (deleteAvatarBtn) {
+    deleteAvatarBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      openModal('<i class="fa-solid fa-triangle-exclamation text-warning text-xl mr-2"></i> Voulez-vous vraiment supprimer votre photo de profil ?', function() {
+        const form = document.getElementById('avatar-form');
+        if (form) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = 'action';
+          input.value = 'delete_avatar';
+          form.appendChild(input);
+          form.submit();
+        }
+      });
+    });
+  }
+
+  // ==================== JAUGE DE FORCE DU MOT DE PASSE ====================
   const passwordInput = document.getElementById('password');
-  const confirmInput = document.getElementById('confirm_password');
   const strengthBar = document.getElementById('strength-bar');
   const strengthText = document.getElementById('strength-text');
   
@@ -694,7 +806,6 @@
       return;
     }
     
-    // Critères
     if (password.length >= 8) strength += 1;
     if (password.length >= 12) strength += 1;
     if (/[a-z]/.test(password)) strength += 1;
@@ -702,7 +813,6 @@
     if (/\d/.test(password)) strength += 1;
     if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
     
-    // Déterminer le niveau
     if (strength <= 2) {
       message = 'Très faible';
       width = 25;
@@ -726,50 +836,9 @@
     strengthText.innerHTML = `<span style="color: ${color}"> Force : ${message}</span>`;
   }
   
-  passwordInput.addEventListener('input', () => {
-    checkPasswordStrength(passwordInput.value);
-  });
-  
-  // ==================== MODALE DE CONFIRMATION ====================
-  const modal = document.getElementById('confirm-modal');
-  const closeBtn = document.getElementById('close-confirm-modal');
-  const cancelBtn = document.getElementById('confirm-cancel');
-  const okBtn = document.getElementById('confirm-ok');
-  let pendingAction = null;
-  
-  function openModal(message, onConfirm) {
-    document.getElementById('confirm-body').innerHTML = message;
-    modal.classList.add('is-open');
-    pendingAction = onConfirm;
-  }
-  
-  function closeModal() {
-    modal.classList.remove('is-open');
-    pendingAction = null;
-  }
-  
-  if (closeBtn) closeBtn.addEventListener('click', closeModal);
-  if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
-  if (modal) modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
-  if (okBtn) okBtn.addEventListener('click', () => {
-    if(pendingAction) pendingAction();
-    closeModal();
-  });
-  
-  // Capture du bouton supprimer avatar
-  const deleteAvatarBtn = document.getElementById('delete-avatar-btn');
-  if (deleteAvatarBtn) {
-    deleteAvatarBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      openModal('<i class="fa-solid fa-triangle-exclamation text-warning text-xl mr-2"></i> Voulez-vous vraiment supprimer votre photo de profil ?', () => {
-        const form = document.getElementById('avatar-form');
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'action';
-        input.value = 'delete_avatar';
-        form.appendChild(input);
-        form.submit();
-      });
+  if (passwordInput) {
+    passwordInput.addEventListener('input', function() {
+      checkPasswordStrength(this.value);
     });
   }
 </script>

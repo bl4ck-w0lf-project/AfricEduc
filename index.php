@@ -152,7 +152,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 1rem;
       padding: 12px 16px;
       border-radius: 50px;
       border: 1px solid rgba(15,157,114,0.2);
@@ -162,7 +162,7 @@
     }
     #mobile-sidebar .sidebar-links .auth-links a:hover {
       background: #0F9D72;
-      color: white;
+      color: #ffffff;
     }
 
     #mobile-overlay {
@@ -337,123 +337,118 @@
       </div>
 
       <!-- Cartes flottantes -->
-      <div class="fade-in relative flex justify-center items-center min-h-[450px]">
-        <!-- Carte 1 -->
-        <!-- <div class="float-card absolute -top-10 left-0 bg-white p-5 shadow-xl rounded-2xl" style="width: 200px;">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <i class="fa-solid fa-users text-primary"></i>
-            </div>
-            <div>
-              <p class="text-2xl font-bold text-slate-900">500+</p>
-              <p class="text-xs text-gray-500">Écoles partenaires</p>
-            </div>
-          </div>
-        </div> -->
+      <div class="fade-in relative flex justify-center items-center min-h-[500px]">
+  <!-- Carte en haut à droite - IMAGE -->
+  <div class="float-card absolute -top-8 right-0 bg-white shadow-xl rounded-2xl overflow-hidden" style="width: 300px; height: 200px; animation-delay: 1s;">
+    <img src="public/students.avif" alt="Étudiants" class="w-full h-full object-cover">
+  </div>
 
-        <!-- Carte 2 -->
-        <!-- <div class="float-card absolute top-20 right-0 bg-white p-5 shadow-xl rounded-2xl" style="width: 200px; animation-delay: 2s;">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-accent/30 flex items-center justify-center">
-              <i class="fa-solid fa-graduation-cap text-primary"></i>
-            </div>
-            <div>
-              <p class="text-2xl font-bold text-slate-900">50K+</p>
-              <p class="text-xs text-gray-500">Élèves suivis</p>
-            </div>
-          </div>
-        </div> -->
-
-        <div class="w-[450px] max-w-sm float-card absolute -top-10 left-0  shadow-2xl rounded-3xl">
-          <img src="public/gojo.jpg" alt="Éducation" class="w-[450px] h-[250px] object-cover">
-        </div>
-
-        <!-- Carte 3 -->
-        <div class="float-card absolute -bottom-10 left-1/2 -translate-x-1/2 bg-white p-5 shadow-xl rounded-2xl" style="width: 200px; animation-delay: 4s;">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
-              <i class="fa-solid fa-star text-amber-400"></i>
-            </div>
-            <div>
-              <p class="text-2xl font-bold text-slate-900">99%</p>
-              <p class="text-xs text-gray-500">Satisfaction client</p>
-            </div>
-          </div>
-        </div>
-
-        
-        <!-- Image centrale -->
-        <div class="w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl">
-          <img src="public/gojo.jpg" alt="Éducation" class="w-full h-[320px] object-cover">
-        </div>
+  <!-- Carte en haut à gauche -->
+  <div class="hidden lg:flex float-card absolute -top-8 left-0 bg-white p-5 shadow-xl rounded-2xl" style="width: 200px;">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+        <i class="fa-solid fa-building-columns text-primary"></i>
+      </div>
+      <div>
+        <p class="text-2xl font-bold text-slate-900">500+</p>
+        <p class="text-xs text-gray-500">Écoles partenaires</p>
       </div>
     </div>
+  </div>
+
+  <!-- Carte en bas à gauche -->
+  <div class="hidden lg:flex  float-card absolute -bottom-8 left-0 bg-white p-5 shadow-xl rounded-2xl" style="width: 200px; animation-delay: 2s;">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-accent/30 flex items-center justify-center">
+        <i class="fa-solid fa-graduation-cap text-primary"></i>
+      </div>
+      <div>
+        <p class="text-2xl font-bold text-slate-900">50K+</p>
+        <p class="text-xs text-gray-500">Élèves suivis</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Carte en bas à droite - DEVENUE IMAGE -->
+  <div class="float-card absolute -bottom-8 right-0 bg-white shadow-xl rounded-2xl overflow-hidden" style="width: 220px; height: 150px; animation-delay: 3s;">
+    <img src="public/students2.avif" alt="Élèves" class="w-full h-full object-cover">
+  </div>
+
+  <!-- Image centrale -->
+  <div class="w-full max-w-md rounded-3xl overflow-hidden shadow-2xl">
+    <img src="public/school.avif" alt="Éducation" class="w-full h-[380px] object-cover">
+  </div>
+</div>
   </div>
 </section>
 
     <!-- SECTION FONCTIONNALITÉS -->
     <section id="features" class="py-24 px-4 sm:px-6 lg:px-8 bg-[#fafafa]">
       <div class="max-w-7xl mx-auto">
-        <div class="text-center max-w-2xl mx-auto mb-16 fade-in">
+        <div class="flex flex-col gap-3 text-left max-w-2xl fade-in">
+          <span class="inline-block text-primary font-semibold tracking-wide text-md  px-4 py-1.5 mb-3">
+            <i class="fa-solid fa-comment-dots mr-2"></i> FONCTIONNALITÉS
+          </span>
           <h2 class="text-3xl md:text-5xl font-bold mb-4">Une solution pensée pour <span class="text-primary">l'éducation</span> ouest-africaine</h2>
-          <p class="text-gray-500 text-lg">Gagnez du temps, améliorez les résultats et centralisez toutes les données.</p>
+          <p class="text-gray-500 text-lg mb-3">Gagnez du temps, améliorez les résultats et centralisez toutes les données.</p>
         </div>
         
-        <div class="grid md:grid-cols-3 gap-8 lg:gap-10">
-          <!-- Carte 1 - Fond vert -->
-          <div class="feature-card-green p-8 border border-white/10 transition-all fade-in rounded-3xl" style="transition-delay: 0s;">
-            <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
-              <i class="fa-solid fa-user-graduate text-2xl"></i>
-            </div>
-            <h3 class="text-2xl font-bold mb-3 text-white">Gestion élèves & inscriptions</h3>
-            <p class="text-white/80 leading-relaxed">Inscriptions simplifiées, dossiers numériques, classes, emplois du temps. Suivez chaque élève de la maternelle à l'université.</p>
-          </div>
-          
-          <!-- Carte 2 -->
-          <div class="feature-card p-8 border border-gray-100 hover:border-primary/30 transition-all fade-in rounded-3xl" style="transition-delay: 0.1s;">
-            <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
-              <i class="fa-solid fa-pen-to-square text-2xl"></i>
-            </div>
-            <h3 class="text-2xl font-bold mb-3">Notes, moyennes & examens</h3>
-            <p class="text-gray-600 leading-relaxed">Saisie intuitive, calcul automatique des moyennes, appréciations, tableaux de performance, et génération de bulletins PDF.</p>
-          </div>
-          
-          <!-- Carte 3 -->
-          <div class="feature-card p-8 border border-gray-100 hover:border-primary/30 transition-all fade-in rounded-3xl" style="transition-delay: 0.2s;">
-            <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
-              <i class="fa-solid fa-coins text-2xl"></i>
-            </div>
-            <h3 class="text-2xl font-bold mb-3">Paiements & gestion financière</h3>
-            <p class="text-gray-600 leading-relaxed">Suivi des frais de scolarité, génération de reçus, rappels automatiques et tableaux de bord financiers pour l'école.</p>
-          </div>
+        
+       <div class="grid md:grid-cols-3 gap-8 lg:gap-10 mt-7">
+  <!-- Carte 1 - Fond vert (pas de hover) -->
+  <div class="feature-card-green p-8 border border-white/10 transition-all fade-in rounded-3xl" style="transition-delay: 0s;">
+    <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
+      <i class="fa-solid fa-user-graduate text-2xl"></i>
+    </div>
+    <h3 class="text-2xl font-bold mb-3 text-white">Gestion élèves & inscriptions</h3>
+    <p class="text-white/80 leading-relaxed">Inscriptions simplifiées, dossiers numériques, classes, emplois du temps. Suivez chaque élève de la maternelle à l'université.</p>
+  </div>
+  
+  <!-- Carte 2 - Hover sur la carte => icône change -->
+  <div class="feature-card p-8 border border-gray-100 transition-all fade-in rounded-3xl group hover:border-primary/30" style="transition-delay: 0.1s;">
+    <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-primary group-hover:text-white">
+      <i class="fa-solid fa-pen-to-square text-2xl text-primary transition-all duration-300 group-hover:text-white"></i>
+    </div>
+    <h3 class="text-2xl font-bold mb-3">Notes, moyennes & examens</h3>
+    <p class="text-gray-600 leading-relaxed">Saisie intuitive, calcul automatique des moyennes, appréciations, tableaux de performance, et génération de bulletins PDF.</p>
+  </div>
+  
+  <!-- Carte 3 - Hover sur la carte => icône change -->
+  <div class="feature-card p-8 border border-gray-100 transition-all fade-in rounded-3xl group hover:border-primary/30" style="transition-delay: 0.2s;">
+    <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-primary group-hover:text-white">
+      <i class="fa-solid fa-coins text-2xl text-primary transition-all duration-300 group-hover:text-white"></i>
+    </div>
+    <h3 class="text-2xl font-bold mb-3">Paiements & gestion financière</h3>
+    <p class="text-gray-600 leading-relaxed">Suivi des frais de scolarité, génération de reçus, rappels automatiques et tableaux de bord financiers pour l'école.</p>
+  </div>
 
-          <!-- Carte 4 -->
-          <div class="feature-card p-8 border border-gray-100 hover:border-primary/30 transition-all fade-in rounded-3xl" style="transition-delay: 0.3s;">
-            <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
-              <i class="fa-solid fa-file-pdf text-2xl"></i>
-            </div>
-            <h3 class="text-2xl font-bold mb-3">Bulletins & relevés PDF</h3>
-            <p class="text-gray-600 leading-relaxed">Génération automatique de bulletins personnalisés, relevés de notes et certificats en PDF prêts à imprimer ou envoyer.</p>
-          </div>
+  <!-- Carte 4 - Hover sur la carte => icône change -->
+  <div class="feature-card p-8 border border-gray-100 transition-all fade-in rounded-3xl group hover:border-primary/30" style="transition-delay: 0.3s;">
+    <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-primary group-hover:text-white">
+      <i class="fa-solid fa-file-pdf text-2xl text-primary transition-all duration-300 group-hover:text-white"></i>
+    </div>
+    <h3 class="text-2xl font-bold mb-3">Bulletins & relevés PDF</h3>
+    <p class="text-gray-600 leading-relaxed">Génération automatique de bulletins personnalisés, relevés de notes et certificats en PDF prêts à imprimer ou envoyer.</p>
+  </div>
 
-          <!-- Carte 5 -->
-          <div class="feature-card p-8 border border-gray-100 hover:border-primary/30 transition-all fade-in rounded-3xl" style="transition-delay: 0.4s;">
-            <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
-              <i class="fa-solid fa-chart-simple text-2xl"></i>
-            </div>
-            <h3 class="text-2xl font-bold mb-3">Statistiques & tableaux de bord</h3>
-            <p class="text-gray-600 leading-relaxed">Visualisez en temps réel les performances, les taux de réussite, les absences et la santé financière de votre établissement.</p>
-          </div>
+  <!-- Carte 5 - Hover sur la carte => icône change -->
+  <div class="feature-card p-8 border border-gray-100 transition-all fade-in rounded-3xl group hover:border-primary/30" style="transition-delay: 0.4s;">
+    <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-primary group-hover:text-white">
+      <i class="fa-solid fa-chart-simple text-2xl text-primary transition-all duration-300 group-hover:text-white"></i>
+    </div>
+    <h3 class="text-2xl font-bold mb-3">Statistiques & tableaux de bord</h3>
+    <p class="text-gray-600 leading-relaxed">Visualisez en temps réel les performances, les taux de réussite, les absences et la santé financière de votre établissement.</p>
+  </div>
 
-          <!-- Carte 6 -->
-          <div class="feature-card p-8 border border-gray-100 hover:border-primary/30 transition-all fade-in rounded-3xl" style="transition-delay: 0.5s;">
-            <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
-              <i class="fa-solid fa-building-columns text-2xl"></i>
-            </div>
-            <h3 class="text-2xl font-bold mb-3">Multi-établissements</h3>
-            <p class="text-gray-600 leading-relaxed">Gérez plusieurs écoles, collèges ou universités depuis une seule interface centralisée et sécurisée.</p>
-          </div>
-        </div>
+  <!-- Carte 6 - Hover sur la carte => icône change -->
+  <div class="feature-card p-8 border border-gray-100 transition-all fade-in rounded-3xl group hover:border-primary/30" style="transition-delay: 0.5s;">
+    <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-primary group-hover:text-white">
+      <i class="fa-solid fa-building-columns text-2xl text-primary transition-all duration-300 group-hover:text-white"></i>
+    </div>
+    <h3 class="text-2xl font-bold mb-3">Multi-établissements</h3>
+    <p class="text-gray-600 leading-relaxed">Gérez plusieurs écoles, collèges ou universités depuis une seule interface centralisée et sécurisée.</p>
+  </div>
+</div>
       </div>
     </section>
 
@@ -461,9 +456,13 @@
     <section class="bg-white py-20 px-4 sm:px-6 lg:px-8" id="whom">
       <div class="flex flex-col gap-4 mx-auto max-w-7xl">
         <div class="flex flex-col gap-3 text-left max-w-2xl fade-in">
+          <span class="inline-block text-primary font-semibold tracking-wide text-md  px-4 py-1.5 mb-3">
+            <i class="fa-solid fa-comment-dots mr-2"></i> QUI PEUT UTLISER AFRICEDUC ?
+          </span>
           <h2 class="section-title">Une solution adaptée à <span>tous les acteurs</span> de l'éducation</h2>
           <p class="section-subtitle">Collèges (publics/privés), lycées et écoles internationales. AfricEduc s'adapte à vos besoins.</p>
         </div>
+        
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
           <!-- Carte 1 -->
@@ -506,62 +505,65 @@
     </section>
 
     <!-- SECTION CHIFFRES CLÉS -->
-    <section class="py-20 lg:py-28 relative overflow-hidden bg-[#0a2e1f]">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="fade-in mb-16 max-w-xl">
-          <span class="inline-block text-accent font-semibold tracking-wide text-sm bg-white/10 backdrop-blur-sm px-4 py-1.5 rounded-full mb-4">
-            <i class="fa-solid fa-chart-simple mr-2"></i> CHIFFRES CLÉS
-          </span>
-          <h2 class="text-4xl text-white font-bold sm:text-5xl lg:text-6xl font-title">Ils avancent avec <span class="text-accent">AfricEduc</span></h2>
-          <p class="mt-4 text-slate-300 text-lg">Des indicateurs concrets pour mesurer la confiance des établissements en Afrique de l'Ouest.</p>
-        </div>
-    
-        <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
-          <div class="fade-in group rounded-2xl bg-white/5 backdrop-blur-sm p-8 border border-white/10 hover:border-accent/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2">
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center group-hover:bg-accent transition-all duration-300">
-                <i class="fa-solid fa-building-columns text-white text-xl group-hover:text-primary transition"></i>
-              </div>
-            </div>
-            <p class="text-sm text-slate-300 uppercase tracking-wide">Écoles partenaires</p>
-            <p class="mt-3 text-5xl font-bold text-accent" data-counter data-target="500" data-suffix="+">0</p>
-            <div class="mt-4 h-1 w-12 bg-accent/30 rounded-full group-hover:w-full transition-all duration-500"></div>
-            <p class="mt-4 text-slate-400 text-sm">Établissements scolaires et universitaires</p>
-          </div>
-    
-          <div class="fade-in group rounded-2xl bg-white/5 backdrop-blur-sm p-8 border border-white/10 hover:border-accent/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2">
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center group-hover:bg-accent transition-all duration-300">
-                <i class="fa-solid fa-user-graduate text-white text-xl group-hover:text-primary transition"></i>
-              </div>
-            </div>
-            <p class="text-sm text-slate-300 uppercase tracking-wide">Élèves suivis</p>
-            <p class="mt-3 text-5xl font-bold text-accent" data-counter data-target="50000" data-suffix="+">0</p>
-            <div class="mt-4 h-1 w-12 bg-accent/30 rounded-full group-hover:w-full transition-all duration-500"></div>
-            <p class="mt-4 text-slate-400 text-sm">Élèves accompagnés au quotidien</p>
-          </div>
-    
-          <div class="fade-in group rounded-2xl bg-white/5 backdrop-blur-sm p-8 border border-white/10 hover:border-accent/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2">
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center group-hover:bg-accent transition-all duration-300">
-                <i class="fa-solid fa-star text-white text-xl group-hover:text-primary transition"></i>
-              </div>
-              <div class="flex gap-0.5">
-                <i class="fa-solid fa-star text-accent text-sm"></i>
-                <i class="fa-solid fa-star text-accent text-sm"></i>
-                <i class="fa-solid fa-star text-accent text-sm"></i>
-                <i class="fa-solid fa-star text-accent text-sm"></i>
-                <i class="fa-regular fa-star text-accent text-sm"></i>
-              </div>
-            </div>
-            <p class="text-sm text-slate-300 uppercase tracking-wide">Satisfaction clients</p>
-            <p class="mt-3 text-5xl font-bold text-accent" data-counter data-target="99" data-suffix="%">0</p>
-            <div class="mt-4 h-1 w-12 bg-accent/30 rounded-full group-hover:w-full transition-all duration-500"></div>
-            <p class="mt-4 text-slate-400 text-sm">Recommandé par les équipes pédagogiques</p>
+    <section class="py-20 lg:py-28 relative overflow-hidden bg-white">
+  <!-- SVG en arrière-plan -->
+  <div class="absolute inset-0 w-full h-full opacity-50" style="background-image: url('/AfricEduc/public/Contour Line.svg'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+  
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="fade-in mb-16 max-w-xl">
+      <span class="inline-block text-primary font-semibold tracking-wide text-sm px-4 py-1.5 mb-4">
+        <i class="fa-solid fa-chart-simple mr-2"></i> CHIFFRES CLÉS
+      </span>
+      <h2 class="text-4xl text-slate-900 font-bold sm:text-5xl lg:text-6xl font-title">Ils avancent avec <span class="text-primary">AfricEduc</span></h2>
+      <p class="mt-4 text-slate-600 text-lg">Des indicateurs concrets pour mesurer la confiance des établissements en Afrique de l'Ouest.</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+      <div class="fade-in group rounded-2xl bg-white shadow-lg p-8 border border-gray-100 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-all duration-300">
+            <i class="fa-solid fa-building-columns text-primary text-xl group-hover:text-white transition"></i>
           </div>
         </div>
+        <p class="text-sm text-slate-500 uppercase tracking-wide">Écoles partenaires</p>
+        <p class="mt-3 text-5xl font-bold text-primary" data-counter data-target="500" data-suffix="+">0</p>
+        <div class="mt-4 h-1 w-12 bg-primary/30 rounded-full group-hover:w-full transition-all duration-500"></div>
+        <p class="mt-4 text-slate-500 text-sm">Établissements scolaires et universitaires</p>
       </div>
-    </section>
+
+      <div class="fade-in group rounded-2xl bg-white shadow-lg p-8 border border-gray-100 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-all duration-300">
+            <i class="fa-solid fa-user-graduate text-primary text-xl group-hover:text-white transition"></i>
+          </div>
+        </div>
+        <p class="text-sm text-slate-500 uppercase tracking-wide">Élèves suivis</p>
+        <p class="mt-3 text-5xl font-bold text-primary" data-counter data-target="50000" data-suffix="+">0</p>
+        <div class="mt-4 h-1 w-12 bg-primary/30 rounded-full group-hover:w-full transition-all duration-500"></div>
+        <p class="mt-4 text-slate-500 text-sm">Élèves accompagnés au quotidien</p>
+      </div>
+
+      <div class="fade-in group rounded-2xl bg-white shadow-lg p-8 border border-gray-100 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-all duration-300">
+            <i class="fa-solid fa-star text-primary text-xl group-hover:text-white transition"></i>
+          </div>
+          <div class="flex gap-0.5">
+            <i class="fa-solid fa-star text-amber-400 text-sm"></i>
+            <i class="fa-solid fa-star text-amber-400 text-sm"></i>
+            <i class="fa-solid fa-star text-amber-400 text-sm"></i>
+            <i class="fa-solid fa-star text-amber-400 text-sm"></i>
+            <i class="fa-regular fa-star text-amber-400 text-sm"></i>
+          </div>
+        </div>
+        <p class="text-sm text-slate-500 uppercase tracking-wide">Satisfaction clients</p>
+        <p class="mt-3 text-5xl font-bold text-primary" data-counter data-target="99" data-suffix="%">0</p>
+        <div class="mt-4 h-1 w-12 bg-primary/30 rounded-full group-hover:w-full transition-all duration-500"></div>
+        <p class="mt-4 text-slate-500 text-sm">Recommandé par les équipes pédagogiques</p>
+      </div>
+    </div>
+  </div>
+</section>
 
     <!-- SECTION AVIS -->
     <section class="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-white" id="testimonies">
@@ -685,33 +687,31 @@
     </section>
 
     <!-- CTA final -->
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary to-primary mt-16 mx-auto max-w-4xl">
-      <div class="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-0 left-0 w-48 h-48 bg-accent/10 rounded-full blur-2xl"></div>
-      <div class="absolute -top-20 -right-20 w-60 h-60 border-2 border-primaryDark rounded-full"></div>
-      <div class="absolute -bottom-20 -left-20 w-60 h-60 border-2 border-primaryDark rounded-full"></div>
-      
-      <div class="relative z-10 flex flex-col items-center text-center gap-6 px-6 py-12 md:px-12 md:py-16">
-        <h2 class="text-2xl font-bold text-white sm:text-3xl md:text-4xl lg:text-5xl font-title">
-          Prêt à transformer votre école ?
-        </h2>
-        <p class="max-w-md text-sm text-slate-200 md:text-base">
-          Rejoignez plus de 500 établissements qui nous font déjà confiance en Afrique de l'Ouest.
-        </p>
-        <div class="flex flex-col gap-3 sm:flex-row sm:gap-4 mt-2">
-          <a href="app/views/auth/register.php" class="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-white px-6 py-3 font-semibold text-primary shadow-lg transition-all hover:shadow-xl hover:scale-105 md:px-8 md:py-3.5">
-            <span class="relative z-10 flex items-center gap-2">
-              <i class="fa-solid fa-play"></i> Commencer gratuitement
-              <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-            </span>
-            <div class="absolute inset-0 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 bg-gradient-to-r from-accent to-primary/20"></div>
-          </a>
-          <a href="#features" class="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 py-3 font-medium text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50 md:px-7 md:py-3.5">
-            <i class="fa-solid fa-circle-question"></i> Comment ça marche ?
-          </a>
-        </div>
-      </div>
+    <div class="relative overflow-hidden rounded-3xl bg-primary mt-16 mx-auto max-w-4xl">
+  <!-- SVG en arrière-plan -->
+  <div class="absolute inset-0 w-full h-full opacity-50" style="background-image: url('/AfricEduc/public/blob-scene-haikei (1).svg'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+  
+  <div class="relative z-10 flex flex-col items-center text-center gap-6 px-6 py-12 md:px-12 md:py-16">
+    <h2 class="text-2xl font-bold text-white sm:text-3xl md:text-4xl lg:text-5xl font-title">
+      Prêt à transformer votre école ?
+    </h2>
+    <p class="max-w-md text-sm text-slate-200 md:text-base">
+      Rejoignez plus de 500 établissements qui nous font déjà confiance en Afrique de l'Ouest.
+    </p>
+    <div class="flex flex-col gap-3 sm:flex-row sm:gap-4 mt-2">
+      <a href="app/views/auth/register.php" class="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-white px-6 py-3 font-semibold text-primary shadow-lg transition-all hover:shadow-xl hover:scale-105 md:px-8 md:py-3.5">
+        <span class="relative z-10 flex items-center gap-2">
+          <i class="fa-solid fa-play"></i> Commencer gratuitement
+          <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+        </span>
+        <div class="absolute inset-0 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 bg-gradient-to-r from-accent to-primary/20"></div>
+      </a>
+      <a href="#features" class="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 py-3 font-medium text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50 md:px-7 md:py-3.5">
+        <i class="fa-solid fa-circle-question"></i> Comment ça marche ?
+      </a>
     </div>
+  </div>
+</div>
   </main>
 
   <!-- FOOTER -->

@@ -56,47 +56,48 @@ class DashboardAdminModel
      */
     public function updateAdminProfile(int $id, array $data): void
     {
-        if (!empty($data['password'])) {
+        try {
+            if (!empty($data['password'])) {
+                $stmt = $this->db->prepare("
+                    UPDATE users
+                    SET
+                        name = ?,
+                        email = ?,
+                        password = ?,
+                        role = ?,
+                        status = ?
+                    WHERE id = ?
+                ");
 
-            $stmt = $this->db->prepare("
-                UPDATE users
-                SET
-                    name = ?,
-                    email = ?,
-                    password = ?,
-                    role = ?,
-                    status = ?
-                WHERE id = ?
-            ");
+                $stmt->execute([
+                    $data['name'],
+                    $data['email'],
+                    $data['password'],
+                    $data['role'],
+                    $data['status'],
+                    $id
+                ]);
+            } else {
+                $stmt = $this->db->prepare("
+                    UPDATE users
+                    SET
+                        name = ?,
+                        email = ?,
+                        role = ?,
+                        status = ?
+                    WHERE id = ?
+                ");
 
-            $stmt->execute([
-                $data['name'],
-                $data['email'],
-                $data['password'],
-                $data['role'],
-                $data['status'],
-                $id
-            ]);
-
-        } else {
-
-            $stmt = $this->db->prepare("
-                UPDATE users
-                SET
-                    name = ?,
-                    email = ?,
-                    role = ?,
-                    status = ?
-                WHERE id = ?
-            ");
-
-            $stmt->execute([
-                $data['name'],
-                $data['email'],
-                $data['role'],
-                $data['status'],
-                $id
-            ]);
+                $stmt->execute([
+                    $data['name'],
+                    $data['email'],
+                    $data['role'],
+                    $data['status'],
+                    $id
+                ]);
+            }
+        } catch (PDOException $e) {
+            throw new Exception('Erreur lors de la mise à jour du profil : ' . $e->getMessage());
         }
     }
 
@@ -105,16 +106,17 @@ class DashboardAdminModel
      */
     public function updateAvatar(int $id, string $avatar): void
     {
-        $stmt = $this->db->prepare("
-            UPDATE users
-            SET avatar = ?
-            WHERE id = ?
-        ");
+        try {
+            $stmt = $this->db->prepare("
+                UPDATE users
+                SET avatar = ?
+                WHERE id = ?
+            ");
 
-        $stmt->execute([
-            $avatar,
-            $id
-        ]);
+            $stmt->execute([$avatar, $id]);
+        } catch (PDOException $e) {
+            throw new Exception('Erreur lors de la mise à jour de l\'avatar : ' . $e->getMessage());
+        }
     }
 
     /**
@@ -122,12 +124,16 @@ class DashboardAdminModel
      */
     public function deleteAvatar(int $id): void
     {
-        $stmt = $this->db->prepare("
-            UPDATE users
-            SET avatar = NULL
-            WHERE id = ?
-        ");
+        try {
+            $stmt = $this->db->prepare("
+                UPDATE users
+                SET avatar = NULL
+                WHERE id = ?
+            ");
 
-        $stmt->execute([$id]);
+            $stmt->execute([$id]);
+        } catch (PDOException $e) {
+            throw new Exception('Erreur lors de la suppression de l\'avatar : ' . $e->getMessage());
+        }
     }
 }

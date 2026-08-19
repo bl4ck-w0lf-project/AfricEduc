@@ -105,7 +105,7 @@ unset($_SESSION['old']);
       <header class="max-w-xl ms-[70px]">
         <a href="/AfricEduc/index.php" class="flex justify-start items-center">
           <span class="flex items-center justify-start transition-all duration-300 group-hover:rotate-6">
-            <img src="/AfricEduc/public/logo.png" alt="" class="h-[70px] w-[150px]" >
+            <img src="/AfricEduc/public/logo.png" alt="" class="h-[100px] w-[150px]" >
           </span>
         </a>
       </header>
