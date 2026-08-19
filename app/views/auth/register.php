@@ -26,7 +26,7 @@ unset($_SESSION['old']);
       theme: {
         extend: {
           colors: {
-            primary: "#7300e9",
+            primary: "#0F9D72",
             accent: "#99fbe3"
           },
           fontFamily: {
@@ -69,22 +69,22 @@ unset($_SESSION['old']);
     }
 
     .step-indicator { transition: all 0.3s ease; cursor: pointer; }
-    .step-active    { background-color: #7300e9; color: white; border-color: #7300e9; transform: scale(1.05); box-shadow: 0 0 0 4px rgba(115,0,233,0.2); }
+    .step-active    { background-color: #0F9D72; color: white; border-color: #0F9D72; transform: scale(1.05); box-shadow: 0 0 0 4px #49dcb0; }
     .step-completed { background-color: #10b981; border-color: #10b981; color: white; box-shadow: 0 0 0 2px rgba(16,185,129,0.2); }
     .step-default   { background-color: white; border-color: #cbd5e1; color: #64748b; }
 
     .step-line          { transition: background-color 0.3s ease; height: 3px; }
     .step-line-completed { background-color: #10b981; }
-    .step-line-active   { background-color: #7300e9; }
+    .step-line-active   { background-color: #0F9D72; }
     .step-line-default  { background-color: #e2e8f0; }
 
     .card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 25px -8px rgba(115,0,233,0.15); }
+    .card-hover:hover { transform: translateY(-2px);  }
 
     .step-label          { transition: color 0.3s ease; }
-    .step-label-active   { color: #7300e9; font-weight: 600; }
+    .step-label-active   { color: #0F9D72; font-weight: 600; }
     .step-label-completed{ color: #10b981; font-weight: 500; }
-    .step-label-default  { color: #94a3b8; }
+    .step-label-default  { color: #10b981; }
 
     .password-toggle {
       position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
@@ -92,36 +92,33 @@ unset($_SESSION['old']);
       background: transparent; border: none; padding: 4px;
       display: flex; align-items: center; justify-content: center;
     }
-    .password-toggle:hover { color: #7300e9; }
+    .password-toggle:hover { color: #0F9D72; }
     .password-wrapper { position: relative; }
     .password-wrapper input { padding-right: 42px; }
   </style>
 </head>
-<body class="min-h-screen bg-slate-50 antialiased text-slate-800">
+<body class="min-h-screen bg-slate-50 antialiased text-slate-800 overflow-hidden">
   <div class="min-h-screen lg:grid lg:grid-cols-2">
 
     <!-- Colonne gauche - Formulaire -->
-    <div class="flex flex-col px-4 py-6 sm:px-8 lg:px-12 xl:px-16">
-      <header class="mb-4">
-        <a href="index.html" class="inline-flex items-center gap-3 group">
-          <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:rotate-6 group-hover:bg-primary/20">
-            <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all duration-300 group-hover:rotate-6">
-              <svg width="30px" height="30px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#9600ec" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="m14.25 9.25v-3.25l-6.25-3.25-6.25 3.25 6.25 3.25 3.25-1.5v3.5c0 1-1.5 2-3.25 2s-3.25-1-3.25-2v-3.5"></path></svg>
-            </span>
+    <div class="flex flex-col px-4 py-3 sm:px-8 lg:px-10 xl:px-16">
+      <header class="max-w-xl ms-[70px]">
+        <a href="index.php" class="flex justify-start items-center">
+          <span class="flex items-center justify-start transition-all duration-300 group-hover:rotate-6">
+            <img src="/AfricEduc/public/logo.png" alt="" class="h-[70px] w-[150px]" >
           </span>
-          <span class="text-xl font-bold text-slate-900 transition-all duration-300 group-hover:text-primary">Afric<span class="text-primary">Educ</span></span>
         </a>
       </header>
 
-      <main class="mx-auto w-full max-w-xl flex-1 pb-12">
+      <main class="mx-auto w-full max-w-xl flex-1 pb-3">
 
-        <div class="mb-6">
+        <div class="mb-3">
           <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl tracking-tight">Créer votre espace <span class="text-primary">AfricEduc</span></h1>
-          <p class="mt-2 text-slate-500 text-sm">Remplissez le formulaire en 3 étapes. Un email de confirmation vous sera envoyé.</p>
+          <p class="mt-1 text-slate-500 text-sm">Remplissez le formulaire en 3 étapes. Un email de confirmation vous sera envoyé.</p>
         </div>
 
         <!-- STEP INDICATOR -->
-        <div class="mb-8">
+        <div class="mb-5">
           <div class="flex items-center justify-between">
             <div class="flex flex-col items-center flex-1">
               <div id="step1-indicator" class="step-indicator w-10 h-10 rounded-full bg-white border-2 border-slate-300 flex items-center justify-center font-semibold text-slate-600">1</div>
@@ -179,7 +176,7 @@ unset($_SESSION['old']);
                 <div>
                   <span class="block text-sm font-semibold text-slate-700 mb-1">Type d'établissement</span>
                   <div class="flex items-center gap-2 mt-1 rounded-xl bg-slate-50/80 px-5 py-3 border border-slate-200">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7300e9" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F9D72" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
                     <span id="type-display" class="font-medium">Collège/Lycée</span>
                   </div>
                 </div>
@@ -442,7 +439,7 @@ unset($_SESSION['old']);
           </div>
         </form>
 
-        <div class="mt-3 text-center">
+        <div class="-mt-7 text-center">
           <p class="text-sm text-slate-500">
             Déjà inscrit ?
             <a href="login.php" class="font-semibold text-primary hover:text-emerald-800 hover:underline transition">Se connecter</a>
@@ -452,65 +449,15 @@ unset($_SESSION['old']);
       </main>
     </div>
 
-<aside class="relative hidden min-h-[280px] flex-col justify-between overflow-hidden p-8 lg:flex lg:min-h-screen lg:p-12 xl:p-16" style="background-image: linear-gradient(135deg, rgba(248,244,255,0.85) 0%, rgba(237,230,255,0.85) 30%, rgba(224,212,255,0.85) 60%, rgba(208,191,255,0.85) 100%), url('https://imgs.search.brave.com/Nqg2-9urYxRDc5JOSMXFuRcr93j90CeXTQC48vlUYCw/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvOTQ3/Mjk1MDM0L2ZyL3Bo/b3RvL3VuLWdyb3Vw/ZS1kZS1kaXBsJUMz/JUI0bSVDMyVBOXMt/amV0YW50LWRlcy1j/YXNxdWV0dGVzLWRl/LWdyYWR1YXRpb24t/ZGFucy1sYWlyLmpw/Zz9zPTYxMng2MTIm/dz0wJms9MjAmYz13/ODJYbjZnNG1Rd05f/RG5GYzcxMFAtUHpR/WGMyLTRiZndwQVoy/aUtUbzZVPQ'); background-size: cover; background-position: center; background-blend-mode: overlay;">  
-  <!-- Overlay noir -->
-  <div class="absolute inset-0 bg-black/70"></div>
-  
-  
-
-  <!-- Contenu principal -->
-  <div class="relative z-10 flex flex-col justify-center min-h-full text-white">
-    <!-- Badge -->
-    <div class="mb-6 inline-flex items-center gap-2 self-start px-4 py-1.5 text-4xl font-semibold">
-      Bienvenue sur <span class="text-primary">AfricEduc</span>
-    </div>
-
-    <!-- Titre principal -->
-    <h2 class="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl text-white">
-      La plateforme éducative<br>
-      <span class="text-primary">qui connecte</span> votre école
-    </h2>
-
-    <!-- Description -->
-    <p class="mt-4 max-w-sm text-base text-white/80 leading-relaxed">
-      Gérez vos collèges et lycées en toute simplicité. Une solution tout-en-un pensée pour l'éducation au Bénin.
-    </p>
-
-    <!-- Avantages avec icônes Font Awesome -->
-    <div class="mt-8 space-y-4">
-      <div class="flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-white/5">
-        <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary backdrop-blur-md border border-white/10">
-          <i class="fas fa-building text-lg"></i>
-        </span>
-        <div>
-          <p class="font-semibold text-white">Établissements vérifiés</p>
-          <p class="text-sm text-white/70">Profils authentifiés et sécurisés</p>
-        </div>
-      </div>
-
-      <div class="flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-white/5">
-        <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary backdrop-blur-md border border-white/10">
-          <i class="fas fa-chart-line text-lg"></i>
-        </span>
-        <div>
-          <p class="font-semibold text-white">Gestion simplifiée</p>
-          <p class="text-sm text-white/70">Élèves, notes, bulletins en quelques clics</p>
-        </div>
-      </div>
-
-      <div class="flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-white/5">
-        <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary backdrop-blur-md border border-white/10">
-          <i class="fas fa-lock text-lg"></i>
-        </span>
-        <div>
-          <p class="font-semibold text-white">Paiements sécurisés</p>
-          <p class="text-sm text-white/70">Transactions garanties et suivi intégré</p>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</aside>
+<aside class="relative hidden min-h-[280px] flex-col justify-between overflow-hidden p-8 lg:flex lg:min-h-screen lg:p-12 xl:p-16" style="background-image: linear-gradient(135deg, rgba(15,157,114,0.9) 0%, rgba(11,122,88,0.9) 50%, rgba(10,46,31,0.95) 100%), url('/AfricEduc/public/High-School-rafiki.svg'); background-size: cover; background-position: center; background-blend-mode: overlay;">  
+      <!-- Cercles décoratifs verts -->
+      <div class="absolute top-20 right-20 w-64 h-64 bg-[#00ffb3]/20 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 left-20 w-48 h-48 bg-[#00ffb3]/10 rounded-full blur-2xl"></div>
+      <div class="absolute top-40 left-10 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
+      
+      <!-- Contenu principal -->
+      
+    </aside>
   </div>
 
   <script>

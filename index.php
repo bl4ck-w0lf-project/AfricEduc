@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -8,12 +7,14 @@
   <meta name="description" content="AfricEduc, la solution SaaS de gestion scolaire pour les collèges et universités du Bénin et d'Afrique de l'Ouest.">
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
             primary: "#0F9D72",
+            primaryDark: "#00ffb3",
             accent: "#99fbe3"
           },
           fontFamily: {
@@ -21,7 +22,8 @@
             body: ["Outfit", "sans-serif"]
           },
           boxShadow: {
-            glow: "0 20px 50px -20px rgba(115, 0, 233, 0.45)"
+            glow: "0 20px 50px -20px rgba(15, 157, 114, 0.45)",
+            premium: "0 30px 60px -20px rgba(0,0,0,0.15)"
           }
         }
       }
@@ -33,15 +35,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    html {
-      scroll-behavior: smooth;
-    }
-    body {
-      font-family: "Outfit", sans-serif;
-    }
-    h1, h2, h3, h4 {
-      font-family: "Quicksand", sans-serif;
-    }
+     html { scroll-behavior: smooth; }
+    body { font-family: "Outfit", sans-serif; background: #fafafa; }
+    h1, h2, h3, h4 { font-family: "Quicksand", sans-serif; }
+    
     .fade-in {
       opacity: 0;
       transform: translateY(24px);
@@ -51,417 +48,547 @@
       opacity: 1;
       transform: translateY(0);
     }
-    .hero-mesh {
-      background:
-        radial-gradient(circle at 90% 15%, #0F9D72, transparent 45%),
-        linear-gradient(135deg, #ffffff 0%, #faf5ff 52%, #f3fffc 100%);
-    }
+    
     .feature-card {
-      transition: all 0.35s ease;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       background: white;
       border-radius: 2rem;
       box-shadow: 0 20px 35px -12px rgba(0,0,0,0.05);
+      border: 1px solid rgba(0,0,0,0.04);
     }
     .feature-card:hover {
       transform: translateY(-8px);
-      box-shadow: 0 30px 45px -15px rgba(115, 0, 233, 0.2);
-      border-color: #0F9D72;
+      box-shadow: 0 30px 45px -15px rgba(15, 157, 114, 0.15);
+      border-color: rgba(15, 157, 114, 0.2);
     }
-    .nav-link {
-            position: relative;
-        }
-        
-        .nav-link:after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -2px;
-            left: 0;
-            background-color: #0F9D72;
-            transition: width 0.3s ease;
-        }
-        
-        .nav-link:hover:after {
-            width: 100%;
-        }
+    .feature-card-green {
+      background: linear-gradient(135deg, #0F9D72 0%, #0B7A58 100%);
+      color: white;
+      border: none;
+    }
+    .feature-card-green:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 30px 45px -15px rgba(15, 157, 114, 0.4);
+    }
+    .feature-card-green .icon-bg { background: rgba(255,255,255,0.2); }
+    .feature-card-green .icon-bg i { color: white; }
+    .feature-card .icon-bg i { color: #0F9D72; }
+    
+    .nav-link { position: relative; }
+    .nav-link:after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -2px;
+      left: 0;
+      background-color: #0F9D72;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover:after { width: 100%; }
+
+    /* ===== SIDEBAR MOBILE CORRIGÉE ===== */
+    #mobile-sidebar {
+      position: fixed;
+      top: 0;
+      right: -340px;
+      width: 320px;
+      height: 100vh;
+      background: white;
+      z-index: 1000;
+      transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: -20px 0 60px rgba(0,0,0,0.1);
+      overflow-y: auto;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+    #mobile-sidebar.is-open { right: 0; }
+    
+    #mobile-sidebar .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #f1f5f9;
+      margin-bottom: 1.5rem;
+      flex-shrink: 0;
+    }
+    #mobile-sidebar .sidebar-logo img {
+      height: 50px;
+      width: auto;
+    }
+    #mobile-sidebar .sidebar-logo span {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    #mobile-sidebar .sidebar-logo span .text-primary { color: #0F9D72; }
+
+    #mobile-sidebar .sidebar-links {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    #mobile-sidebar .sidebar-links a {
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #475569;
+      transition: all 0.2s ease;
+    }
+    #mobile-sidebar .sidebar-links a:hover {
+      background: #f1f5f9;
+      color: #0F9D72;
+    }
+    #mobile-sidebar .sidebar-links .auth-links {
+      margin-top: auto;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 1rem;
+    }
+    #mobile-sidebar .sidebar-links .auth-links a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 12px 16px;
+      border-radius: 50px;
+      border: 1px solid rgba(15,157,114,0.2);
+      font-weight: 600;
+      color: #0F9D72;
+      transition: all 0.2s ease;
+    }
+    #mobile-sidebar .sidebar-links .auth-links a:hover {
+      background: #0F9D72;
+      color: white;
+    }
+
+    #mobile-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      backdrop-filter: blur(4px);
+    }
+    #mobile-overlay.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Floating cards */
+    .float-card {
+      animation: float 6s ease-in-out infinite;
+      border-radius: 1.5rem;
+      box-shadow: 0 20px 60px rgba(15, 157, 114, 0.15);
+    }
+    .float-card:nth-child(2) { animation-delay: 2s; }
+    .float-card:nth-child(3) { animation-delay: 4s; }
+    .float-card:nth-child(4) { animation-delay: 1s; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .section-title span { color: #0F9D72; }
+    .section-subtitle {
+      color: #64748b;
+      font-size: 1.1rem;
+      max-width: 600px;
+    }
+
+    /* FAQ rotate */
+    .faq-toggle i.fa-chevron-down {
+      transition: transform 0.3s ease;
+    }
+    .faq-toggle i.fa-chevron-down.rotate-180 {
+      transform: rotate(180deg);
+    }
+
+      /* Bouton fermeture mobile - vert */
+  #close-mobile-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #e6f7f0;
+    color: #0F9D72;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  #close-mobile-menu:hover {
+    background: #0F9D72;
+    color: white;
+    transform: rotate(90deg);
+  }
+  #close-mobile-menu i {
+    font-size: 1.5rem;
+  }
   </style>
-  <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.10/dist/dotlottie-wc.js" type="module"></script>
 </head>
-<body class="bg-white text-slate-800 antialiased">
-  <header class="fixed left-0 right-0 top-0 z-50 border-b border-emerald-100/70 bg-white/85 backdrop-blur-md">
+<body class="bg-[#fafafa] text-slate-800 antialiased">
+
+  <!-- Overlay mobile -->
+  <!-- Overlay mobile -->
+  <div id="mobile-overlay"></div>
+
+  <!-- Sidebar mobile CORRIGÉE -->
+    <!-- Sidebar mobile CORRIGÉE -->
+<div id="mobile-sidebar">
+  <!-- Logo en haut avec bouton fermeture -->
+  <div class="sidebar-logo" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 1.5rem; border-bottom: 1px solid #f1f5f9; margin-bottom: 1.5rem; flex-shrink: 0;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <img src="public/logo.png" alt="AfricEduc" style="height: 50px; width: auto;">
+      <span style="font-size: 1.25rem; font-weight: 700; color: #0f172a;">Afric<span style="color: #0F9D72;">Educ</span></span>
+    </div>
+    <button id="close-mobile-menu" style="padding: 8px; border-radius: 8px; color: #0F9D72; background: #e6f7f0; border: none; cursor: pointer; transition: all 0.2s ease;">
+      <i class="fa-solid fa-xmark" style="font-size: 1.5rem;"></i>
+    </button>
+  </div>
+  
+  <div class="sidebar-links">
+    <a href="#features">Fonctionnalités</a>
+    <a href="#whom">Pour qui ?</a>
+    <a href="#testimonies">Avis</a>
+    <a href="#faq">FAQ</a>
+    <div class="auth-links" style="margin-top: auto; border-top: 1px solid #f1f5f9; padding-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+      <a href="app/views/auth/login.php" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 12px 16px; border-radius: 50px; border: 1px solid rgba(15,157,114,0.2); font-weight: 600; color: #0F9D72; transition: all 0.2s ease; text-decoration: none;">
+        <i class="fa-solid fa-arrow-right-to-bracket"></i> Se connecter
+      </a>
+      <a href="app/views/auth/register.php" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 12px 16px; border-radius: 50px; border: 1px solid rgba(15,157,114,0.2); font-weight: 600; color: #0F9D72; transition: all 0.2s ease; text-decoration: none;">
+        <i class="fa-solid fa-user-plus"></i> S'inscrire
+      </a>
+    </div>
+  </div>
+</div>
+  </div>
+
+  <!-- HEADER -->
+   <!-- HEADER -->
+  <header class="fixed left-0 right-0 top-0 z-50 border-b border-emerald-100/50 bg-white/90 backdrop-blur-md">
     <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
       <a href="index.html" class="group inline-flex items-center gap-3">
-        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition group-hover:rotate-6">
-          <svg width="30px" height="30px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#0F9D72" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.16"></g><g id="SVGRepo_iconCarrier"> <path d="m14.25 9.25v-3.25l-6.25-3.25-6.25 3.25 6.25 3.25 3.25-1.5v3.5c0 1-1.5 2-3.25 2s-3.25-1-3.25-2v-3.5"></path> </g></svg>
+        <span class="inline-flex h-[50px] w-[150px] items-center justify-center rounded-xl transition group-hover:rotate-3">
+          <img src="public/logo.png" class="h-[100px] w-[150px]" alt="">
         </span>
         <span class="text-xl font-bold tracking-tight text-slate-900">Afric<span class="text-primary">Educ</span></span>
       </a>
 
-      <!-- Menu desktop -->
       <div class="hidden md:flex items-center gap-x-8 text-sm font-medium">
         <a href="#features" class="nav-link text-gray-600 hover:text-gray-900">Fonctionnalités</a>
         <a href="#whom" class="nav-link text-gray-600 hover:text-gray-900">Pour qui ?</a>
         <a href="#testimonies" class="nav-link text-gray-600 hover:text-gray-900">Avis</a>
+        <a href="#faq" class="nav-link text-gray-600 hover:text-gray-900">FAQ</a>
       </div>
-
-      <!-- Bouton Se connecter desktop -->
-      
 
       <div class="flex justify-center gap-2">
-          <a href="app/views/auth/login.php" class="hidden md:flex rounded-full items-center gap-1 border border-primary/20 px-5 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:bg-primary hover:text-white">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-1">
-              <path d="M15 9L20 12L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M20 12H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M12 5H8C6.89543 5 6 5.89543 6 7V17C6 18.1046 6.89543 19 8 19H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-             Se connecter
-          </a>
-
-          <a href="app/views/auth/register.php" class="hidden md:flex rounded-full items-center gap-1 border border-primary/20 px-5 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:bg-primary hover:text-white">
-            <svg width="20" height="20" class="mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> 
-              <path d="M20 18L14 18M17 15V21M7.68213 14C8.63244 14.6318 9.77319 15 10.9999 15C11.7012 15 12.3744 14.8797 13 14.6586M10.5 21H5.6C5.03995 21 4.75992 21 4.54601 20.891C4.35785 20.7951 4.20487 20.6422 4.10899 20.454C4 20.2401 4 19.9601 4 19.4V17C4 15.3431 5.34315 14 7 14H7.5M15 7C15 9.20914 13.2091 11 11 11C8.79086 11 7 9.20914 7 7C7 4.79086 8.79086 3 11 3C13.2091 3 15 4.79086 15 7Z" 
-              stroke="#0F9D72" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                </path> </g>
-            </svg>
-              S'inscrire
-          </a>
+        <a href="app/views/auth/login.php" class="hidden md:flex rounded-full items-center gap-2 border border-primary/20 px-5 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:bg-primary hover:text-white">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Se connecter
+        </a>
+        <a href="app/views/auth/register.php" class="hidden md:flex rounded-full items-center gap-2 border border-primary/20 px-5 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:bg-primary hover:text-white">
+          <i class="fa-solid fa-user-plus"></i> S'inscrire
+        </a>
       </div>
-      
 
-      <!-- Bouton hamburger mobile -->
-      <button id="menu-btn" class="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition border border-2 border-[#0F9D72]">
-        <svg id="menu-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
+      <button id="menu-btn" class="md:hidden px-4 py-3 rounded-lg bg-primary text-white hover:bg-primaryDark transition shadow-lg">
+        <i class="fa-solid fa-bars text-xl "></i>
       </button>
     </nav>
+  </header>
 
-    <!-- Menu mobile (caché par défaut) -->
-    <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-md border-t border-emerald-100/70 py-4 px-4 shadow-lg">
-      <div class="flex flex-col space-y-4">
-        <a href="#features" class="nav-link text-gray-600 hover:text-gray-900 py-2 text-sm font-medium">Fonctionnalités</a>
-        <a href="#whom" class="nav-link text-gray-600 hover:text-gray-900 py-2 text-sm font-medium">Pour qui ?</a>
-        <a href="#testimonies" class="nav-link text-gray-600 hover:text-gray-900 py-2 text-sm font-medium">Avis</a>
-        <div class="pt-5 border-t border-gray-100">
-          <a href="app/views/auth/login.php" class="inline-flex items-center justify-center w-full rounded-full border border-primary/20 px-5 py-2.5 my-2 text-sm font-semibold text-primary transition hover:border-primary hover:bg-primary hover:text-white">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
-              <path d="M15 9L20 12L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M20 12H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M12 5H8C6.89543 5 6 5.89543 6 7V17C6 18.1046 6.89543 19 8 19H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-            Se connecter
+  <main>
+    <!-- HERO SECTION - Dégradé corrigé -->
+    <!-- HERO SECTION - Fond blanc -->
+<section class="relative overflow-hidden pt-[180px] pb-[160px] px-4 sm:px-6 lg:px-8 bg-white">
+  <!-- Cercles décoratifs -->
+  <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/10 rounded-full blur-3xl"></div>
+  
+  <div class="mx-auto max-w-7xl relative z-10">
+    <div class="grid lg:grid-cols-2 gap-16 items-center">
+      <!-- Texte -->
+      <div class="fade-in">
+        <h1 class="text-4xl font-bold leading-tight text-slate-900 sm:text-5xl lg:text-6xl">
+          Pilotez votre établissement <br> <span class="text-primary">sans friction.</span>
+        </h1>
+        <p class="mt-6 max-w-xl text-base text-slate-600 sm:text-lg">
+          AfricEduc centralise les élèves, notes, moyennes, paiements de scolarité et bulletins PDF dans une interface claire, pensée pour les réalités d'Afrique de l'Ouest.
+        </p>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <a href="app/views/auth/register.php" class="inline-flex items-center justify-center rounded-xl bg-primary px-6 py-3 text-lg font-semibold text-white shadow-glow transition hover:-translate-y-0.5 hover:shadow-xl">
+            <i class="fa-solid fa-play mr-2"></i> Commencer gratuitement
           </a>
+          <a href="#features" class="inline-flex items-center justify-center rounded-xl border border-primary/30 px-6 py-3 text-lg font-semibold text-primary transition hover:bg-primary/10 hover:border-primary/50">
+            <i class="fa-solid fa-circle-question mr-2"></i> Comment ça fonctionne ?
+          </a>
+        </div>
+      </div>
 
-          <a href="app/views/auth/register.php" class="inline-flex items-center justify-center w-full rounded-full border border-primary/20 px-5 py-2.5 my-2 text-sm font-semibold text-primary transition hover:border-primary hover:bg-primary hover:text-white">
-            <svg width="20" height="20" class="mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> 
-              <path d="M20 18L14 18M17 15V21M7.68213 14C8.63244 14.6318 9.77319 15 10.9999 15C11.7012 15 12.3744 14.8797 13 14.6586M10.5 21H5.6C5.03995 21 4.75992 21 4.54601 20.891C4.35785 20.7951 4.20487 20.6422 4.10899 20.454C4 20.2401 4 19.9601 4 19.4V17C4 15.3431 5.34315 14 7 14H7.5M15 7C15 9.20914 13.2091 11 11 11C8.79086 11 7 9.20914 7 7C7 4.79086 8.79086 3 11 3C13.2091 3 15 4.79086 15 7Z" 
-              stroke="#0F9D72" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                </path> </g>
-            </svg>
-            S'inscrire
-          </a>
+      <!-- Cartes flottantes -->
+      <div class="fade-in relative flex justify-center items-center min-h-[450px]">
+        <!-- Carte 1 -->
+        <!-- <div class="float-card absolute -top-10 left-0 bg-white p-5 shadow-xl rounded-2xl" style="width: 200px;">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <i class="fa-solid fa-users text-primary"></i>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-slate-900">500+</p>
+              <p class="text-xs text-gray-500">Écoles partenaires</p>
+            </div>
+          </div>
+        </div> -->
+
+        <!-- Carte 2 -->
+        <!-- <div class="float-card absolute top-20 right-0 bg-white p-5 shadow-xl rounded-2xl" style="width: 200px; animation-delay: 2s;">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-accent/30 flex items-center justify-center">
+              <i class="fa-solid fa-graduation-cap text-primary"></i>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-slate-900">50K+</p>
+              <p class="text-xs text-gray-500">Élèves suivis</p>
+            </div>
+          </div>
+        </div> -->
+
+        <div class="w-[450px] max-w-sm float-card absolute -top-10 left-0  shadow-2xl rounded-3xl">
+          <img src="public/gojo.jpg" alt="Éducation" class="w-[450px] h-[250px] object-cover">
+        </div>
+
+        <!-- Carte 3 -->
+        <div class="float-card absolute -bottom-10 left-1/2 -translate-x-1/2 bg-white p-5 shadow-xl rounded-2xl" style="width: 200px; animation-delay: 4s;">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
+              <i class="fa-solid fa-star text-amber-400"></i>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-slate-900">99%</p>
+              <p class="text-xs text-gray-500">Satisfaction client</p>
+            </div>
+          </div>
+        </div>
+
+        
+        <!-- Image centrale -->
+        <div class="w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl">
+          <img src="public/gojo.jpg" alt="Éducation" class="w-full h-[320px] object-cover">
         </div>
       </div>
     </div>
-  </header>
+  </div>
+</section>
 
-  <main class="">
-    <section class="hero-mesh relative overflow-hidden pt-[150px] pb-[50px]">
-      <div class="mx-auto max-w-7xl gap-10 px-4 py-15 sm:px-6 lg:px-8">
-        <!-- Première div : texte -->
-        <div class="fade-in mb-3 text-center">
-          <div class="flex justify-center">
-            <span class="text-[#0F9D72] font-semibold tracking-wide uppercase text-sm bg-[#0F9D72]/10 px-4 py-1.5 rounded-full inline-block">
-              Une gestion administrative simplifiée !!
-            </span>
-          </div>
-          <h1 class="mt-5 text-4xl font-bold leading-tight text-slate-900 text-center sm:text-5xl lg:text-6xl">
-            Pilotez votre établissement <br> sans friction.
-          </h1>
-          <p class="mt-5 max-w-2xl mx-auto text-base text-slate-600 text-center sm:text-lg">
-            AfricEduc centralise les élèves, notes, moyennes, paiements de scolarité et bulletins PDF dans une interface claire, pensée pour les réalités d'Afrique de l'Ouest.
-          </p>
-          <div class="mt-8 flex flex-col gap-3 sm:flex-row justify-center">
-            <a href="auth/register.php" class="inline-flex items-center justify-center rounded-xl bg-primary px-6 py-3 text-lg font-semibold text-white shadow-glow transition hover:-translate-y-0.5 hover:bg-emerald-800">
-              Commencer gratuitement
-            </a>
-            <a href="#features" class="inline-flex items-center justify-center rounded-xl border border-slate-300 px-6 py-3 text-lg font-semibold text-slate-700 transition hover:border-primary/30 hover:text-primary">
-              Comment ça fonctionne ?
-            </a>
-          </div>
-        </div>
-    
-        <!-- Deuxième div : animation -->
-        <div class="fade-in p-3 sm:p-8 flex justify-center">
-          <dotlottie-wc src="https://lottie.host/271ecaa2-3d0d-46c5-a2fd-24e6b3e7844b/dsOFCYq1AH.lottie" 
-          style="width: 600px;height: 600px" autoplay loop></dotlottie-wc>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION FEATURES -->
-    <section id="features" class="py-24 px-6 bg-white">
+    <!-- SECTION FONCTIONNALITÉS -->
+    <section id="features" class="py-24 px-4 sm:px-6 lg:px-8 bg-[#fafafa]">
       <div class="max-w-7xl mx-auto">
-        <div class="text-center max-w-2xl mx-auto mb-16 fade-up">
-          
-          <span class="text-[#0F9D72] font-semibold tracking-wide uppercase text-sm bg-[#0F9D72]/10 px-4 py-1.5 rounded-full">Pourquoi AfricEduc ?</span>
-          <h2 class="text-3xl md:text-5xl font-bold mt-5 mb-4">Une solution pensée pour l'éducation ouest-africaine</h2>
+        <div class="text-center max-w-2xl mx-auto mb-16 fade-in">
+          <h2 class="text-3xl md:text-5xl font-bold mb-4">Une solution pensée pour <span class="text-primary">l'éducation</span> ouest-africaine</h2>
           <p class="text-gray-500 text-lg">Gagnez du temps, améliorez les résultats et centralisez toutes les données.</p>
         </div>
-        <div class="grid md:grid-cols-3 gap-8 lg:gap-12">
-          <!-- Carte 1 : Gestion élèves -->
-          <div class="feature-card p-8 border border-gray-100 hover:border-[#0F9D72]/30 transition-all fade-up" style="transition-delay: 0s;">
-            <div class="w-14 h-14 bg-[#0F9D72]/10 rounded-2xl flex items-center justify-center mb-6">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" stroke="#0F9D72" stroke-width="1.6" stroke-linecap="round"/>
-                <path d="M5 20V19C5 15.6863 7.68629 13 11 13H13C16.3137 13 19 15.6863 19 19V20" stroke="#0F9D72" stroke-width="1.6" stroke-linecap="round"/>
-                <circle cx="18" cy="6" r="2" stroke="#0F9D72" stroke-width="1.6"/>
-                <path d="M22 20V19C22 16.8 20.6 14.9 18.5 14" stroke="#0F9D72" stroke-width="1.6" stroke-linecap="round"/>
-              </svg>
+        
+        <div class="grid md:grid-cols-3 gap-8 lg:gap-10">
+          <!-- Carte 1 - Fond vert -->
+          <div class="feature-card-green p-8 border border-white/10 transition-all fade-in rounded-3xl" style="transition-delay: 0s;">
+            <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
+              <i class="fa-solid fa-user-graduate text-2xl"></i>
             </div>
-            <h3 class="text-2xl font-bold mb-3">Gestion élèves & inscriptions</h3>
-            <p class="text-gray-600 leading-relaxed">Inscriptions simplifiées, dossiers numériques, classes, emplois du temps. Suivez chaque élève de la maternelle à l'université.</p>
-            
+            <h3 class="text-2xl font-bold mb-3 text-white">Gestion élèves & inscriptions</h3>
+            <p class="text-white/80 leading-relaxed">Inscriptions simplifiées, dossiers numériques, classes, emplois du temps. Suivez chaque élève de la maternelle à l'université.</p>
           </div>
-          <!-- Carte 2 : Notes & moyennes -->
-          <div class="feature-card p-8 border border-gray-100 hover:border-[#99fbe3]/50 transition-all fade-up" style="transition-delay: 0.1s;">
-            <div class="w-14 h-14 bg-[#99fbe3]/30 rounded-2xl flex items-center justify-center mb-6">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 12H15" stroke="#0F9D72" stroke-width="1.6" stroke-linecap="round"/>
-                <path d="M12 9V15" stroke="#0F9D72" stroke-width="1.6" stroke-linecap="round"/>
-                <rect x="3" y="3" width="18" height="18" rx="3" stroke="#0F9D72" stroke-width="1.6"/>
-                <path d="M8 3V6M16 3V6" stroke="#0F9D72" stroke-width="1.5" stroke-linecap="round"/>
-                <path d="M3 10H21" stroke="#0F9D72" stroke-width="1.4"/>
-              </svg>
+          
+          <!-- Carte 2 -->
+          <div class="feature-card p-8 border border-gray-100 hover:border-primary/30 transition-all fade-in rounded-3xl" style="transition-delay: 0.1s;">
+            <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
+              <i class="fa-solid fa-pen-to-square text-2xl"></i>
             </div>
             <h3 class="text-2xl font-bold mb-3">Notes, moyennes & examens</h3>
             <p class="text-gray-600 leading-relaxed">Saisie intuitive, calcul automatique des moyennes, appréciations, tableaux de performance, et génération de bulletins PDF.</p>
-            
           </div>
-          <!-- Carte 3 : Paiements scolarité -->
-          <div class="feature-card p-8 border border-gray-100 hover:border-[#0F9D72]/30 transition-all fade-up" style="transition-delay: 0.2s;">
-            <div class="w-14 h-14 bg-[#0F9D72]/10 rounded-2xl flex items-center justify-center mb-6">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 10H21" stroke="#0F9D72" stroke-width="1.6" stroke-linecap="round"/>
-                <path d="M7 15H10" stroke="#0F9D72" stroke-width="1.6" stroke-linecap="round"/>
-                <rect x="5" y="4" width="14" height="16" rx="2" stroke="#0F9D72" stroke-width="1.6"/>
-                <path d="M8 7H16" stroke="#0F9D72" stroke-width="1.6" stroke-linecap="round"/>
-                <circle cx="17" cy="17" r="2" stroke="#0F9D72" stroke-width="1.5"/>
-              </svg>
+          
+          <!-- Carte 3 -->
+          <div class="feature-card p-8 border border-gray-100 hover:border-primary/30 transition-all fade-in rounded-3xl" style="transition-delay: 0.2s;">
+            <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
+              <i class="fa-solid fa-coins text-2xl"></i>
             </div>
             <h3 class="text-2xl font-bold mb-3">Paiements & gestion financière</h3>
             <p class="text-gray-600 leading-relaxed">Suivi des frais de scolarité, génération de reçus, rappels automatiques et tableaux de bord financiers pour l'école.</p>
-            
+          </div>
+
+          <!-- Carte 4 -->
+          <div class="feature-card p-8 border border-gray-100 hover:border-primary/30 transition-all fade-in rounded-3xl" style="transition-delay: 0.3s;">
+            <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
+              <i class="fa-solid fa-file-pdf text-2xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">Bulletins & relevés PDF</h3>
+            <p class="text-gray-600 leading-relaxed">Génération automatique de bulletins personnalisés, relevés de notes et certificats en PDF prêts à imprimer ou envoyer.</p>
+          </div>
+
+          <!-- Carte 5 -->
+          <div class="feature-card p-8 border border-gray-100 hover:border-primary/30 transition-all fade-in rounded-3xl" style="transition-delay: 0.4s;">
+            <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
+              <i class="fa-solid fa-chart-simple text-2xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">Statistiques & tableaux de bord</h3>
+            <p class="text-gray-600 leading-relaxed">Visualisez en temps réel les performances, les taux de réussite, les absences et la santé financière de votre établissement.</p>
+          </div>
+
+          <!-- Carte 6 -->
+          <div class="feature-card p-8 border border-gray-100 hover:border-primary/30 transition-all fade-in rounded-3xl" style="transition-delay: 0.5s;">
+            <div class="icon-bg w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
+              <i class="fa-solid fa-building-columns text-2xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">Multi-établissements</h3>
+            <p class="text-gray-600 leading-relaxed">Gérez plusieurs écoles, collèges ou universités depuis une seule interface centralisée et sécurisée.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SECTION : QUI PEUT UTILISER AfricEduc ? (3 catégories uniquement) -->
+    <!-- SECTION : QUI PEUT UTILISER AfricEduc ? -->
     <section class="bg-white py-20 px-4 sm:px-6 lg:px-8" id="whom">
       <div class="flex flex-col gap-4 mx-auto max-w-7xl">
-        
-        <!-- En-tête de section -->
-        <div class="flex flex-col gap-3 text-center max-w-2xl mx-auto">
-          <span class="text-[#0F9D72] font-semibold text-sm uppercase tracking-wide bg-[#0F9D72]/10 px-4 py-1.5 rounded-full w-fit mx-auto">
-            Pour qui ?
-          </span>
-          <h2 class="font-title text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900">
-            Une solution adaptée à <span class="text-[#0F9D72]">tous les acteurs</span> de l'éducation
-          </h2>
-          <p class="text-gray-500 text-lg mt-2">
-            Collèges (publics/privés), lycées et écoles internationales. AfricEduc s'adapte à vos besoins.
-          </p>
+        <div class="flex flex-col gap-3 text-left max-w-2xl fade-in">
+          <h2 class="section-title">Une solution adaptée à <span>tous les acteurs</span> de l'éducation</h2>
+          <p class="section-subtitle">Collèges (publics/privés), lycées et écoles internationales. AfricEduc s'adapte à vos besoins.</p>
         </div>
 
-        <!-- Grille des cartes utilisateurs : 3 colonnes -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-          
-          <!-- Carte 1 : Collèges publics & privés -->
-          <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:border-[#0F9D72]/30 hover:shadow-xl transition-all duration-300 group">
-            <div class="w-14 h-14 bg-[#0F9D72]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#0F9D72] transition">
-              <svg fill="#0F9D72" class="w-8 h-8 group-hover:fill-white" height="20px" width="20px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <polygon points="0,158.694 0,219.615 110.641,219.615 204.562,158.694 "></polygon> </g> </g> <g> <g> <polygon points="307.438,158.694 401.359,219.615 512,219.615 512,158.694 "></polygon> </g> </g> <g> <g> <polygon points="240.779,26.873 240.779,135.204 256,125.331 271.221,135.204 271.221,111.033 369.875,74.578 "></polygon> </g> </g> <g> <g> <path d="M367.034,364.262c-8.051,0-14.6,6.549-14.6,14.6v106.264h29.2V378.861C381.633,370.811,375.084,364.262,367.034,364.262z"></path> </g> </g> <g> <g> <path d="M144.966,364.262c-8.051,0-14.6,6.549-14.6,14.6v106.264h29.2V378.861C159.567,370.811,153.017,364.262,144.966,364.262z"></path> </g> </g> <g> <g> <path d="M256,364.262c-8.05,0-14.599,6.549-14.599,14.599v106.265h29.199V378.861C270.599,370.811,264.05,364.262,256,364.262z"></path> </g> </g> <g> <g> <path d="M256,243.015c-9.427,0-17.097,7.669-17.097,17.097s7.67,17.097,17.097,17.097c9.427,0,17.097-7.67,17.097-17.097 S265.427,243.015,256,243.015z"></path> </g> </g> <g> <g> <path d="M256,161.616l-125.633,81.49v93.155c4.582-1.575,9.49-2.443,14.599-2.443c24.837,0,45.043,20.206,45.043,45.043v106.264 h20.949V378.86c0-24.836,20.206-45.042,45.042-45.042s45.042,20.206,45.042,45.042v106.265h20.949V378.861 c0-24.837,20.206-45.043,45.042-45.043c5.109,0,10.018,0.868,14.6,2.443v-93.155L256,161.616z M256,307.651 c-26.213,0-47.539-21.326-47.539-47.539s21.326-47.539,47.539-47.539c26.213,0,47.539,21.326,47.539,47.539 C303.539,286.325,282.213,307.651,256,307.651z"></path> </g> </g> <g> <g> <path d="M0,250.058v235.068h99.924V378.861V250.058H0z M65.183,440.968H34.74v-33.69h30.443V440.968z M65.183,384.436H34.74 v-33.69h30.443V384.436z M65.183,327.905H34.74v-33.69h30.443V327.905z"></path> </g> </g> <g> <g> <path d="M412.076,250.058v128.803v106.264H512V250.058H412.076z M477.259,440.968h-30.443v-33.69h30.443V440.968z M477.259,384.436h-30.443v-33.69h30.443V384.436z M477.259,327.905h-30.443v-33.69h30.443V327.905z"></path> </g> </g> </g></svg>
+          <!-- Carte 1 -->
+          <div class="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:border-primary/30 hover:shadow-xl transition-all duration-300 group fade-in">
+            <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-primary transition">
+              <i class="fa-solid fa-school text-3xl text-primary group-hover:text-white transition"></i>
             </div>
             <h3 class="font-title text-xl font-bold mb-2">Collèges publics & privés</h3>
-            <p class="text-gray-500 text-sm leading-relaxed">
-              De la 6ème à la 3ème. Gérez les classes, les notes, les bulletins, les paiements de scolarité et la communication parents-professeurs.
-            </p>
-            <div class="mt-4 flex items-center text-[#0F9D72] text-sm font-medium gap-1">
+            <p class="text-gray-500 text-sm leading-relaxed">De la 6ème à la 3ème. Gérez les classes, les notes, les bulletins, les paiements de scolarité et la communication parents-professeurs.</p>
+            <div class="mt-4 flex items-center text-primary text-sm font-medium gap-1">
               <span>6ème → Terminale</span>
-              
             </div>
           </div>
 
-          <!-- Carte 2 : Lycées -->
-          <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:border-[#0F9D72]/30 hover:shadow-xl transition-all duration-300 group">
-            <div class="w-14 h-14 bg-[#0F9D72]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#0F9D72] transition">
-              <svg fill="#0F9D72" class="w-8 h-8 group-hover:fill-white" height="200px" width="200px" version="1.2" baseProfile="tiny" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 256 256" xml:space="preserve">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path id="XMLID_24_" d="M176.2,82.2H79.8L126,44.4V31V11.4V7.4h3.9v3.9h21.7V31H130v13.4L176.2,82.2z M254,204.3v31.5h-77.8v13.8 H79.8v-13.8H2v-31.5h6.9v-94.5h70.9V86.2h96.5v23.6h70.9v94.5H254z M26.6,151.1h-9.8v45.3h9.8V151.1z M26.6,133.4h-9.8v9.8h9.8 V133.4z M44.3,151.1h-9.8v45.3h9.8V151.1z M44.3,133.4h-9.8v9.8h9.8V133.4z M62,151.1h-9.8v45.3H62V151.1z M62,133.4h-9.8v9.8H62 V133.4z M79.8,151.1h-9.8v45.3h9.8V151.1z M79.8,133.4h-9.8v9.8h9.8V133.4z M148.7,212.2h13.8V109.8h-13.8V212.2z M121.1,212.2h13.8 V109.8h-13.8V212.2z M93.5,212.2h13.8V109.8H93.5V212.2z M169.7,240.5H86.3v3.2h83.4V240.5z M169.7,232.1H86.3v3.2h83.4V232.1z M186.1,151.1h-9.8v45.3h9.8V151.1z M186.1,133.4h-9.8v9.8h9.8V133.4z M203.8,151.1H194v45.3h9.8V151.1z M203.8,133.4H194v9.8h9.8 V133.4z M221.5,151.1h-9.8v45.3h9.8V151.1z M221.5,133.4h-9.8v9.8h9.8V133.4z M239.2,151.1h-9.8v45.3h9.8V151.1z M239.2,133.4h-9.8 v9.8h9.8V133.4z"></path> </g>
-              </svg>
+          <!-- Carte 2 -->
+          <div class="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:border-primary/30 hover:shadow-xl transition-all duration-300 group fade-in">
+            <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-primary transition">
+              <i class="fa-solid fa-graduation-cap text-3xl text-primary group-hover:text-white transition"></i>
             </div>
-            <h3 class="font-title text-xl font-bold mb-2">Lycées techniques, professionnels & générales</h3>
-            <p class="text-gray-500 text-sm leading-relaxed">
-              De la seconde à la terminale. Suivez les résultats au baccalauréat, gérez les spécialités, les bulletins et l'orientation.
-            </p>
-            <div class="mt-4 flex items-center text-[#0F9D72] text-sm font-medium gap-1">
+            <h3 class="font-title text-xl font-bold mb-2">Lycées techniques & professionnels</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">De la seconde à la terminale. Suivez les résultats au baccalauréat, gérez les spécialités, les bulletins et l'orientation.</p>
+            <div class="mt-4 flex items-center text-primary text-sm font-medium gap-1">
               <span>Seconde → Terminale</span>
-              
             </div>
           </div>
 
-          <!-- Carte 3 : Écoles internationales -->
-          <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:border-[#0F9D72]/30 hover:shadow-xl transition-all duration-300 group">
-            <div class="w-14 h-14 bg-[#0F9D72]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#0F9D72] transition">
-              <svg class="w-10 h-10 text-[#0F9D72] group-hover:text-white transition" height="200px" width="200px" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path d="M14.188 29.656H8.563c-.775 0-1.406.631-1.406 1.406v3.75c0 .775.631 1.406 1.406 1.406h5.625c.775 0 1.406-.631 1.406-1.406v-3.75c0-.775-.631-1.406-1.406-1.406m-3.282 5.625H8.563a.47.47 0 0 1-.469-.469v-3.75a.47.47 0 0 1 .469-.469h2.344v4.688zm3.75-.468a.47.47 0 0 1-.469.469h-2.344v-4.688h2.344a.47.47 0 0 1 .469.469v3.75"></path>
-                  <path d="M14.188 39.5H8.563c-.775 0-1.406.631-1.406 1.406v3.75c0 .775.631 1.406 1.406 1.406h5.625c.775 0 1.406-.631 1.406-1.406v-3.75c0-.775-.631-1.406-1.406-1.406m-3.282 5.625H8.563a.47.47 0 0 1-.469-.469v-3.75a.47.47 0 0 1 .469-.469h2.344v4.688zm3.75-.469a.47.47 0 0 1-.469.469h-2.344v-4.688h2.344a.47.47 0 0 1 .469.469v3.75"></path>
-                  <path d="M14.188 48.875H8.563c-.775 0-1.406.631-1.406 1.406v3.75c0 .775.631 1.406 1.406 1.406h5.625c.775 0 1.406-.631 1.406-1.406v-3.75c0-.775-.631-1.406-1.406-1.406M10.906 54.5H8.563a.47.47 0 0 1-.469-.469v-3.75a.47.47 0 0 1 .469-.469h2.344V54.5zm3.75-.469a.47.47 0 0 1-.469.469h-2.344v-4.688h2.344a.47.47 0 0 1 .469.469v3.75"></path>
-                  <path d="M48.406 31.063v3.75c0 .775.631 1.406 1.406 1.406h5.625c.775 0 1.406-.631 1.406-1.406v-3.75c0-.775-.631-1.406-1.406-1.406h-5.625a1.407 1.407 0 0 0-1.406 1.406m4.688-.469h2.344a.47.47 0 0 1 .469.469v3.75a.47.47 0 0 1-.469.469h-2.344v-4.688m-.938 4.687h-2.344a.47.47 0 0 1-.469-.469v-3.75a.47.47 0 0 1 .469-.469h2.344v4.688"></path>
-                  <path d="M55.438 39.5h-5.625c-.775 0-1.406.631-1.406 1.406v3.75c0 .775.631 1.406 1.406 1.406h5.625c.775 0 1.406-.631 1.406-1.406v-3.75c0-.775-.631-1.406-1.406-1.406m-3.282 5.625h-2.344a.47.47 0 0 1-.469-.469v-3.75a.47.47 0 0 1 .469-.469h2.344v4.688m3.75-.469a.47.47 0 0 1-.469.469h-2.344v-4.688h2.344a.47.47 0 0 1 .469.469v3.75"></path>
-                  <path d="M55.438 48.875h-5.625c-.775 0-1.406.631-1.406 1.406v3.75c0 .775.631 1.406 1.406 1.406h5.625c.775 0 1.406-.631 1.406-1.406v-3.75c0-.775-.631-1.406-1.406-1.406M52.156 54.5h-2.344a.47.47 0 0 1-.469-.469v-3.75a.47.47 0 0 1 .469-.469h2.344V54.5m3.75-.469a.47.47 0 0 1-.469.469h-2.344v-4.688h2.344a.47.47 0 0 1 .469.469v3.75"></path>
-                  <path d="M22.499 36.348c-.527-.178-.76-.28-.76-.512c0-.188.194-.35.597-.35c.399 0 .691.102.854.172l.207-.663a2.778 2.778 0 0 0-1.044-.183c-.967 0-1.549.475-1.549 1.094c0 .527.443.862 1.124 1.072c.491.155.686.286.686.512c0 .237-.225.393-.65.393c-.394 0-.776-.112-1.025-.226l-.188.679c.23.113.692.221 1.16.221c1.123 0 1.651-.517 1.651-1.126c0-.512-.34-.846-1.063-1.083"></path>
-                  <path d="M26.276 35.492c.327 0 .589.063.776.134l.188-.651c-.163-.076-.527-.162-1.007-.162c-1.239 0-2.236.689-2.236 1.929c0 1.035.729 1.815 2.145 1.815c.498 0 .881-.08 1.051-.156l-.141-.641a2.59 2.59 0 0 1-.771.119c-.825 0-1.311-.459-1.311-1.186c.001-.808.572-1.201 1.306-1.201"></path>
-                  <path d="M30.254 36.268h-1.525v-1.396h-.928v3.631h.928v-1.52h1.525v1.52h.923v-3.631h-.923z"></path>
-                  <path d="M33.788 34.813c-1.208 0-1.991.813-1.991 1.901c0 1.035.71 1.849 1.924 1.849c1.197 0 2.01-.723 2.01-1.912c-.001-1.004-.686-1.838-1.943-1.838m-.017 3.098c-.62 0-.996-.502-.996-1.213c0-.706.364-1.234.989-1.234c.638 0 .99.561.99 1.213c0 .706-.359 1.234-.983 1.234"></path>
-                  <path d="M38.144 34.813c-1.209 0-1.992.813-1.992 1.901c0 1.035.71 1.849 1.924 1.849c1.198 0 2.011-.723 2.011-1.912c-.001-1.004-.688-1.838-1.943-1.838m-.019 3.098c-.62 0-.996-.502-.996-1.213c0-.706.364-1.234.989-1.234c.639 0 .99.561.99 1.213c0 .706-.358 1.234-.983 1.234"></path>
-                  <path d="M41.622 34.872h-.929v3.631h2.557v-.69h-1.628z"></path>
-                  <path d="M38.563 26.375a6.563 6.563 0 1 0-13.126 0a6.563 6.563 0 1 0 13.126 0m-11.25 0a4.689 4.689 0 1 1 9.378.002a4.689 4.689 0 0 1-9.378-.002"></path>
-                  <path d="M32.938 27.313v-3.75c0-.516-.422-.938-.938-.938s-.938.422-.938.938v2.813h-.938c-.516 0-.938.422-.938.938s.422.938.938.938H32a.943.943 0 0 0 .938-.939"></path>
-                  <path d="M61.063 58.25h-.938v-30h.634c1.055 0 1.53-.755 1.059-1.677l-3.077-6.021c-.472-.922-1.721-1.677-2.775-1.677H40.107l-7.17-5.804v-2.29c3.75 2.992 7.5-6.446 11.25-3.453c-3.75-5.294-7.5 1.841-11.25-3.453v-.937C32.938 2.422 32.516 2 32 2s-.938.422-.938.938v10.134l-7.17 5.804H8.035c-1.055 0-2.304.755-2.775 1.677l-3.077 6.021c-.472.922.004 1.677 1.059 1.677h.634v30h-.938a.94.94 0 0 0-.938.937v1.875a.94.94 0 0 0 .938.937h58.125a.94.94 0 0 0 .937-.937v-1.875a.94.94 0 0 0-.937-.938M17 58.25H5.75v-30h8.937c.018.163.05.318.1.459c.245.685.957 1.416 2.214 1.416V58.25zm25 2.594H22v-1.5h20v1.5M26.375 58.25V47h5.156v11.25h-5.156m6.094 0V47h5.156v11.25h-5.156m12.656 0H39.5V47h1.875v-1.881s-6.443-3.893-8.487-5.348a1.586 1.586 0 0 0-1.775 0c-2.044 1.455-8.487 5.348-8.487 5.348V47H24.5v11.25h-5.625v-30H17c-.516 0-.611-.269-.214-.596l14.49-11.934c.199-.163.462-.245.724-.245s.524.082.724.245l14.49 11.934c.397.327.302.596-.214.596h-1.875v30m13.125 0H47V30.125c1.257 0 1.969-.731 2.214-1.416c.05-.141.082-.296.1-.459h8.937v30z"></path>
-                  <path d="M29.246 52.156h1.348v.681h-1.348z"></path>
-                  <path d="M33.406 52.156h1.348v.681h-1.348z"></path>
-                </g>
-              </svg>
+          <!-- Carte 3 -->
+          <div class="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:border-primary/30 hover:shadow-xl transition-all duration-300 group fade-in">
+            <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-primary transition">
+              <i class="fa-solid fa-globe text-3xl text-primary group-hover:text-white transition"></i>
             </div>
             <h3 class="font-title text-xl font-bold mb-2">Écoles internationales</h3>
-            <p class="text-gray-500 text-sm leading-relaxed">
-              Programmes bilingues, cursus internationaux (IB, Cambridge, etc.). Gestion multi-langue, rapports adaptés et suivi personnalisé.
-            </p>
-            <div class="mt-4 flex items-center text-[#0F9D72] text-sm font-medium gap-1">
+            <p class="text-gray-500 text-sm leading-relaxed">Programmes bilingues, cursus internationaux (IB, Cambridge). Gestion multi-langue, rapports adaptés et suivi personnalisé.</p>
+            <div class="mt-4 flex items-center text-primary text-sm font-medium gap-1">
               <span>Multi-langue · Bac international</span>
-              
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SECTION CHIFFRES CLÉS (conservée) -->
-    <section class="py-16 lg:py-24 relative overflow-hidden bg-[#12122b]">
+    <!-- SECTION CHIFFRES CLÉS -->
+    <section class="py-20 lg:py-28 relative overflow-hidden bg-[#0a2e1f]">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="fade-in mb-12 max-w-xl text-center lg:text-left lg:max-w-2xl">
-          <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-4">
-            <span class="w-2 h-2 bg-[#99fbe3] rounded-full animate-pulse"></span>
-            <span class="text-xs font-medium text-[#99fbe3] tracking-wide">CHIFFRES CLÉS</span>
-          </div>
-          <h2 class="text-4xl text-white font-bold sm:text-5xl lg:text-6xl font-title">Ils avancent avec <span class="text-[#99fbe3]">AfricEduc</span></h2>
-          <p class="mt-4 text-slate-200 text-lg">Des indicateurs concrets pour mesurer la confiance des établissements en Afrique de l'Ouest.</p>
+        <div class="fade-in mb-16 max-w-xl">
+          <span class="inline-block text-accent font-semibold tracking-wide text-sm bg-white/10 backdrop-blur-sm px-4 py-1.5 rounded-full mb-4">
+            <i class="fa-solid fa-chart-simple mr-2"></i> CHIFFRES CLÉS
+          </span>
+          <h2 class="text-4xl text-white font-bold sm:text-5xl lg:text-6xl font-title">Ils avancent avec <span class="text-accent">AfricEduc</span></h2>
+          <p class="mt-4 text-slate-300 text-lg">Des indicateurs concrets pour mesurer la confiance des établissements en Afrique de l'Ouest.</p>
         </div>
     
-        <div class="grid gap-6 sm:grid-cols-3">
-          <!-- Carte 1 - Écoles partenaires -->
-          <article class="fade-in group rounded-2xl bg-white/5 backdrop-blur-md p-8 border border-white/20 hover:border-[#99fbe3]/50 transition-all duration-300 hover:shadow-2xl hover:shadow-[#0F9D72]/20 hover:-translate-y-2">
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+          <div class="fade-in group rounded-2xl bg-white/5 backdrop-blur-sm p-8 border border-white/10 hover:border-accent/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2">
             <div class="flex items-center justify-between mb-4">
-              <div class="w-12 h-12 rounded-xl bg-[#99fbe3]/20 flex items-center justify-center group-hover:bg-[#99fbe3] transition-all duration-300">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="text-white group-hover:text-[#0F9D72] transition">
-                  <path d="M12 3L3 8L12 13L21 8L12 3Z" />
-                  <path d="M5 13L5 17.5C5 18.7 8 20 12 20C16 20 19 18.7 19 17.5L19 13" />
-                </svg>
+              <div class="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center group-hover:bg-accent transition-all duration-300">
+                <i class="fa-solid fa-building-columns text-white text-xl group-hover:text-primary transition"></i>
               </div>
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#99fbe3/30" stroke-width="1" class="opacity-50 group-hover:opacity-100 transition">
-                <path d="M7 20L17 4" />
-                <path d="M12 4L7 9" />
-                <path d="M17 15L12 20" />
-              </svg>
             </div>
             <p class="text-sm text-slate-300 uppercase tracking-wide">Écoles partenaires</p>
-            <p class="mt-3 text-5xl font-bold text-[#99fbe3]" data-counter data-target="500" data-suffix="+">0</p>
-            <div class="mt-4 h-1 w-12 bg-[#99fbe3]/30 rounded-full group-hover:w-full transition-all duration-500"></div>
+            <p class="mt-3 text-5xl font-bold text-accent" data-counter data-target="500" data-suffix="+">0</p>
+            <div class="mt-4 h-1 w-12 bg-accent/30 rounded-full group-hover:w-full transition-all duration-500"></div>
             <p class="mt-4 text-slate-400 text-sm">Établissements scolaires et universitaires</p>
-          </article>
+          </div>
     
-          <!-- Carte 2 - Élèves suivis -->
-          <article class="fade-in group rounded-2xl bg-white/5 backdrop-blur-md p-8 border border-white/20 hover:border-[#99fbe3]/50 transition-all duration-300 hover:shadow-2xl hover:shadow-[#0F9D72]/20 hover:-translate-y-2">
+          <div class="fade-in group rounded-2xl bg-white/5 backdrop-blur-sm p-8 border border-white/10 hover:border-accent/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2">
             <div class="flex items-center justify-between mb-4">
-              <div class="w-12 h-12 rounded-xl bg-[#99fbe3]/20 flex items-center justify-center group-hover:bg-[#99fbe3] transition-all duration-300">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="text-white group-hover:text-[#0F9D72] transition">
-                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                </svg>
+              <div class="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center group-hover:bg-accent transition-all duration-300">
+                <i class="fa-solid fa-user-graduate text-white text-xl group-hover:text-primary transition"></i>
               </div>
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#99fbe3/30" stroke-width="1" class="opacity-50 group-hover:opacity-100 transition">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 8v4l3 3" />
-              </svg>
             </div>
             <p class="text-sm text-slate-300 uppercase tracking-wide">Élèves suivis</p>
-            <p class="mt-3 text-5xl font-bold text-[#99fbe3]" data-counter data-target="50000" data-suffix="+">0</p>
-            <div class="mt-4 h-1 w-12 bg-[#99fbe3]/30 rounded-full group-hover:w-full transition-all duration-500"></div>
+            <p class="mt-3 text-5xl font-bold text-accent" data-counter data-target="50000" data-suffix="+">0</p>
+            <div class="mt-4 h-1 w-12 bg-accent/30 rounded-full group-hover:w-full transition-all duration-500"></div>
             <p class="mt-4 text-slate-400 text-sm">Élèves accompagnés au quotidien</p>
-          </article>
+          </div>
     
-          <!-- Carte 3 - Satisfaction clients -->
-          <article class="fade-in group rounded-2xl bg-white/5 backdrop-blur-md p-8 border border-white/20 hover:border-[#99fbe3]/50 transition-all duration-300 hover:shadow-2xl hover:shadow-[#0F9D72]/20 hover:-translate-y-2">
+          <div class="fade-in group rounded-2xl bg-white/5 backdrop-blur-sm p-8 border border-white/10 hover:border-accent/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2">
             <div class="flex items-center justify-between mb-4">
-              <div class="w-12 h-12 rounded-xl bg-[#99fbe3]/20 flex items-center justify-center group-hover:bg-[#99fbe3] transition-all duration-300">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="text-white group-hover:text-[#0F9D72] transition">
-                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" />
-                  <path d="M8 14C8.5 15.5 10 17 12 17C14 17 15.5 15.5 16 14" />
-                  <circle cx="9" cy="9" r="1" fill="#99fbe3" />
-                  <circle cx="15" cy="9" r="1" fill="#99fbe3" />
-                </svg>
+              <div class="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center group-hover:bg-accent transition-all duration-300">
+                <i class="fa-solid fa-star text-white text-xl group-hover:text-primary transition"></i>
               </div>
               <div class="flex gap-0.5">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#99fbe3" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#99fbe3" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#99fbe3" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#99fbe3" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#99fbe3/50" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
+                <i class="fa-solid fa-star text-accent text-sm"></i>
+                <i class="fa-solid fa-star text-accent text-sm"></i>
+                <i class="fa-solid fa-star text-accent text-sm"></i>
+                <i class="fa-solid fa-star text-accent text-sm"></i>
+                <i class="fa-regular fa-star text-accent text-sm"></i>
               </div>
             </div>
             <p class="text-sm text-slate-300 uppercase tracking-wide">Satisfaction clients</p>
-            <p class="mt-3 text-5xl font-bold text-[#99fbe3]" data-counter data-target="99" data-suffix="%">0</p>
-            <div class="mt-4 h-1 w-12 bg-[#99fbe3]/30 rounded-full group-hover:w-full transition-all duration-500"></div>
+            <p class="mt-3 text-5xl font-bold text-accent" data-counter data-target="99" data-suffix="%">0</p>
+            <div class="mt-4 h-1 w-12 bg-accent/30 rounded-full group-hover:w-full transition-all duration-500"></div>
             <p class="mt-4 text-slate-400 text-sm">Recommandé par les équipes pédagogiques</p>
-          </article>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SECTION AVIS (conservée) -->
+    <!-- SECTION AVIS -->
     <section class="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-white" id="testimonies">
-      <div class="absolute top-0 right-0 w-96 h-96 bg-[#0F9D72]/5 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-0 left-0 w-80 h-80 bg-[#99fbe3]/20 rounded-full blur-3xl"></div>
+      <div class="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-0 w-80 h-80 bg-accent/20 rounded-full blur-3xl"></div>
     
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="fade-in mb-12 text-center max-w-2xl mx-auto">
-          <div class="inline-flex items-center gap-2 bg-[#0F9D72]/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-4">
-            <span class="w-2 h-2 bg-[#0F9D72] rounded-full animate-pulse"></span>
-            <span class="text-xs font-medium text-[#0F9D72] tracking-wide">ILS PARLENT DE NOUS</span>
-          </div>
-          <h2 class="text-3xl font-bold sm:text-4xl lg:text-5xl font-title">Ce que nos <span class="text-[#0F9D72]">clients</span> en pensent</h2>
-          <p class="mt-4 text-gray-500 text-lg">Des établissements qui ont fait le choix d'AfricEduc</p>
+      <div class="mx-auto max-w-7xl relative z-10">
+        <div class="fade-in mb-12">
+          <span class="inline-block text-primary font-semibold tracking-wide text-md  px-4 py-1.5 mb-3">
+            <i class="fa-solid fa-comment-dots mr-2"></i> ILS PARLENT DE NOUS
+          </span>
+          <h2 class="section-title">Ce que nos <span>clients</span> en pensent</h2>
+          <p class="section-subtitle">Des établissements qui ont fait le choix d'AfricEduc</p>
         </div>
     
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <!-- AVIS 1 -->
-          <div class="fade-in group bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:border-[#0F9D72]/30 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div class="fade-in group bg-white rounded-3xl p-6 shadow-lg border border-gray-100 hover:border-primary/30 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div class="flex items-center gap-1 mb-4">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D72" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D72" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D72" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D72" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D72" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
+              <i class="fa-solid fa-star text-amber-400"></i>
+              <i class="fa-solid fa-star text-amber-400"></i>
+              <i class="fa-solid fa-star text-amber-400"></i>
+              <i class="fa-solid fa-star text-amber-400"></i>
+              <i class="fa-solid fa-star text-amber-400"></i>
             </div>
             <p class="text-gray-600 text-sm leading-relaxed italic">"AfricEduc a transformé la gestion de notre collège. Plus de perte de temps avec les notes et les bulletins, tout est automatisé. Je recommande vivement !"</p>
             <div class="mt-5 flex items-center gap-3 pt-3 border-t border-gray-100">
-              <div class="w-10 h-10 rounded-full bg-[#0F9D72] flex items-center justify-center text-white font-bold text-sm">MD</div>
+              <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm">MD</div>
               <div>
                 <p class="font-semibold text-gray-800">Mamadou Diallo</p>
                 <p class="text-xs text-gray-400">Directeur - Collège Moderne de Cotonou</p>
@@ -469,18 +596,17 @@
             </div>
           </div>
     
-          <!-- AVIS 2 -->
-          <div class="fade-in group bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:border-[#0F9D72]/30 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div class="fade-in group bg-white rounded-3xl p-6 shadow-lg border border-gray-100 hover:border-primary/30 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div class="flex items-center gap-1 mb-4">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D72" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D72" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D72" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D72" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D72" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
+              <i class="fa-solid fa-star text-amber-400"></i>
+              <i class="fa-solid fa-star text-amber-400"></i>
+              <i class="fa-solid fa-star text-amber-400"></i>
+              <i class="fa-solid fa-star text-amber-400"></i>
+              <i class="fa-solid fa-star text-amber-400"></i>
             </div>
             <p class="text-gray-600 text-sm leading-relaxed italic">"La plateforme est intuitive et le support client réactif. Le suivi des paiements nous a permis de réduire les impayés de 40%."</p>
             <div class="mt-5 flex items-center gap-3 pt-3 border-t border-gray-100">
-              <div class="w-10 h-10 rounded-full bg-[#0F9D72] flex items-center justify-center text-white font-bold text-sm">AT</div>
+              <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm">AT</div>
               <div>
                 <p class="font-semibold text-gray-800">Aminata Touré</p>
                 <p class="text-xs text-gray-400">Secrétaire Générale - Université Abomey-Calavi</p>
@@ -488,18 +614,17 @@
             </div>
           </div>
     
-          <!-- AVIS 3 -->
-          <div class="fade-in group bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:border-[#0F9D72]/30 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div class="fade-in group bg-white rounded-3xl p-6 shadow-lg border border-gray-100 hover:border-primary/30 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div class="flex items-center gap-1 mb-4">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D72" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D72" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D72" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D72" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F9D72/40" stroke="none"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2" /></svg>
+              <i class="fa-solid fa-star text-amber-400"></i>
+              <i class="fa-solid fa-star text-amber-400"></i>
+              <i class="fa-solid fa-star text-amber-400"></i>
+              <i class="fa-solid fa-star text-amber-400"></i>
+              <i class="fa-regular fa-star text-amber-400"></i>
             </div>
             <p class="text-gray-600 text-sm leading-relaxed italic">"Le générateur de bulletins PDF nous fait gagner des heures chaque semaine. Et mes agents adorent la simplicité d'utilisation."</p>
             <div class="mt-5 flex items-center gap-3 pt-3 border-t border-gray-100">
-              <div class="w-10 h-10 rounded-full bg-[#0F9D72] flex items-center justify-center text-white font-bold text-sm">JK</div>
+              <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm">JK</div>
               <div>
                 <p class="font-semibold text-gray-800">Jean Kouadio</p>
                 <p class="text-xs text-gray-400">Proviseur - Lycée Moderne d'Abidjan</p>
@@ -508,103 +633,205 @@
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- CTA final -->
-      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0F9D72] via-[#0F9D72] to-[#0F9D72] mt-16 mx-auto max-w-4xl">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-[#99fbe3]/20 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-0 left-0 w-48 h-48 bg-[#99fbe3]/10 rounded-full blur-2xl"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-md bg-white/5 rounded-full blur-3xl"></div>
-        
-        <div class="relative z-10 flex flex-col items-center text-center gap-6 px-6 py-12 md:px-12 md:py-16">
-          <h2 class="text-2xl font-bold text-white sm:text-3xl md:text-4xl lg:text-5xl font-title">
-            Prêt à transformer votre école ?
-          </h2>
-          <p class="max-w-md text-sm text-slate-200 md:text-base">
-            Rejoignez plus de 500 établissements qui nous font déjà confiance en Afrique de l'Ouest.
-          </p>
-          <div class="flex flex-col gap-3 sm:flex-row sm:gap-4 mt-2">
-            <a href="auth/register.php" class="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-white px-6 py-3 font-semibold text-[#0F9D72] shadow-lg transition-all hover:shadow-xl hover:scale-105 md:px-8 md:py-3.5">
-              <span class="relative z-10 flex items-center gap-2">
-                Commencer gratuitement
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover:translate-x-1 transition-transform">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </span>
-              <div class="absolute inset-0 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 bg-gradient-to-r from-[#99fbe3] to-[#0F9D72]/20"></div>
-            </a>
-            <a href="#features" class="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 py-3 font-medium text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50 md:px-7 md:py-3.5">
-              Comment ça marche ?
-            </a>
+    <!-- SECTION FAQ -->
+    <section id="faq" class="py-20 px-4 sm:px-6 lg:px-8 bg-[#f8fafc]">
+      <div class="mx-auto max-w-7xl">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+          <div class="fade-in flex justify-center">
+            <img src="public/Shrug-cuate.svg" alt="FAQ" class="w-full max-w-md">
+          </div>
+          <div class="fade-in">
+            <span class="inline-block text-primary font-semibold tracking-wide text-md px-4 py-1.5 mb-4">
+              <i class="fa-solid fa-circle-question mr-2"></i> QUESTIONS FRÉQUENTES
+            </span>
+            <h2 class="text-3xl sm:text-4xl font-bold mb-6">Vous avez des <span class="text-primary">questions</span> ?</h2>
+            <p class="text-gray-500 mb-8">Retrouvez les réponses aux questions les plus posées sur AfricEduc.</p>
+            
+            <div class="space-y-4">
+              <div class="border border-gray-200 rounded-2xl overflow-hidden">
+                <button class="faq-toggle w-full text-left px-6 py-4 flex justify-between items-center hover:bg-gray-100/50 transition">
+                  <span class="font-semibold">1. Qu'est-ce que AfricEduc ?</span>
+                  <i class="fa-solid fa-chevron-down text-gray-500 transition-transform duration-300"></i>
+                </button>
+                <div class="faq-answer px-6 pb-4 text-gray-600 text-sm hidden">AfricEduc est une plateforme SaaS de gestion scolaire qui permet aux établissements de gérer les inscriptions, notes, paiements et communications.</div>
+              </div>
+              <div class="border border-gray-200 rounded-2xl overflow-hidden">
+                <button class="faq-toggle w-full text-left px-6 py-4 flex justify-between items-center hover:bg-gray-100/50 transition">
+                  <span class="font-semibold">2. Est-ce adapté à mon école ?</span>
+                  <i class="fa-solid fa-chevron-down text-gray-500 transition-transform duration-300"></i>
+                </button>
+                <div class="faq-answer px-6 pb-4 text-gray-600 text-sm hidden">Oui, AfricEduc s'adapte aux collèges, lycées, écoles internationales, et universités, qu'ils soient publics ou privés.</div>
+              </div>
+              <div class="border border-gray-200 rounded-2xl overflow-hidden">
+                <button class="faq-toggle w-full text-left px-6 py-4 flex justify-between items-center hover:bg-gray-100/50 transition">
+                  <span class="font-semibold">3. Combien coûte AfricEduc ?</span>
+                  <i class="fa-solid fa-chevron-down text-gray-500 transition-transform duration-300"></i>
+                </button>
+                <div class="faq-answer px-6 pb-4 text-gray-600 text-sm hidden">Nous proposons des formules adaptées à la taille de votre établissement. Contactez-nous pour un devis personnalisé.</div>
+              </div>
+              <div class="border border-gray-200 rounded-2xl overflow-hidden">
+                <button class="faq-toggle w-full text-left px-6 py-4 flex justify-between items-center hover:bg-gray-100/50 transition">
+                  <span class="font-semibold">4. Est-ce que je peux l'essayer ?</span>
+                  <i class="fa-solid fa-chevron-down text-gray-500 transition-transform duration-300"></i>
+                </button>
+                <div class="faq-answer px-6 pb-4 text-gray-600 text-sm hidden">Oui ! Nous proposons une démo gratuite. Inscrivez-vous et découvrez toutes les fonctionnalités sans engagement.</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
+
+    <!-- CTA final -->
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary to-primary mt-16 mx-auto max-w-4xl">
+      <div class="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-0 w-48 h-48 bg-accent/10 rounded-full blur-2xl"></div>
+      <div class="absolute -top-20 -right-20 w-60 h-60 border-2 border-primaryDark rounded-full"></div>
+      <div class="absolute -bottom-20 -left-20 w-60 h-60 border-2 border-primaryDark rounded-full"></div>
+      
+      <div class="relative z-10 flex flex-col items-center text-center gap-6 px-6 py-12 md:px-12 md:py-16">
+        <h2 class="text-2xl font-bold text-white sm:text-3xl md:text-4xl lg:text-5xl font-title">
+          Prêt à transformer votre école ?
+        </h2>
+        <p class="max-w-md text-sm text-slate-200 md:text-base">
+          Rejoignez plus de 500 établissements qui nous font déjà confiance en Afrique de l'Ouest.
+        </p>
+        <div class="flex flex-col gap-3 sm:flex-row sm:gap-4 mt-2">
+          <a href="app/views/auth/register.php" class="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-white px-6 py-3 font-semibold text-primary shadow-lg transition-all hover:shadow-xl hover:scale-105 md:px-8 md:py-3.5">
+            <span class="relative z-10 flex items-center gap-2">
+              <i class="fa-solid fa-play"></i> Commencer gratuitement
+              <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            </span>
+            <div class="absolute inset-0 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 bg-gradient-to-r from-accent to-primary/20"></div>
+          </a>
+          <a href="#features" class="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 py-3 font-medium text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50 md:px-7 md:py-3.5">
+            <i class="fa-solid fa-circle-question"></i> Comment ça marche ?
+          </a>
+        </div>
+      </div>
+    </div>
   </main>
 
-  <footer class="bg-white border-t border-[#0F9D72]/10 pt-12 pb-6">
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-primary/10 pt-16 pb-6 mt-[3rem]">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5">
+      <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
         <div class="lg:col-span-2">
-          <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition group-hover:rotate-6">
-            <svg width="30px" height="30px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#0F9D72" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.16"></g><g id="SVGRepo_iconCarrier"> <path d="m14.25 9.25v-3.25l-6.25-3.25-6.25 3.25 6.25 3.25 3.25-1.5v3.5c0 1-1.5 2-3.25 2s-3.25-1-3.25-2v-3.5"></path> </g></svg>
-          </span>
-          <span class="text-xl mx-2 font-bold tracking-tight text-slate-900">Afric<span class="text-primary">Educ</span></span>
-          <p class="text-gray-500 text-sm leading-relaxed mb-4 max-w-sm">
+          <div class="flex items-center gap-3 mb-4">
+            <img src="public/logo.png" class="h-[100px] w-auto" alt="AfricEduc">
+            <span class="text-2xl font-bold tracking-tight text-slate-900">Afric<span class="text-primary">Educ</span></span>
+          </div>
+          <p class="text-gray-500 text-sm leading-relaxed mb-6 max-w-sm">
             La solution complète de gestion scolaire pour les collèges et universités d'Afrique de l'Ouest. Simple, puissante et sécurisée.
           </p>
+          <div class="flex gap-3">
+            <a href="#" class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center hover:bg-primary hover:text-white transition text-gray-600 hover:text-white text-lg">
+              <i class="fa-brands fa-facebook-f"></i>
+            </a>
+            <a href="#" class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center hover:bg-primary hover:text-white transition text-gray-600 hover:text-white text-lg">
+              <i class="fa-brands fa-twitter"></i>
+            </a>
+            <a href="#" class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center hover:bg-primary hover:text-white transition text-gray-600 hover:text-white text-lg">
+              <i class="fa-brands fa-linkedin-in"></i>
+            </a>
+            <a href="#" class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center hover:bg-primary hover:text-white transition text-gray-600 hover:text-white text-lg">
+              <i class="fa-brands fa-youtube"></i>
+            </a>
+          </div>
         </div>
         <div>
           <h3 class="font-title font-semibold text-gray-800 mb-4">Navigation</h3>
           <ul class="space-y-2 text-sm">
-            <li><a href="#features" class="text-gray-500 hover:text-[#0F9D72] transition">Fonctionnalités</a></li>
-            <li><a href="#whom" class="text-gray-500 hover:text-[#0F9D72] transition">Par qui ?</a></li>
-            <li><a href="#testimonies" class="text-gray-500 hover:text-[#0F9D72] transition">Avis</a></li>
-            <li><a href="auth/register.php" class="text-gray-500 hover:text-[#0F9D72] transition">Démo gratuite</a></li>
+            <li><a href="#features" class="text-gray-500 hover:text-primary transition">Fonctionnalités</a></li>
+            <li><a href="#whom" class="text-gray-500 hover:text-primary transition">Pour qui ?</a></li>
+            <li><a href="#testimonies" class="text-gray-500 hover:text-primary transition">Avis</a></li>
+            <li><a href="#faq" class="text-gray-500 hover:text-primary transition">FAQ</a></li>
           </ul>
         </div>
-        
-        
+        <div>
+          <h3 class="font-title font-semibold text-gray-800 mb-4">Contact</h3>
+          <ul class="space-y-2 text-sm text-gray-500">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-envelope text-primary w-4"></i> <a href="mailto:contact@africeduc.com" class="hover:text-primary transition">contact@africeduc.com</a></li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-phone text-primary w-4"></i> <a href="tel:+22967000000" class="hover:text-primary transition">+229 67 00 00 00</a></li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-primary w-4"></i> Cotonou, Bénin</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-title font-semibold text-gray-800 mb-4">Liens utiles</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="text-gray-500 hover:text-primary transition">Conditions d'utilisation</a></li>
+            <li><a href="#" class="text-gray-500 hover:text-primary transition">Politique de confidentialité</a></li>
+            <li><a href="#" class="text-gray-500 hover:text-primary transition">Support</a></li>
+          </ul>
+        </div>
       </div>
       <div class="border-t border-gray-100 my-8"></div>
       <div class="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-400">
-        <div class="flex flex-wrap gap-4 justify-center">
-          <span>&copy; 2026 AfricEduc. Tous droits réservés.</span>
-        </div>
-        <div class="text-center sm:text-right">
-          Créé par 
-          <a href="https://hounmenou-ricardo.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-[#0F9D72] hover:text-[#5a00b8] hover:underline font-medium transition">
-            Ricardo
-          </a>
-        </div>
+        <span>&copy; 2026 AfricEduc. Tous droits réservés.</span>
+        <span>Créé par <a href="https://hounmenou-ricardo.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-primaryDark hover:underline font-medium transition">Ricardo</a></span>
       </div>  
     </div>
   </footer>
 
   <script>
-    // Menu hamburger mobile
-    const menuBtn = document.getElementById('menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const menuIcon = document.getElementById('menu-icon');
+   // Menu hamburger mobile
+const menuBtn = document.getElementById('menu-btn');
+const mobileSidebar = document.getElementById('mobile-sidebar');
+const mobileOverlay = document.getElementById('mobile-overlay');
+const closeMobileMenu = document.getElementById('close-mobile-menu');
 
-    if (menuBtn && mobileMenu) {
-      menuBtn.addEventListener('click', function() {
-        mobileMenu.classList.toggle('hidden');
-        if (!mobileMenu.classList.contains('hidden')) {
-          menuIcon.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>';
-        } else {
-          menuIcon.innerHTML = '<line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>';
-        }
+function openMobileMenu() {
+  mobileSidebar.classList.add('is-open');
+  mobileOverlay.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMobileMenuFn() {
+  mobileSidebar.classList.remove('is-open');
+  mobileOverlay.classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+
+if (menuBtn) menuBtn.addEventListener('click', openMobileMenu);
+if (closeMobileMenu) closeMobileMenu.addEventListener('click', closeMobileMenuFn);
+if (mobileOverlay) mobileOverlay.addEventListener('click', closeMobileMenuFn);
+   
+
+    // FAQ Toggle
+      // FAQ Toggle - Un seul ouvert à la fois
+  document.querySelectorAll('.faq-toggle').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const answer = this.nextElementSibling;
+      const icon = this.querySelector('i.fa-chevron-down');
+      const isOpen = !answer.classList.contains('hidden');
+      
+      // Fermer toutes les réponses
+      document.querySelectorAll('.faq-answer').forEach(a => {
+        a.classList.add('hidden');
       });
-    }
+      document.querySelectorAll('.faq-toggle i.fa-chevron-down').forEach(i => {
+        i.classList.remove('rotate-180');
+      });
+      
+      // Si elle était fermée, on l'ouvre
+      if (!isOpen) {
+        answer.classList.remove('hidden');
+        if (icon) icon.classList.add('rotate-180');
+      }
+    });
+  });
 
+    // Animations fade-in
     (function () {
       const fadeElements = document.querySelectorAll(".fade-in");
       const revealOnScroll = new IntersectionObserver(
-        (entries, observer) => {
+        (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
               entry.target.classList.add("is-visible");
-              observer.unobserve(entry.target);
+              revealOnScroll.unobserve(entry.target);
             }
           });
         },
@@ -612,9 +839,10 @@
       );
       fadeElements.forEach((el) => revealOnScroll.observe(el));
 
+      // Counters
       const counters = document.querySelectorAll("[data-counter]");
       const counterObserver = new IntersectionObserver(
-        (entries, observer) => {
+        (entries) => {
           entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
             const el = entry.target;
@@ -630,7 +858,7 @@
               else el.textContent = target.toLocaleString("fr-FR") + suffix;
             };
             requestAnimationFrame(tick);
-            observer.unobserve(el);
+            counterObserver.unobserve(el);
           });
         },
         { threshold: 0.5 }
