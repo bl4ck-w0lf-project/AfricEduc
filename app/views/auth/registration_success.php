@@ -14,37 +14,58 @@ unset($_SESSION['success'], $_SESSION['mail_error'], $_SESSION['registered_email
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inscription réussie | AfricEduc</title>
+  <meta name="description" content="Votre inscription sur AfricEduc a été prise en compte.">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors: { primary: "#7300e9", accent: "#99fbe3" },
-          fontFamily: { heading: ["Quicksand", "sans-serif"], body: ["Outfit", "sans-serif"] },
-          boxShadow: { glow: "0 20px 50px -20px rgba(115, 0, 233, 0.45)" }
+          colors: {
+            primary: "#0F9D72",
+            primaryDark: "#0B7A58",
+            accent: "#99fbe3"
+          },
+          fontFamily: {
+            heading: ["Quicksand", "sans-serif"],
+            body: ["Outfit", "sans-serif"]
+          },
+          boxShadow: {
+            glow: "0 20px 50px -20px rgba(115, 0, 233, 0.45)"
+          }
         }
       }
     };
   </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
     body { font-family: "Outfit", sans-serif; }
     h1, h2, h3 { font-family: "Quicksand", sans-serif; }
-    .page-bg {
-      background-color: #f4f4f7;
-      background-image:
-        radial-gradient(circle at 15% 20%, rgba(153, 251, 227, 0.45), transparent 42%),
-        radial-gradient(circle at 85% 10%, rgba(115, 0, 233, 0.12), transparent 40%),
-        radial-gradient(circle at 50% 100%, rgba(115, 0, 233, 0.06), transparent 50%);
-    }
+
     .glass-card {
-      background: rgba(255, 255, 255, 0.75);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 0 20px 40px -12px rgba(115, 0, 233, 0.15);
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow:
+        0 4px 6px -1px rgba(115, 0, 233, 0.06),
+        0 20px 40px -12px rgba(115, 0, 233, 0.15);
       backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
     }
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(20px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .card-enter { animation: card-in 0.65s ease-out forwards; }
+
+    .page-bg {
+      background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 50%, #ffffff 100%);
+    }
+
     .status-icon {
       animation: pulse 2s ease-in-out infinite;
     }
@@ -54,71 +75,76 @@ unset($_SESSION['success'], $_SESSION['mail_error'], $_SESSION['registered_email
     }
   </style>
 </head>
-<body class="page-bg min-h-screen flex items-center justify-center px-4">
+<body class="page-bg min-h-screen antialiased text-slate-800">
+  <div class="relative z-10 min-h-screen lg:grid lg:grid-cols-2">
 
-  <div class="glass-card w-full max-w-md rounded-3xl p-10 text-center">
+    <!-- Colonne gauche - SVG + cercles verts -->
+    <aside class="relative hidden min-h-[280px] flex-col justify-between overflow-hidden p-8 lg:flex lg:min-h-screen lg:p-12 xl:p-16" style="background-image: linear-gradient(135deg, rgba(15,157,114,0.9) 0%, rgba(11,122,88,0.9) 50%, rgba(10,46,31,0.95) 100%), url('/AfricEduc/public/college-admission-rafiki.svg'); background-size: cover; background-position: center; background-blend-mode: overlay;">  
+      <!-- Cercles décoratifs verts -->
+      <div class="absolute top-20 right-20 w-64 h-64 bg-[#00ffb3]/20 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 left-20 w-48 h-48 bg-[#00ffb3]/10 rounded-full blur-2xl"></div>
+      <div class="absolute top-40 left-10 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
+    </aside>
 
-    <!-- Logo -->
-    <a href="#" class="inline-flex items-center gap-3 mb-6">
-      <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <svg width="30" height="30" viewBox="0 0 16 16" fill="none" stroke="#9600ec" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
-            <path d="m14.25 9.25v-3.25l-6.25-3.25-6.25 3.25 6.25 3.25 3.25-1.5v3.5c0 1-1.5 2-3.25 2s-3.25-1-3.25-2v-3.5"/>
-          </svg>
-        </span>
-      </span>
-      <span class="text-2xl font-bold tracking-tight text-slate-900">Afric<span class="text-primary">Educ</span></span>
-    </a>
+    <!-- Colonne droite - Contenu -->
+    <div class="flex min-h-screen flex-col justify-center px-6 py-8 sm:px-10 md:px-14 lg:px-20 xl:px-24">
 
-    <!-- Status icon -->
-    <div class="status-icon mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full <?php echo $mailError ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'; ?> text-3xl">
-      <?php echo $mailError ? '!' : '✓'; ?>
-    </div>
-
-    <h1 class="text-2xl font-bold text-slate-900 mb-2">
-      <?php echo $mailError ? "Compte créé mais email non envoyé !" : "Inscription en attente de validation !!"; ?>
-    </h1>
-
-    <p class="mt-4 text-slate-600 text-sm leading-relaxed">
-      <?php 
-        if ($mailError) {
-          echo "Nous n'avons pas pu envoyer l'email de confirmation à <strong>{$registeredEmail}</strong>.<br>";
-          echo "Erreur: {$mailError}";
-        } else {
-          echo " Un email de confirmation a été envoyé à <strong>{$registeredEmail}</strong>.<br><br>";
-          echo " <strong>Étapes à suivre :</strong><br>";
-          echo "1. Vérifiez votre boîte email et cliquez sur le lien de confirmation.<br>";
-          echo "2. Votre compte sera ensuite examiné par l'administrateur.<br>";
-          echo "3. Vous recevrez une notification dès que votre compte sera activé.";
-        }
-      ?>
-    </p>
-
-    <?php if ($adminNotified && !$mailError): ?>
-      <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-        <p class="text-xs text-blue-700">
-           L'administrateur a été notifié de votre inscription.
-        </p>
-      </div>
-    <?php endif; ?>
-
-    <div class="mt-8 space-y-3">
-      <a href="login.php"
-         class="block w-full rounded-xl bg-primary px-6 py-3 text-white font-semibold shadow-glow hover:bg-emerald-800 transition">
-        Aller à la connexion
+      <!-- Logo -->
+      <a href="#" class="">
+        <img src="/AfricEduc/public/logo.png" alt="AfricEduc" class="h-[100px] w-auto mx-auto">
       </a>
-      <?php if($mailError): ?>
-      <p class="text-xs text-red-500">
-        Vous pouvez réessayer plus tard ou contacter l'assistance.
+
+      <!-- Status icon -->
+      <div class="status-icon mx-auto mt-6 flex h-16 w-16 items-center justify-center rounded-full <?php echo $mailError ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'; ?> text-3xl">
+        <?php echo $mailError ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-check"></i>'; ?>
+      </div>
+
+      <h1 class="mt-4 text-3xl font-bold text-slate-900 mx-auto text-center">
+        <?php echo $mailError ? "Compte créé mais email non envoyé !" : "Inscription en attente de validation !!"; ?>
+      </h1>
+
+      <p class="mt-4 max-w-sm text-sm text-slate-600 sm:text-base mx-auto text-center leading-relaxed">
+        <?php 
+          if ($mailError) {
+            echo "Nous n'avons pas pu envoyer l'email de confirmation à <strong class='text-primary'>{$registeredEmail}</strong>.<br>";
+            echo "Erreur: {$mailError}";
+          } else {
+            echo "Un email de confirmation a été envoyé à <strong class='text-primary'>{$registeredEmail}</strong>.<br><br>";
+            echo "<strong>Étapes à suivre :</strong><br>";
+            echo "1. Vérifiez votre boîte email et cliquez sur le lien de confirmation.<br>";
+            echo "2. Votre compte sera ensuite examiné par l'administrateur.<br>";
+            echo "3. Vous recevrez une notification dès que votre compte sera activé.";
+          }
+        ?>
       </p>
-      <?php else: ?>
-      <p class="text-xs text-slate-500">
-        Vous ne trouvez pas l'email ? Vérifiez vos spams.
-      </p>
+
+      <?php if ($adminNotified && !$mailError): ?>
+        <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg mx-auto max-w-sm">
+          <p class="text-xs text-blue-700 flex items-center gap-2">
+            <i class="fa-solid fa-circle-check text-blue-500"></i>
+            L'administrateur a été notifié de votre inscription.
+          </p>
+        </div>
       <?php endif; ?>
+
+      <div class="mt-8 space-y-3 mx-auto w-full max-w-md">
+        <a href="/AfricEduc/public/index.php?url=login"
+           class="block w-full rounded-xl bg-primary px-6 py-3.5 text-white font-semibold text-center shadow-lg shadow-primary/25 hover:bg-primary/90 hover:shadow-primary/35 transition">
+          <i class="fa-solid fa-arrow-right-to-bracket mr-2"></i>
+          Aller à la connexion
+        </a>
+        <?php if($mailError): ?>
+          <p class="text-xs text-red-500 text-center">
+            Vous pouvez réessayer plus tard ou contacter l'assistance.
+          </p>
+        <?php else: ?>
+          <p class="text-xs text-slate-500 text-center">
+            Vous ne trouvez pas l'email ? Vérifiez vos spams.
+          </p>
+        <?php endif; ?>
+      </div>
+
     </div>
-
   </div>
-
 </body>
 </html>

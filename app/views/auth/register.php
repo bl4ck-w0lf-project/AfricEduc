@@ -103,7 +103,7 @@ unset($_SESSION['old']);
     <!-- Colonne gauche - Formulaire -->
     <div class="flex flex-col px-4 py-3 sm:px-8 lg:px-10 xl:px-16">
       <header class="max-w-xl ms-[70px]">
-        <a href="index.php" class="flex justify-start items-center">
+        <a href="/AfricEduc/index.php" class="flex justify-start items-center">
           <span class="flex items-center justify-start transition-all duration-300 group-hover:rotate-6">
             <img src="/AfricEduc/public/logo.png" alt="" class="h-[70px] w-[150px]" >
           </span>

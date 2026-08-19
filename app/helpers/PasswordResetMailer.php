@@ -103,7 +103,7 @@ class PasswordResetMailer
                         <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.08);max-width:600px;width:100%;">
                             <!-- HEADER avec dégradé amélioré -->
                             <tr>
-                                <td style="background:linear-gradient(135deg,#7300e9 0%,#9c40ff 100%);padding: 40px 40px 24px 40px;text-align:center;position:relative;">
+                                <td style="background:linear-gradient(135deg,#0F9D72 0%,#0F9D72 100%);padding: 40px 40px 24px 40px;text-align:center;position:relative;">
                                     <span style="color:#ffffff;font-size:28px;font-weight:700;letter-spacing:-0.5px;position:relative;z-index:1;text-shadow:0 2px 15px rgba(0,0,0,0.1);">
                                         AfricEduc
                                     </span>
@@ -131,7 +131,7 @@ class PasswordResetMailer
                                     </h1>
                                     
                                     <p style="margin:0 0 6px;color:#475569;font-size:15px;line-height:1.7;">
-                                        Vous avez demandé à réinitialiser votre mot de passe pour votre compte <strong style="color:#7300e9;">AfricEduc</strong>.
+                                        Vous avez demandé à réinitialiser votre mot de passe pour votre compte <strong style="color:#0F9D72;">AfricEduc</strong>.
                                     </p>
                                     
                                     <p style="margin:0 0 28px;color:#475569;font-size:15px;line-height:1.7;">
@@ -145,9 +145,9 @@ class PasswordResetMailer
                                     <!-- Bouton CTA amélioré -->
                                     <div style="text-align:center;margin:0 0 28px;">
                                         <a href="{$safe}"
-                                          style="display:inline-block;background:linear-gradient(135deg,#7300e9 0%,#9c40ff 100%);
+                                          style="display:inline-block;background:linear-gradient(135deg,#0F9D72 0%,#0F9D72 100%);
                                                   color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:14px;
-                                                  font-weight:600;font-size:16px;box-shadow:0 4px 20px rgba(115,0,233,0.35);
+                                                  font-weight:600;font-size:16px;box-shadow:0 4px 20px #0F9D72;
                                                   transition:all 0.3s ease;border:none;cursor:pointer;
                                                   letter-spacing:0.3px;">
                                              Choisir un nouveau mot de passe
